@@ -1,0 +1,84 @@
+% define a classe de documento, no caso um artigo em fonte de 12pt
+\documentclass[12pt]{article}
+
+% Carrega 
+\input{packages_latex}
+
+
+\addbibresource{InforSoc.bib}
+
+\begin{document} 
+
+\title{Sistema de Gerenciamento de Consultas Veterinárias}
+	
+\author{Ana Luiza Campos Souza \\ Célio Júnio de Freitas Eduardo \\
+Giulia Moura Ferreira \\ Letícia}
+		
+\newcommand{\address}{{
+			\begin{center}
+				\footnotesize
+				Universidade de Brasília - Instituto de Ciências Exatas\\  Departamento de Ciência da Computação - CIC0134 - Banco de Dados \\
+				Professora Maristela Holanda \\ Prédio CIC/EST - Campus Universitário Darcy Ribeiro \\Asa Norte 70919-970 Brasília, DF\\
+				\href{seu-email@aluno.unb.br}{211055441@aluno.unb.br}
+			\end{center}
+}}
+	
+\maketitle
+\address
+	
+\begin{abstract} 
+		Após concluir o projeto, escreva aqui o resumo usando um único parágrafo de texto, com até 500 palavras. \\
+\textbf{Palavras-chave:} \textit{Informática e Sociedade; UnB; Ensaio Científico; Dilemas; Ética.}
+\end{abstract}
+
+\section{Introdução}
+
+Espaço destinado a introdução.
+
+\section{Metodologia}
+
+Descreva a metodologia de \cite{jones_doing_2016}, isto é, os passos que você deve seguir para realizar o trabalho, conforme as orientações do Plano de Ensino.
+
+\section{Problemas e Dilemas Ético-Morais}
+
+Defina o que são problemas e dilemas ético-morais no campo da informática e sociedade, conforme as orientações do Plano de Ensino.
+
+Veja o esquema geral de um dilema na Figura \ref{fig:dilema}, apresentado de forma mais detalhada no Plano de Ensino.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{images/DilemaEticoInformatica.png}
+    \caption{Modelo Geral de um Dilema Ético-Moral em Informática. Fonte: \cite{fernandes_texto_2024-1}}
+    \label{fig:dilema}
+\end{figure}
+
+\section{Análise Tecnológica} 
+
+Escreva um texto que desconstrua e analise a tecnologia (artefato informático) relacionada com o dilema proposto, sob as várias perspectivas (análise \textit{multistakeholder}), conforme as orientações do Plano de Ensino.
+	
+\section{Análise Ética}
+	
+Declare um dilema concreto e faça uma análise valorativa dele, conforme as orientações do Plano de Ensino.
+ 
+\section{Análise Jurídica, Legal e Normativa}
+	
+Pesquise, cite e descreva leis, normas e regulamentos que auxiliam na análise do dilema, sendo um dos exemplos a LGPD \cite{brasil_lei_2018}, 
+conforme as orientações do Plano de Ensino.
+
+\section{Análise Profissional e Empresarial}
+	
+Analise as profissões e empresas envolvidas no dilema, e o que dizem seus códigos de conduta acerca dos elementos do dilema, 
+conforme as orientações do Plano de Ensino.
+
+\section{Proposições e Encaminhamentos}
+	
+Apresentar encaminhamentos para a solução do dilema analisado, ponderando valores e princípios sociais,
+conforme as orientações do Plano de Ensino.
+
+\section{Conclusões sobre a disciplina}
+	
+Nas conclusões do ensaio você deve refletir e relatar sobre o que ocorreu no semestre, conforme orienta o Plano de Ensino.
+
+\label{referencias}
+\printbibliography
+\end{document}
