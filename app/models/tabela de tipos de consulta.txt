@@ -1,0 +1,60 @@
+CREATE TABLE Tipo_Consulta (
+    id_tipo INT AUTO_INCREMENT PRIMARY KEY, -- Identificador único para cada tipo
+    nome VARCHAR(100) NOT NULL, -- Nome do tipo de consulta
+    categoria VARCHAR(50), -- Categoria ampla da consulta (Preventiva, Curativa, etc.)
+    descricao TEXT, -- Descrição detalhada da consulta
+    Data_Criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- Data de criação do registro
+);
+
+INSERT INTO Tipo_Consulta (Nome, Categoria, Descricao)
+VALUES
+    ('Consulta Geral', 'Preventiva', 'Consulta básica para avaliação geral do animal.'),
+    ('Check-up de Rotina', 'Preventiva', 'Consulta periódica para acompanhamento da saúde do animal.'),
+    ('Vacinação', 'Preventiva', 'Administração de vacinas recomendadas para a espécie.'),
+    ('Vermifugação', 'Preventiva', 'Tratamento para eliminação de parasitas internos.'),
+    ('Emergência', 'Curativa', 'Atendimento imediato para situações de risco.'),
+    ('Cirurgia Geral', 'Curativa', 'Procedimento cirúrgico para diversas finalidades.'),
+    ('Cirurgia Ortopédica', 'Curativa', 'Cirurgia para corrigir problemas nos ossos ou articulações.'),
+    ('Consulta Odontológica', 'Preventiva', 'Avaliação e tratamento de problemas bucais.'),
+    ('Consulta Dermatológica', 'Curativa', 'Consulta para tratar problemas de pele.'),
+    ('Consulta Cardiológica', 'Curativa', 'Avaliação da saúde cardíaca do animal.'),
+    ('Consulta Neurológica', 'Curativa', 'Avaliação de problemas neurológicos.'),
+    ('Consulta Oftalmológica', 'Curativa', 'Avaliação e tratamento de problemas oculares.'),
+    ('Consulta de Reabilitação', 'Curativa', 'Fisioterapia e reabilitação física do animal.'),
+    ('Consulta Nutricional', 'Preventiva', 'Planejamento alimentar e avaliação nutricional.'),
+    ('Exame Laboratorial', 'Diagnóstico', 'Coleta de amostras para análises laboratoriais.'),
+    ('Ultrassonografia', 'Diagnóstico', 'Exame de imagem para avaliação interna.'),
+    ('Radiografia (Raio-X)', 'Diagnóstico', 'Exame de imagem para avaliação óssea e interna.'),
+    ('Tomografia Computadorizada', 'Diagnóstico', 'Exame de imagem detalhado do corpo do animal.'),
+    ('Ecocardiograma', 'Diagnóstico', 'Exame de imagem para avaliação do coração.'),
+    ('Consulta Comportamental', 'Preventiva', 'Avaliação de comportamento e bem-estar do animal.'),
+    ('Consulta Geriátrica', 'Preventiva', 'Consulta voltada para animais idosos.'),
+    ('Consulta Neonatal', 'Preventiva', 'Consulta voltada para filhotes recém-nascidos.'),
+    ('Consulta Reprodutiva', 'Preventiva', 'Acompanhamento de reprodução e gestação.'),
+    ('Consulta para Animais Exóticos', 'Especializada', 'Atendimento de espécies não convencionais.'),
+    ('Consulta para Animais Silvestres', 'Especializada', 'Atendimento de espécies silvestres.'),
+    ('Consulta para Animais de Grande Porte', 'Especializada', 'Consulta voltada para cavalos, bovinos, etc.'),
+    ('Castração', 'Curativa', 'Procedimento para esterilização do animal.'),
+    ('Microchipagem', 'Preventiva', 'Implantação de microchip para identificação do animal.'),
+    ('Tratamento de Feridas', 'Curativa', 'Cuidado e tratamento de feridas.'),
+    ('Retirada de Pontos', 'Curativa', 'Retirada de pontos após procedimento cirúrgico.'),
+    ('Avaliação Pré-operatória', 'Preventiva', 'Exame para avaliar a saúde antes de cirurgia.'),
+    ('Consulta para Controle de Parasitas', 'Preventiva', 'Tratamento preventivo contra parasitas externos e internos.'),
+    ('Atendimento Domiciliar', 'Preventiva', 'Consulta realizada no domicílio do cliente.'),
+    ('Consulta de Avaliação de Peso', 'Preventiva', 'Acompanhamento e controle do peso do animal.'),
+    ('Consulta para Viagens', 'Especializada', 'Emissão de atestado de saúde para viagens.'),
+    ('Consulta para Controle de Zoonoses', 'Preventiva', 'Controle de doenças transmissíveis entre animais e humanos.'),
+    ('Consulta Paliativa', 'Curativa', 'Cuidados paliativos para animais com doenças crônicas.'),
+    ('Consulta de Acupuntura', 'Terapias Alternativas', 'Tratamento com acupuntura para diversos fins.'),
+    ('Consulta de Homeopatia', 'Terapias Alternativas', 'Tratamento homeopático para o animal.'),
+    ('Consulta de Terapias Alternativas', 'Terapias Alternativas', 'Consulta para outras terapias complementares.'),
+    ('Consulta de Bem-estar Animal', 'Preventiva', 'Avaliação geral do bem-estar do animal.'),
+    ('Consulta Oncológica', 'Curativa', 'Avaliação e tratamento de câncer.'),
+    ('Consulta Pós-operatória', 'Curativa', 'Acompanhamento após procedimento cirúrgico.'),
+    ('Consulta para Adoção', 'Preventiva', 'Avaliação de saúde para animais destinados à adoção.'),
+    ('Consulta Pré-natal', 'Preventiva', 'Acompanhamento de fêmeas gestantes.'),
+    ('Consulta de Desintoxicação', 'Curativa', 'Tratamento de intoxicações.'),
+    ('Consulta Endocrinológica', 'Curativa', 'Avaliação de problemas hormonais.'),
+    ('Consulta Ortopédica', 'Curativa', 'Tratamento especializado em ortopedia.'),
+    ('Consulta de Hematologia', 'Diagnóstico', 'Avaliação de problemas no sangue.'),
+    ('Consulta de Anestesiologia', 'Especializada', 'Consulta para planejamento anestésico.');
