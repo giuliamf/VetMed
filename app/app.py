@@ -13,5 +13,10 @@ def inicio():
     return render_template("./inicio.html")
 
 
+@app.route("/cadastros")
+def cadastro():
+    return render_template("./cadastros.html")
+
+
 if __name__ == "__main__":
     app.run(debug=True)

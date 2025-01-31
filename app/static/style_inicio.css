@@ -31,6 +31,12 @@ body {
     font-weight: 600;
 }
 
+.navbar ul li a.active {
+    background-color: rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
 .user-info {
     display: flex;
     align-items: center;
@@ -55,3 +61,14 @@ body {
     height: calc(100vh - 50px);
     background-color: white;
 }
+
+.button {
+    background: white;
+    border: 1px solid #ccc;
+    padding: 15px 25px;
+    margin: 10px;
+    border-radius: 10px;
+    font-weight: 600;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
