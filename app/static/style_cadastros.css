@@ -36,3 +36,17 @@ body {
 .cadastro-button:hover {
     background-color: #9abad4;
 }
+
+.cadastro-button.active {
+    background-color: #004070;
+    color: white;
+    padding: 20px 40px;
+    margin: 10px;
+    border-radius: 50px;
+    font-weight: lighter;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 250px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    text-align: center;
+}
