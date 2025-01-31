@@ -6,7 +6,7 @@
     <title>Pacientes - VetMed</title>
     <link rel="stylesheet" href="../static/style_inicio.css">
     <link rel="stylesheet" href="../static/style_cadastros.css">
-    <link rel="stylesheet" href="../static/tela_cadastros/style_pacientes.css">
+    <link rel="stylesheet" href="../static/tela_cadastros/style_usuarios.css">
 </head>
 <body>
     <header>
@@ -28,8 +28,8 @@
     </header>
     <main>
         <div class="cadastro-container">
-            <button class="cadastro-button active">Pacientes</button>
-            <button class="cadastro-button">Pessoas</button>
+            <button class="cadastro-button active" onclick="window.location.href='/pacientes'">Pacientes</button>
+            <button class="cadastro-button" onclick="window.location.href='/tutores'">Tutores</button>
             <button class="cadastro-button">Produtos</button>
             <button class="cadastro-button">Serviços</button>
             <button class="cadastro-button">Exames</button>
@@ -37,7 +37,7 @@
             <button class="cadastro-button">Usuários</button>
         </div>
 
-        <div class="pacientes-container">
+        <div class="usuarios-container">
             <div class="table-header">
                 <h2>Pacientes</h2>
                 <label for="search"></label><input type="text" id="search" placeholder="Pesquisar Pacientes">

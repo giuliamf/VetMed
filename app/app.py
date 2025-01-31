@@ -11,6 +11,14 @@ pacientes = [
     {'nome': 'Rex (Carlos Eduardo Santos)'}
 ]
 
+tutores = [
+    {'nome': 'Ana Luiza Campos'},
+    {'nome': 'Célio Eduardo Júnior'},
+    {'nome': 'João Pedro Souza'},
+    {'nome': 'Fernanda Oliveira'},
+    {'nome': 'Carlos Eduardo Santos'}
+]
+
 
 @app.route('/')
 def login():
@@ -42,6 +50,15 @@ def pacientes_page():
 @app.route('/api/pacientes')
 def get_pacientes():
     return jsonify(pacientes)
+
+
+@app.route('/tutores')
+def tutores_page():
+    return render_template('tutores.html', tutores=tutores)
+
+@app.route('/api/tutores')
+def get_tutores():
+    return jsonify(tutores)
 
 
 # Tela de consultas e suas funcionalidades
