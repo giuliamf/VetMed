@@ -8,7 +8,6 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    transform: rotate(0.15deg);
     background-color: #004070;
     padding: 15px 20px;
     margin: auto;
