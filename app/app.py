@@ -8,5 +8,10 @@ def login():
     return render_template("./login.html")
 
 
+@app.route("/inicio")
+def inicio():
+    return render_template("./inicio.html")
+
+
 if __name__ == "__main__":
     app.run(debug=True)
