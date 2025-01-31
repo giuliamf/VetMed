@@ -1,1 +1,93 @@
-css styles
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Montserrat, sans-serif;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f0f0f0;
+}
+
+.container {
+    display: flex;
+    width: 100%;
+    max-width: 1920px;
+    height: 100vh;
+    background: white;
+    overflow: hidden;
+
+}
+
+.left-side {
+    flex: 2;
+    background: url('../static/bg.png') no-repeat center center/cover;
+    position: relative;
+    padding-left: 600px;
+}
+
+.overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 2.5rem;
+    font-weight: bold;
+}
+
+.bold {
+    font-weight: 700;
+}
+
+.blue {
+    color: #007bff;
+}
+
+.right-side {
+    flex: 1;
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    background: white;
+    padding-left: 50px;
+}
+
+.login-form {
+    width: 80%;
+    max-width: 350px;
+}
+
+.login-form h2 {
+    font-size: 1.2rem;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.login-form input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: none;
+    border-radius: 5px;
+    background: #ddd;
+}
+
+.login-form button {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background: #004070;
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.login-form button:hover {
+    background: #002b50;
+}
