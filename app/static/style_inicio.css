@@ -60,7 +60,7 @@ body {
 .content {
     width: 100%;
     height: calc(100vh - 50px);
-    background-color: white;
+    background-color: #f0f0f0;
 }
 
 .button.active {
