@@ -2,6 +2,7 @@ body {
     margin: 0;
     padding: 0;
     font-family: Montserrat, sans-serif;
+    background-color: #f0f0f0;
 }
 
 .navbar {
@@ -26,7 +27,7 @@ body {
 }
 
 .navbar ul li a {
-    color: white;
+    color: #f0f0f0;
     text-decoration: none;
     font-weight: 600;
 }
@@ -62,13 +63,10 @@ body {
     background-color: white;
 }
 
-.button {
-    background: white;
-    border: 1px solid #ccc;
-    padding: 15px 25px;
-    margin: 10px;
-    border-radius: 10px;
-    font-weight: 600;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+.button.active {
+    background-color: #004070;
+    color: white;
+    border: none;
+    transform: scale(1.1);
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
 }
-

@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastros - VetMed</title>
+    <title>Pacientes - VetMed</title>
     <link rel="stylesheet" href="../static/style_inicio.css">
     <link rel="stylesheet" href="../static/style_cadastros.css">
+    <link rel="stylesheet" href="../static/tela_cadastros/style_pacientes.css">
 </head>
 <body>
     <header>
@@ -26,7 +27,7 @@
     </header>
     <main>
         <div class="cadastro-container">
-            <button class="cadastro-button" onclick="window.location.href='/pacientes'">Pacientes</button>
+            <button class="cadastro-button active">Pacientes</button>
             <button class="cadastro-button">Pessoas</button>
             <button class="cadastro-button">Produtos</button>
             <button class="cadastro-button">Serviços</button>
@@ -34,7 +35,36 @@
             <button class="cadastro-button">Vacinas</button>
             <button class="cadastro-button">Usuários</button>
         </div>
-        <div id="pacientes-container"></div>
+
+        <div class="pacientes-container">
+            <div class="table-header">
+                <h2>Pacientes</h2>
+                <label for="search"></label><input type="text" id="search" placeholder="Pesquisar Pacientes">
+                <button id="novoCadastro">Novo cadastro</button>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for paciente in pacientes %}
+                    <tr>
+                        <td>{{ paciente.nome }}</td>
+                        <td><button onclick="editarPaciente('{{ paciente.nome }}')">Editar</button></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </main>
+
+    <script>
+        function editarPaciente(nome) {
+            alert("Editar paciente: " + nome);
+        }
+    </script>
 </body>
 </html>
