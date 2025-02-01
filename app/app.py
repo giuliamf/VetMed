@@ -1,4 +1,4 @@
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, request, redirect, url_for
 
 app = Flask(__name__)
 
@@ -17,6 +17,12 @@ tutores = [
     {'nome': 'João Pedro Souza'},
     {'nome': 'Fernanda Oliveira'},
     {'nome': 'Carlos Eduardo Santos'}
+]
+
+usuarios = [
+    {'nome': 'Giulia Moura Ferreira'},
+    {'nome': 'Célio Eduardo Júnior'},
+    {'nome': 'Ana Luiza Campos'},
 ]
 
 
@@ -56,9 +62,15 @@ def get_pacientes():
 def tutores_page():
     return render_template('tutores.html', tutores=tutores)
 
+
 @app.route('/api/tutores')
 def get_tutores():
     return jsonify(tutores)
+
+
+@app.route('/usuarios')
+def usuarios_page():
+    return render_template('usuarios.html', usuarios=usuarios)
 
 
 # Tela de consultas e suas funcionalidades
