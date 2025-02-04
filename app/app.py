@@ -19,6 +19,10 @@ tutores = [
     {'nome': 'Carlos Eduardo Santos'}
 ]
 
+usuarios = {
+    {'nome': 'Giulia Moura Ferreira'},
+    {'nome': 'Ana Luiza Campos'}
+}
 
 @app.route('/')
 def login():
@@ -61,6 +65,11 @@ def get_tutores():
     return jsonify(tutores)
 
 
+@app.route('/usuarios')
+def usuarios_page():
+    return render_template('usuarios.html', usuarios=usuarios)
+
+
 # Tela de consultas e suas funcionalidades
 @app.route('/consultas')
 def consultas():
@@ -71,8 +80,6 @@ def consultas():
 @app.route('/financeiro')
 def financeiro():
     return render_template('financeiro.html')
-
-
 
 
 if __name__ == '__main__':
