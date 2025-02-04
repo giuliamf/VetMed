@@ -23,3 +23,25 @@ class AgendamentoValidator:
             return False, "Campo 'hora' deve estar no formato HH:MM."
 
         return True, None
+
+    @staticmethod
+    def validar_atualizar_agendamento(data):
+        """
+        Valida os campos ao atualizar um agendamento.
+        Aceita campos variáveis, mas valida os formatos de 'data' e 'hora', se presentes.
+        """
+        # Validar data (formato DD/MM/YYYY), se presente
+        if 'data' in data:
+            try:
+                datetime.strptime(data['data'], '%d/%m/%Y').date()
+            except ValueError:
+                return False, "Campo 'data' deve estar no formato DD/MM/YYYY."
+
+        # Validar hora (formato HH:MM), se presente
+        if 'hora' in data:
+            try:
+                datetime.strptime(data['hora'], '%H:%M').time()
+            except ValueError:
+                return False, "Campo 'hora' deve estar no formato HH:MM."
+
+        return True, None

@@ -13,11 +13,11 @@
         <nav class="navbar">
             <ul>
                 <li><a href="/inicio">Início</a></li>
-                <li><a href="#">Agenda</a></li>
+                <li><a href="/agenda">Agenda</a></li>
                 <li><a href="/cadastros" class="active">Cadastros</a></li>
-                <li><a href="#">Exames</a></li>
-                <li><a href="#">Financeiro</a></li>
-                <li><a href="#">Pesquisa</a></li>
+                <li><a href="/consultas">Consultas</a></li>
+                <li><a href="/financeiro">Financeiro</a></li>
+                <li><a href="/pesquisa">Pesquisa</a></li>
                 <li><a href="/">Sair</a></li>
             </ul>
             <div class="user-info">
@@ -40,7 +40,7 @@
         <div class="usuarios-container">
             <div class="table-header">
                 <h2>Pacientes</h2>
-                <label for="search"></label><input type="text" id="search" placeholder="Pesquisar Pacientes">
+                <label for="search"></label><input type="text" id="search" placeholder="Pesquisar paciente">
                 <button id="novoCadastro">Novo cadastro</button>
             </div>
             <table>
@@ -61,7 +61,6 @@
             </table>
         </div>
     </main>
-
     <script>
         function editarPaciente(nome) {
             alert("Editar paciente: " + nome);
@@ -69,3 +68,5 @@
     </script>
 </body>
 </html>
+
+

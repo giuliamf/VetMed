@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tutores - VetMed</title>
+    <title>Usuarios - VetMed</title>
     <link rel="stylesheet" href="../static/style_inicio.css">
     <link rel="stylesheet" href="../static/style_cadastros.css">
     <link rel="stylesheet" href="../static/tela_cadastros/style_usuarios.css">
@@ -13,11 +13,11 @@
         <nav class="navbar">
             <ul>
                 <li><a href="/inicio">Início</a></li>
-                <li><a href="#">Agenda</a></li>
+                <li><a href="/agenda">Agenda</a></li>
                 <li><a href="/cadastros" class="active">Cadastros</a></li>
-                <li><a href="#">Exames</a></li>
-                <li><a href="#">Financeiro</a></li>
-                <li><a href="#">Pesquisa</a></li>
+                <li><a href="/consultas">Consultas</a></li>
+                <li><a href="/financeiro">Financeiro</a></li>
+                <li><a href="/pesquisa">Pesquisa</a></li>
                 <li><a href="/">Sair</a></li>
             </ul>
             <div class="user-info">
@@ -36,10 +36,11 @@
             <button class="cadastro-button">Vacinas</button>
             <button class="cadastro-button active" onclick="window.location.href='/usuarios'">Usuários</button>
         </div>
-      <div class="usuarios-container">
+
+        <div class="usuarios-container">
             <div class="table-header">
-                <h2>Tutores</h2>
-                <label for="search"></label><input type="text" id="search" placeholder="Pesquisar Usuário">
+                <h2>Usuarios</h2>
+                <label for="search"></label><input type="text" id="search" placeholder="Pesquisar usuário">
                 <button id="novoCadastro">Novo cadastro</button>
             </div>
             <table>
@@ -60,7 +61,6 @@
             </table>
         </div>
     </main>
-
     <script>
         function editarUsuario(nome) {
             alert("Editar usuário: " + nome);
@@ -68,3 +68,5 @@
     </script>
 </body>
 </html>
+
+

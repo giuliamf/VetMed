@@ -1,4 +1,4 @@
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, request, redirect, url_for
 
 app = Flask(__name__)
 
@@ -19,10 +19,12 @@ tutores = [
     {'nome': 'Carlos Eduardo Santos'}
 ]
 
-usuarios = {
+usuarios = [
     {'nome': 'Giulia Moura Ferreira'},
-    {'nome': 'Ana Luiza Campos'}
-}
+    {'nome': 'Célio Eduardo Júnior'},
+    {'nome': 'Ana Luiza Campos'},
+]
+
 
 @app.route('/')
 def login():
@@ -60,6 +62,7 @@ def get_pacientes():
 def tutores_page():
     return render_template('tutores.html', tutores=tutores)
 
+
 @app.route('/api/tutores')
 def get_tutores():
     return jsonify(tutores)
@@ -80,6 +83,8 @@ def consultas():
 @app.route('/financeiro')
 def financeiro():
     return render_template('financeiro.html')
+
+
 
 
 if __name__ == '__main__':
