@@ -8,24 +8,40 @@
 </head>
 <body>
     <header>
-        <nav class="navbar">
-            <ul>
-                <li><a href="/inicio" class="active">Início</a></li>
-                <li><a href="#">Agenda</a></li>
-                <li><a href="/cadastros">Cadastros</a></li>
-                <li><a href="#">Consultas</a></li>
-                <li><a href="#">Financeiro</a></li>
-                <li><a href="#">Pesquisa</a></li>
-                <li><a href="/">Sair</a></li>
-            </ul>
-            <div class="user-info">
-                <img src="../static/profile_pictures/anaclara.png" alt="Foto do Usuário">
-                <span>Olá, Ana Clara!</span> <!-- Trocar para {{nome_usuario}} quando for implementar -->
-            </div>
-        </nav>
+        <div class="top-bar">
+            <span class="user-greeting">Olá, Ana Clara!</span>
+            <img src="../static/profile_pictures/anaclara.png" alt="Foto do Usuário" class="user-photo">
+        </div>
     </header>
+
     <main>
-        <div class="content"></div>
+        <div class="container">
+            <div class="logo">
+                <span class="vet">Vet</span><span class="med">Med</span>
+            </div>
+            <div class="button-grid">
+                <a href="#" class="button">
+                    <img src="../static/icones/agenda.png" alt="Agenda">
+                    <span>Agenda</span>
+                </a>
+                <a href="/cadastros" class="button">
+                    <img src="../static/icones/cadastros.png" alt="Cadastros">
+                    <span>Cadastros</span>
+                </a>
+                <a href="#" class="button">
+                    <img src="../static/icones/calendario.png" alt="Consultas">
+                    <span>Consultas</span>
+                </a>
+                <a href="#" class="button">
+                    <img src="../static/icones/financeiro.png" alt="Financeiro">
+                    <span>Financeiro</span>
+                </a>
+                <a href="/" class="button">
+                    <img src="../static/icones/saida.png" alt="Sair">
+                    <span>Sair</span>
+                </a>
+            </div>
+        </div>
     </main>
 </body>
 </html>

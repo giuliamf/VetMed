@@ -1,4 +1,4 @@
-from flask import Flask, render_template, jsonify, request, redirect, url_for
+from flask import Flask, render_template, jsonify
 
 app = Flask(__name__)
 
@@ -83,8 +83,6 @@ def consultas():
 @app.route('/financeiro')
 def financeiro():
     return render_template('financeiro.html')
-
-
 
 
 if __name__ == '__main__':
