@@ -88,7 +88,7 @@ def cadastro_paciente():
 
 @app.route('/api/pacientes')
 def get_pacientes():
-    animais = Animal.query.all()
+    q_pacientes = Animal.query.all()
     pacientes_lista = [{
         "id_animal": p.id_animal,
         "id_tutor": p.id_tutor,
@@ -99,7 +99,7 @@ def get_pacientes():
         "sexo": p.sexo,  # Retorna 'M' ou 'F'
         "peso": p.peso,
         "cor": p.cor
-    } for p in animais]
+    } for p in q_pacientes]
 
     return jsonify(pacientes_lista)
 

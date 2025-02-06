@@ -49,7 +49,7 @@ CREATE TABLE IF NOT EXISTS Animal (
     especie VARCHAR(50) NOT NULL,
     raca VARCHAR(50),
     ano_nascimento INTEGER,
-    sexo VARCHAR(1),
+    sexo CHAR(1) CHECK (sexo IN ('M', 'F')) NOT NULL,
     peso FLOAT,
     cor VARCHAR(50),
     CONSTRAINT fk_tutor FOREIGN KEY (id_tutor) REFERENCES Tutor(id_tutor)
