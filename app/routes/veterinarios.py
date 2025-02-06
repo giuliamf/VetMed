@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify
 from app.models.veterinario import Veterinario
 from app.validators.veterinario_validator import VeterinarioValidator
 from app.utils.crmv_generator import gerar_crmv
-from app import db
+from app.init import db
 
 veterinarios_bp = Blueprint('veterinarios', __name__)
 

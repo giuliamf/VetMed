@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify
 from app.models.tutor import Tutor
 from app.validators.tutor_validator import TutorValidator
 from app.utils.cpf_generator import gerar_cpf
-from app import db
+from app.init import db
 
 
 tutores_bp = Blueprint('tutores', __name__)

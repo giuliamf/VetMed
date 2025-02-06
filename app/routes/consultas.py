@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from app.models.consulta import Consulta
 from app.validators.horario_validator import HorarioValidator
-from app import db
+from app.init import db
 
 consultas_bp = Blueprint('consultas', __name__)
 

@@ -1,4 +1,4 @@
-from app import db
+from app.init import db
 
 
 class Animal(db.Model):

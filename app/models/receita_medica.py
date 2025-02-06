@@ -1,4 +1,5 @@
-from app import db
+from app.init import db
+
 
 class ReceitaMedica(db.Model):
     __tablename__ = 'receitas_medicas'

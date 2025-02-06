@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from app.models.exame import Exame
 from app.validators.exame_validator import ExameValidator
-from app import db
+from app.init import db
 from datetime import datetime
 
 exames_bp = Blueprint('exames', __name__)

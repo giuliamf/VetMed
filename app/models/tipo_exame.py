@@ -1,4 +1,5 @@
-from app import db
+from app.init import db
+
 
 class TipoExame(db.Model):
     __tablename__ = 'tipos_exames'
