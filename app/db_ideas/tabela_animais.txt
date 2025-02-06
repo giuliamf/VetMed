@@ -1,0 +1,12 @@
+CREATE TABLE animais (
+    id_animal SERIAL PRIMARY KEY,
+    id_tutor INT NOT NULL,
+    nome VARCHAR(100) NOT NULL,
+    especie VARCHAR(50) NOT NULL,
+    raca VARCHAR(50),
+    ano_nascimento INT,
+    sexo VARCHAR(10) CHECK (sexo IN ('Macho', 'Fêmea')),
+    peso VARCHAR(20),
+    cor VARCHAR(30),
+    FOREIGN KEY (id_tutor) REFERENCES tutores(id_tutor) ON DELETE CASCADE
+);

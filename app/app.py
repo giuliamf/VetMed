@@ -1,4 +1,4 @@
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, request
 
 app = Flask(__name__)
 
@@ -53,8 +53,33 @@ def pacientes_page():
     return render_template('tela_cadastros/pacientes.html', pacientes=pacientes)
 
 
-@app.route('/cadastro_paciente')
+@app.route('/cadastro_paciente', methods=['GET', 'POST'])
 def cadastro_paciente():
+    if request.method == 'POST':
+        nome = request.form.get('nome')
+        nascimento = request.form.get('nascimento')
+        sexo = request.form.get('sexo')
+        especie = request.form.get('especie')
+        raca = request.form.get('raca')
+        peso = request.form.get('peso')
+        cor = request.form.get('cor')
+        tutor = request.form.get('tutor')
+
+        novo_paciente = {
+            'nome': nome,
+            'nascimento': nascimento,
+            'sexo': sexo,
+            'especie': especie,
+            'raca': raca,
+            'peso': peso,
+            'cor': cor,
+            'tutor': tutor
+        }
+
+        # Inserir no banco de dados aqui
+        # db....add(novo_paciente)
+        # db.commit()
+
     return render_template('tela_cadastros/cadastro_pacientes.html')
 
 

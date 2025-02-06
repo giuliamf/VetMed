@@ -22,12 +22,12 @@ body {
 /* Caixa do pop-up */
 .popup-content {
     background: white;
-    padding: 20px;
     border-radius: 10px;
     width: 400px;
     max-width: 90%;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
     text-align: center;
+    padding: 20px 37px 20px 20px;
 }
 
 /* Estilização dos campos */
@@ -38,6 +38,21 @@ body {
     margin: 5px 0;
     border: 1px solid #ccc;
     border-radius: 5px;
+}
+
+/* Estiliza os radio buttons */
+.radio-buttons {
+    display: flex;
+    gap: 100px;
+    align-items: center;
+    margin: 15px;
+    padding-left: 50px;
+}
+
+.radio-buttons input {
+    margin: 10px;
+    width: 15px;
+    height: 15px;
 }
 
 /* Botões */
