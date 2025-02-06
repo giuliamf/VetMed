@@ -1,14 +1,6 @@
-from flask import Flask, render_template, jsonify, request
-# from app import db
+from flask import render_template, jsonify, request
 from models.animal import Animal
-from routes.animal_route import animais_bp
-
-app = Flask(__name__)
-#app.config.from_object('app.config.Config') # configurações do bd
-
-#db.init_app(app)    # inicializa o bd
-
-app.register_blueprint(animais_bp, url_prefix='/api')
+from init import connect_database, disconnect_database, create_app
 
 # Simulação de dados vindos do banco de dados
 pacientes = [
@@ -33,6 +25,8 @@ usuarios = [
     {'nome': 'Ana Luiza Campos'},
 ]
 
+app = create_app()
+cursor, conn = connect_database()
 
 @app.route('/')
 def login():
