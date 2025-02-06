@@ -10,7 +10,7 @@ class Animal(db.Model):
     especie = db.Column(db.String(50), nullable=False)
     raca = db.Column(db.String(50))
     ano_nascimento = db.Column(db.Integer)
-    sexo = db.Column(db.String(10), nullable=False)  # 'Macho' ou 'Fêmea'
+    sexo = db.Column(db.String(1), nullable=False)  # 'Macho' ou 'Fêmea'
     peso = db.Column(db.String(20))
     cor = db.Column(db.String(30))
 
