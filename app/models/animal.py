@@ -1,64 +1,18 @@
 from app import db
-from app.validators import AnimalValidator
 
 
-class Animal:
-    def __init__(self, id_animal, id_tutor, nome, especie, raca, ano_nascimento, sexo, peso, cor):
-        self.id_animal = id_animal
-        self.id_tutor = id_tutor
-        self.nome = nome
-        self.especie = especie
-        self.raca = raca
-        self.ano_nascimento = ano_nascimento
-        self.sexo = sexo
-        self.peso = peso
-        self.cor = cor
+class Animal(db.Model):
+    __tablename__ = 'animais'
+
+    id_animal = db.Column(db.Integer, primary_key=True)  # Gerado automaticamente pelo banco
+    id_tutor = db.Column(db.Integer, nullable=False)
+    nome = db.Column(db.String(100), nullable=False)
+    especie = db.Column(db.String(50), nullable=False)
+    raca = db.Column(db.String(50))
+    ano_nascimento = db.Column(db.Integer)
+    sexo = db.Column(db.String(10), nullable=False)  # 'Macho' ou 'Fêmea'
+    peso = db.Column(db.String(20))
+    cor = db.Column(db.String(30))
 
     def __repr__(self):
-        return f"<Animal {self.id_animal}>"
-
-    @staticmethod
-    def criar_animal(data):
-        """
-        Cria um novo animal no banco de dados.
-        Recebe um dicionário `data` com os campos do animal.
-        """
-        # Validar os dados
-        valido, mensagem = AnimalValidator.validar_criar_animal(data)
-        if not valido:
-            raise ValueError(mensagem)
-
-        # Extrair os valores do dicionário
-        id_tutor = data.get('id_tutor')
-        nome = data.get('nome')
-        especie = data.get('especie')
-        raca = data.get('raca')
-        ano_nascimento = data.get('ano_nascimento')
-        sexo = data.get('sexo')
-        peso = data.get('peso')
-        cor = data.get('cor')
-
-        # GIULIA:
-        # id do animal deve ser criado diretamente no banco de dados utilizando o comando SERIAL
-        #with get_db_connection() as conn:
-        #with conn.cursor() as cursor:
-        #cursor.execute(query, (id_tutor, nome, especie, raca, ano_nascimento, sexo, peso, cor))
-        #id_animal = cursor.fetchone()[0]
-        #conn.commit()
-
-        # Inserir no banco de dados
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        query = sql.SQL("""
-            INSERT INTO animais (id_animal, id_tutor, id_animal, nome, especie, raca, ano_nascimento, sexo, peso, cor)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-            RETURNING id_animal
-        """)
-
-        cursor.execute(query, (id_animal, id_tutor, id_animal, nome, especie, raca, ano_nascimento, sexo, peso, cor))
-        id_animal = cursor.fetchone()[0]
-        conn.commit()
-        cursor.close()
-        conn.close()
-
-        return id_animal
+        return f"<Animal {self.nome} ({self.id_animal})>"

@@ -1,11 +1,16 @@
 from flask import Blueprint, request, jsonify
 from app.models.animal import Animal
+from app.validators.animal_validator import AnimalValidator
 from app import db
 
 animais_bp = Blueprint('animais', __name__)
 
+
 @animais_bp.route('/animais', methods=['POST'])
 def criar_animal():
+    """
+    Rota para criar um novo animal no banco de dados.
+    """
     data = request.get_json()
 
     # Validar dados
@@ -24,9 +29,12 @@ def criar_animal():
         peso=data.get('peso'),
         cor=data['cor']
     )
+
     db.session.add(novo_animal)
     db.session.commit()
+
     return jsonify({"mensagem": "Animal criado com sucesso!", "id_animal": novo_animal.id_animal}), 201
+
 
 @animais_bp.route('/animais/<int:id_animal>', methods=['GET'])
 def obter_animal(id_animal):

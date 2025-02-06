@@ -1,5 +1,6 @@
 from app.validators.base_validator import BaseValidator
 
+
 class AnimalValidator(BaseValidator):
     @staticmethod
     def validar_criar_animal(data):

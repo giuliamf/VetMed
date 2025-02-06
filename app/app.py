@@ -1,6 +1,14 @@
 from flask import Flask, render_template, jsonify, request
+# from app import db
+from models.animal import Animal
+from routes.animal_route import animais_bp
 
 app = Flask(__name__)
+#app.config.from_object('app.config.Config') # configurações do bd
+
+#db.init_app(app)    # inicializa o bd
+
+app.register_blueprint(animais_bp, url_prefix='/api')
 
 # Simulação de dados vindos do banco de dados
 pacientes = [
@@ -56,29 +64,24 @@ def pacientes_page():
 @app.route('/cadastro_paciente', methods=['GET', 'POST'])
 def cadastro_paciente():
     if request.method == 'POST':
-        nome = request.form.get('nome')
-        nascimento = request.form.get('nascimento')
-        sexo = request.form.get('sexo')
-        especie = request.form.get('especie')
-        raca = request.form.get('raca')
-        peso = request.form.get('peso')
-        cor = request.form.get('cor')
-        tutor = request.form.get('tutor')
-
-        novo_paciente = {
-            'nome': nome,
-            'nascimento': nascimento,
-            'sexo': sexo,
-            'especie': especie,
-            'raca': raca,
-            'peso': peso,
-            'cor': cor,
-            'tutor': tutor
+        data = {
+            'id_tutor': request.form.get('tutor'),  # pegar o cpf (?) do tutor e achar o id
+            'nome': request.form.get('nome'),
+            'ano_nascimento': request.form.get('nascimento'),
+            'sexo': request.form.get('sexo'),
+            'especie': request.form.get('especie'),
+            'raca': request.form.get('raca'),
+            'peso': request.form.get('peso'),
+            'cor': request.form.get('cor')
         }
 
+        novo_animal = Animal(**data)
+
         # Inserir no banco de dados aqui
-        # db....add(novo_paciente)
-        # db.commit()
+        # db.session.add(novo_animal)
+        # db.session.commit()
+
+        return jsonify({'mensagem': 'Paciente cadastrado com sucesso!', 'id_animal': novo_animal.id_animal}), 201
 
     return render_template('tela_cadastros/cadastro_pacientes.html')
 
