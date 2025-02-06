@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Paciente</title>
+    <link rel="stylesheet" href="../../static/tela_cadastros/style_novocadastro.css">
+</head>
+<body>
+
+    <div class="popup-container" id="popup">
+        <div class="popup-content">
+            <h2>PACIENTE</h2>
+            <form id="cadastroForm">
+                <label for="nome">Nome</label>
+                <input type="text" id="nome" name="nome" required>
+
+                <label for="nascimento">Nascimento</label>
+                <input type="date" id="nascimento" name="nascimento">
+
+                <label for="sexo">Sexo</label>
+                <input type="text" id="sexo" name="sexo">
+
+                <label for="especie">Espécie</label>
+                <input type="text" id="especie" name="especie">
+
+                <label for="raca">Raça</label>
+                <input type="text" id="raca" name="raca">
+
+                <label for="peso">Peso</label>
+                <input type="text" id="peso" name="peso">
+
+                <label for="cor">Cor</label>
+                <input type="text" id="cor" name="cor">
+
+                <label for="responsavel">Responsável</label>
+                <input type="text" id="responsavel" name="responsavel">
+
+                <label for="alergias">Alergias</label>
+                <textarea id="alergias" name="alergias"></textarea>
+
+                <label for="observacoes">Observações</label>
+                <textarea id="observacoes" name="observacoes"></textarea>
+
+                <div class="form-buttons">
+                    <button type="submit" class="salvar">Salvar</button>
+                    <button type="button" class="cancelar" onclick="fecharPopup()">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function fecharPopup() {
+            document.getElementById("popup").style.display = "none";
+        }
+    </script>
+</body>
+</html>

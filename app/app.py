@@ -53,6 +53,11 @@ def pacientes_page():
     return render_template('tela_cadastros/pacientes.html', pacientes=pacientes)
 
 
+@app.route('/cadastro_paciente')
+def cadastro_paciente():
+    return render_template('tela_cadastros/cadastro_pacientes.html')
+
+
 @app.route('/api/pacientes')
 def get_pacientes():
     return jsonify(pacientes)
