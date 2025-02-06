@@ -50,7 +50,7 @@ def cadastro():
 
 @app.route('/pacientes')
 def pacientes_page():
-    return render_template('pacientes.html', pacientes=pacientes)
+    return render_template('tela_cadastros/pacientes.html', pacientes=pacientes)
 
 
 @app.route('/api/pacientes')
@@ -60,7 +60,7 @@ def get_pacientes():
 
 @app.route('/tutores')
 def tutores_page():
-    return render_template('tutores.html', tutores=tutores)
+    return render_template('tela_cadastros/tutores.html', tutores=tutores)
 
 
 @app.route('/api/tutores')
@@ -70,7 +70,7 @@ def get_tutores():
 
 @app.route('/usuarios')
 def usuarios_page():
-    return render_template('usuarios.html', usuarios=usuarios)
+    return render_template('tela_cadastros/usuarios.html', usuarios=usuarios)
 
 
 # Tela de consultas e suas funcionalidades
