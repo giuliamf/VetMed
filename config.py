@@ -1,19 +1,6 @@
 import psycopg2
 from app import connect_database, disconnect_database, create_database
 
-banco_existe = True
-
-
-# Função para executar comandos SQL
-def execute_sql(cursor, sql_script):
-    try:
-        cursor.execute(sql_script)
-        print("Comando SQL executado com sucesso!")
-    except Exception as e:
-        print(f"Erro ao executar o script SQL: {e}")
-    finally:
-        cursor.close()
-
 
 # Conecta ao banco de dados padrão (postgres)
 conn = psycopg2.connect(

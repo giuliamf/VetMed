@@ -58,3 +58,18 @@ def connect_database():
 def disconnect_database(cursor, conn):
     cursor.close()
     conn.close()
+
+
+def create_tables(cursor):
+    # Aqui deve chamar um arquivo .sql com os comandos de criação das tabelas
+    with open('app/database/create_tables.sql', 'r') as file:
+        cursor.execute(file.read())
+
+
+# Função para executar comandos SQL
+def execute_sql(cursor, sql_script):
+    try:
+        cursor.execute(sql_script)
+        print("Comando SQL executado com sucesso!")
+    except Exception as e:
+        print(f"Erro ao executar o script SQL: {e}")
