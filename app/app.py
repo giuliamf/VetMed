@@ -1,6 +1,6 @@
 from flask import render_template, jsonify, request
-from models.animal import Animal
-from init import connect_database, disconnect_database, create_app
+from app.models.animal import Animal
+from app import connect_database, disconnect_database, create_app
 
 # Simulação de dados vindos do banco de dados
 pacientes = [
@@ -27,6 +27,7 @@ usuarios = [
 
 app = create_app()
 cursor, conn = connect_database()
+
 
 @app.route('/')
 def login():

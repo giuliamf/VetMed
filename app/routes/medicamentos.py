@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from app.models.medicamento import Medicamento
 from app.validators.medicamento_validator import MedicamentoValidator
-from app.init import db
+from app import db
 
 medicamentos_bp = Blueprint('medicamentos', __name__)
 

@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from app.models.animal import Animal
 from app.validators.animal_validator import AnimalValidator
-from app.init import db
+from app import db
 
 animais_bp = Blueprint('animais', __name__)
 

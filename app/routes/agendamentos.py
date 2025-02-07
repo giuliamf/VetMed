@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify, Blueprint
 from app.models.agendamento import Agendamento
 from app.validators.agendamento_validator import AgendamentoValidator
-from app.init import db
+from app import db
 from datetime import datetime
 
 agendamentos_bp = Blueprint('agendamentos', __name__)

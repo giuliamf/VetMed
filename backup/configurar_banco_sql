@@ -1,35 +1,35 @@
--- Nome do banco de dados: VetMed
--- Codificacao: UTF-8
--- Regiao: Brasil (pt_BR)
--- Porta padrao: 5432 (PostgreSQL)
--- Proposito: Banco de dados para sistema de gestao de clínica veterinaria
+-- Nome do banco de dados: med_vet_bd
+-- Codificação: UTF-8
+-- Região: Brasil (pt_BR)
+-- Porta padrão: 5432 (PostgreSQL)
+-- Propósito: Banco de dados para sistema de gestão de clínica veterinária
 
--- Configuracoes adicionais do banco de dados
-SET client_encoding TO 'UTF8';
-SET TIMEZONE = 'America/Sao_Paulo'; -- Fuso horario do Brasil
+-- Configurações adicionais do banco de dados
+SET client_encoding = 'UTF8';
+SET TIMEZONE = 'America/Sao_Paulo'; -- Fuso horário do Brasil
 
--- Permissoes e roles (opcional, dependendo do ambiente)
--- Cria um role específico para o banco de dados (substitua 'vetmed_user' e 'senha_segura' conforme necessario)
+-- Permissões e roles (opcional, dependendo do ambiente)
+-- Cria um role específico para o banco de dados (substitua 'med_vet_user' e 'senha_segura' conforme necessário)
 DO $$
 BEGIN
-    IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'vetmed_user') THEN
-        CREATE ROLE vetmed_user WITH LOGIN PASSWORD 'senha_segura';
+    IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'med_vet_user') THEN
+        CREATE ROLE med_vet_user WITH LOGIN PASSWORD 'senha_segura';
     END IF;
 END $$;
 
-GRANT ALL PRIVILEGES ON DATABASE VetMed TO vetmed_user;
+GRANT ALL PRIVILEGES ON DATABASE med_vet_bd TO med_vet_user;
 
--- Configuracoes de extensoes (opcional, se necessario)
--- Exemplo: Habilita a extensao pgcrypto para criptografia
+-- Configurações de extensões (opcional, se necessário)
+-- Exemplo: Habilita a extensão pgcrypto para criptografia
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
--- Configuracoes de tabelas e esquemas (opcional)
--- Cria um esquema especifico para organizar as tabelas (substitua 'vet_schema' pelo nome desejado)
+-- Configurações de tabelas e esquemas (opcional)
+-- Cria um esquema específico para organizar as tabelas (substitua 'vet_schema' pelo nome desejado)
 CREATE SCHEMA IF NOT EXISTS vet_schema;
 SET search_path TO vet_schema;
 
--- Comentarios adicionais
-COMMENT ON DATABASE VetMed IS 'Banco de dados para gestao da clínica veterinaria VETMED.';
+-- Comentários adicionais
+COMMENT ON DATABASE med_vet_bd IS 'Banco de dados para gestão da clínica veterinária MED VET.';
 
 
 CREATE TABLE IF NOT EXISTS Tutor (
@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS Tutor (
     nome VARCHAR(100) NOT NULL,
     data_nascimento DATE,
     telefone VARCHAR(15),
-    endereco VARCHAR(200),
+    endereço VARCHAR(200),
     email VARCHAR(100) UNIQUE
 );
 
@@ -57,7 +57,7 @@ CREATE TABLE IF NOT EXISTS Animal (
 
 
 CREATE TABLE IF NOT EXISTS Veterinario (
-    id_veterinario CHAR(11) PRIMARY KEY,  -- CPF do veterinario
+    id_veterinario CHAR(11) PRIMARY KEY,  -- CPF do veterinário
     nome VARCHAR(90) NOT NULL,
     telefone VARCHAR(20) NOT NULL,
     endereco VARCHAR(120) NOT NULL,

@@ -20,26 +20,35 @@ def create_app():
     return app
 
 
-def create_database(cursor, db_name='VetMed'):
+def create_database(cursor, db_name):
     try:
-        cursor.execute(f"""SELECT 1 FROM pg_database WHERE datname = {db_name};""")
+        cursor.execute("SELECT 1 FROM pg_database WHERE datname = %s;", (db_name,))
         exists = cursor.fetchone()
 
         if not exists:
-            cursor.execute(f"""
-                CREATE DATABASE {db_name}
-                WITH ENCODING 'UTF8'
-                LC_COLLATE = 'pt_BR.UTF-8'
-                LC_CTYPE = 'pt_BR.UTF-8'
-                TEMPLATE template0;
-""")
+            cursor.execute(f"CREATE DATABASE \"{db_name}\" "
+                           f"ENCODING 'UTF8' "
+                           f"LC_COLLATE 'pt_BR.UTF-8' "
+                           f"LC_CTYPE 'pt_BR.UTF-8' "
+                           f"TEMPLATE template0;")
+
+            print(f'Banco de dados >{db_name}< criado com sucesso!')
+        else:
+            print(f'Banco de dados >{db_name}< já existe!')
     except Exception as e:
-        print(f'Erro: {e}')
+        print(f'Erro ao criar o banco de dados: {e}')
 
 
 def connect_database():
     user, password = 'postgres', 'giulia'
-    conn = psycopg2.connect(dbname='VetMed', user=user, host='localhost', password=password, port='5432')
+    conn = psycopg2.connect(
+        dbname='VetMed',
+        user=user,
+        host='localhost',
+        password=password,
+        port='5432',
+        client_encoding="utf8"
+    )
     conn.autocommit = True
     cursor = conn.cursor()
 

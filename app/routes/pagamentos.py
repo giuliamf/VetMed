@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from app.models.pagamento import Pagamento
 from app.validators.pagamento_validator import PagamentoValidator
-from app.init import db
+from app import db
 from datetime import datetime
 
 pagamentos_bp = Blueprint('pagamentos', __name__)
