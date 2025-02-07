@@ -1,6 +1,6 @@
 from flask import render_template, jsonify, request
 from app.models.animal import Animal
-from app import connect_database, disconnect_database, create_app
+from app import connect_database, disconnect_database, create_app, db
 
 # Simulação de dados vindos do banco de dados
 pacientes = [
@@ -69,14 +69,15 @@ def cadastro_paciente():
             'peso': request.form.get('peso'),
             'cor': request.form.get('cor')
         }
-
-        novo_animal = Animal(**data)
-
         # Inserir no banco de dados aqui
-        # db.session.add(novo_animal)
-        # db.session.commit()
-
-        return jsonify({'mensagem': 'Paciente cadastrado com sucesso!', 'id_animal': novo_animal.id_animal}), 201
+        try:
+            novo_animal = Animal(**data)
+            db.session.add(novo_animal)
+            db.session.commit()
+            return jsonify({"mensagem": "Paciente cadastrado com sucesso!", "id_animal": novo_animal.id_animal}), 201
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({"erro": f"Erro ao cadastrar paciente: {str(e)}"}), 500
 
     return render_template('tela_cadastros/cadastro_pacientes.html')
 

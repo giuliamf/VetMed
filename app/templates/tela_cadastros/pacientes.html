@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="../../static/style_cadastros.css">
     <link rel="stylesheet" href="../../static/tela_cadastros/style_usuarios.css">
     <link rel="stylesheet" href="../../static/style_cabecalho.css">
+    <link rel="stylesheet" href="../../static/tela_cadastros/style_novocadastro.css">
 </head>
 <body>
     <header>
@@ -18,7 +19,7 @@
                 <li><a href="/cadastros" class="active">Cadastros</a></li>
                 <li><a href="/consultas">Consultas</a></li>
                 <li><a href="/financeiro">Financeiro</a></li>
-                <li><a href="/BDProjeto2024-2/app/static">Sair</a></li>
+                <li><a href="/">Sair</a></li>
             </ul>
             <div class="user-info">
                 <img src="../../static/profile_pictures/usuarios/anaclara.png" alt="Foto do Usuário">
@@ -37,7 +38,59 @@
             <div class="table-header">
                 <h2>Pacientes</h2>
                 <label for="search"></label><input type="text" id="search" placeholder="Pesquisar paciente">
+
                 <button id="novoCadastro" onclick="cadastroPaciente()">Novo Cadastro</button>
+                <div id="popupContainer"></div>
+                <script>
+                    document.getElementById("novoCadastro").addEventListener("click", function () {
+                        fetch("/cadastro_paciente")
+                            .then(response => response.text())
+                            .then(html => {
+                                document.getElementById("popupContainer").innerHTML = html;
+                                document.getElementById("popup").style.display = "flex";
+
+                                document.getElementById("cadastroForm").addEventListener("submit", function(event) {
+                                    event.preventDefault();
+                                    enviarFormulario();
+                            });
+                        })
+                            .catch(error => console.error("Erro ao carregar popup: ", error));
+                    });
+
+                    function fecharPopup() {
+                        document.getElementById("popup").style.display = "none";
+                    }
+
+                    function enviarFormulario() {
+                        const form = document.getElementById("cadastroForm");
+                        const formData = new FormData(form);
+
+                        const data = {};
+                        formData.forEach((value, key) => data[key] = value);
+
+                        fetch("/cadastro_paciente", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify(data)
+                        })
+                            .then(response => response.json())
+                            .then(response => {
+                                if (response.status === "success") {
+                                    alert("Paciente cadastrado com sucesso!");
+                                    fecharPopup();
+                                } else {
+                                    alert("Erro ao cadastrar paciente: " + response.message);
+                                }
+                            })
+                            .catch(error => console.error("Erro ao cadastrar paciente: ", error));
+                    }
+                    function editarPaciente(nome) {
+                        alert("Editar paciente: " + nome);
+                    }
+
+                </script>
             </div>
             <table>
                 <thead>
@@ -57,15 +110,6 @@
             </table>
         </div>
     </main>
-    <script>
-        function editarPaciente(nome) {
-            alert("Editar paciente: " + nome);
-        }
-
-        function cadastroPaciente() {
-        window.open("/cadastro_paciente", "_blank", "width=600,height=900");
-    }
-    </script>
 </body>
 </html>
 

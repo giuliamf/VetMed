@@ -1,60 +1,42 @@
-<!DOCTYPE html>
-<html lang="pt">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastro de Paciente</title>
-    <link rel="stylesheet" href="../../static/tela_cadastros/style_novocadastro.css">
-</head>
-<body>
+<div id="popup" class="popup-container">
+    <div class="popup-content">
+        <h2>Cadastro de Paciente</h2>
+        <form id="cadastroForm">
+            <label for="nome">Nome</label>
+            <input type="text" id="nome" name="nome" required>
 
-    <div class="popup-container" id="popup">
-        <div class="popup-content">
-            <h2>Cadastro de Paciente</h2>
-            <form id="cadastroForm">
-                <label for="nome">Nome</label>
-                <input type="text" id="nome" name="nome" required>
+            <label for="nascimento">Nascimento</label>
+            <input type="date" id="nascimento" name="nascimento">
 
-                <label for="nascimento">Nascimento</label>
-                <input type="date" id="nascimento" name="nascimento">
+            <div class="radio-buttons">
+                <label for="macho">
+                    <input type="radio" id="macho" name="sexo" value="M">Macho
+                </label>
 
-                <div class="radio-buttons">
-                    <label for="macho">
-                        <input type="radio" id="macho" name="sexo" value="M">Macho
-                    </label>
+                <label for="femea">
+                    <input type="radio" id="femea" name="sexo" value="F">Fêmea
+                </label>
+            </div>
 
-                    <label for="femea">
-                        <input type="radio" id="femea" name="sexo" value="F">Fêmea
-                    </label>
-                </div>
+            <label for="especie">Espécie</label>
+            <input type="text" id="especie" name="especie">
 
-                <label for="especie">Espécie</label>
-                <input type="text" id="especie" name="especie">
+            <label for="raca">Raça</label>
+            <input type="text" id="raca" name="raca">
 
-                <label for="raca">Raça</label>
-                <input type="text" id="raca" name="raca">
+            <label for="peso">Peso</label>
+            <input type="number" min="0" step="0.01" id="peso" name="peso">
 
-                <label for="peso">Peso</label>
-                <input type="number" min="0" step="0.01" id="peso" name="peso">
+            <label for="cor">Cor</label>
+            <input type="text" id="cor" name="cor">
 
-                <label for="cor">Cor</label>
-                <input type="text" id="cor" name="cor">
+            <label for="tutor">Tutor</label>
+            <input type="text" id="tutor" name="tutor">
 
-                <label for="tutor">Tutor</label>
-                <input type="text" id="tutor" name="tutor">
-
-                <div class="form-buttons">
-                    <button type="submit" class="salvar">Salvar</button>
-                    <button type="button" class="cancelar" onclick="fecharPopup()">Cancelar</button>
-                </div>
-            </form>
-        </div>
+            <div class="form-buttons">
+                <button type="submit" class="salvar">Salvar</button>
+                <button type="button" class="cancelar" onclick="fecharPopup()">Cancelar</button>
+            </div>
+        </form>
     </div>
-
-    <script>
-        function fecharPopup() {
-            document.getElementById("popup").style.display = "none";
-        }
-    </script>
-</body>
-</html>
+</div>
