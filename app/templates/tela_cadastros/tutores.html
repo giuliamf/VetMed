@@ -58,7 +58,7 @@
             <tbody>
             {% for tutor in tutores %}
                 <tr>
-                    <td>{{ tutor.nome + "( " + tutor.cpf + ")" }}</td>
+                    <td>{{ tutor.nome + " (" + tutor.cpf + ")" }}</td>
                     <td>
                         <button onclick="editarTutor('{{ tutor.id }}')">Editar</button>
                     </td>

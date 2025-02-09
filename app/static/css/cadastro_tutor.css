@@ -1,5 +1,6 @@
 /* Estilização dos campos */
-.popup-content input {
+.popup-content input,
+.popup-content textarea {
     width: 100%;
     padding: 8px;
     margin: 5px 0;
@@ -7,11 +8,10 @@
     border-radius: 5px;
 }
 
-/* Ajusta os campos menores */
-.popup-content input#uf,
-.popup-content input#cep,
-.popup-content input#cpf,
-.popup-content input#telefone {
-    width: calc(50% - 5px); /* Define a largura menor */
-    display: inline-block;
+/* Botões */
+.form-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+    margin-right: -18px;
 }
