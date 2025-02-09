@@ -6,7 +6,7 @@
     <link rel="shortcut icon" href="../../static/images/icon.png">
     <title>Pacientes - VetMed</title>
     <link rel="stylesheet" href="../../static/css/cadastros.css">       <!-- CSS da tela de cadastros (botões) -->
-    <link rel="stylesheet" href="../../static/css/usuarios.css">        <!-- CSS da tabela de usuários -->
+    <link rel="stylesheet" href="../../static/css/sp_usuarios.css">        <!-- CSS da tabela de usuários -->
     <link rel="stylesheet" href="../../static/css/cabecalho.css">       <!-- CSS do cabeçalho -->
     <link rel="stylesheet" href="../../static/css/paciente.css">   <!-- CSS do popup de novo cadastro -->
     <link rel="stylesheet" href="../../static/css/logout.css">          <!-- CSS do popup de logout -->
@@ -70,23 +70,6 @@
     <script type="module" src="../../static/js/paciente.js"></script>
     <script type="module" src="../../static/js/buscas.js"></script>
 </main>
-<script>
-    document.addEventListener("DOMContentLoaded", async function() {
-        let pacientes = document.querySelectorAll("[id^='tutor-']");
-
-        for (let elemento of pacientes) {
-            let pacienteId = elemento.id.split('-')[1]; // Extrai o ID do paciente
-
-            try {
-                let tutorNome = await buscarNomeIdTutor(pacienteId); // Aguarda a resposta da API
-                elemento.textContent = tutorNome || "Desconhecido"; // Se for null, exibe "Desconhecido"
-            } catch (error) {
-                console.error("Erro ao obter o nome do tutor:", error);
-                elemento.textContent = "Erro ao carregar";
-            }
-        }
-    });
-</script>
 <script src="../../static/js/logout.js"></script>
 </body>
 </html>

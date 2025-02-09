@@ -6,10 +6,11 @@
     <link rel="shortcut icon" href="../../static/images/icon.png">
     <title>Usuarios - VetMed</title>
     <link rel="stylesheet" href="../../static/css/cadastros.css">       <!-- CSS da página de cadastros (botões) -->
-    <link rel="stylesheet" href="../../static/css/usuarios.css">        <!-- CSS da tabela de usuários -->
+    <link rel="stylesheet" href="../../static/css/sp_usuarios.css">        <!-- CSS da tabela de usuários -->
     <link rel="stylesheet" href="../../static/css/cabecalho.css">       <!-- CSS do cabeçalho -->
+    <link rel="stylesheet" href="../../static/css/usuario.css">   <!-- CSS do popup de novo cadastro -->
     <link rel="stylesheet" href="../../static/css/logout.css">          <!-- CSS do popup de logout -->
-    <link rel="stylesheet" href="../../static/css/popup.css">    <!-- CSS do popup padrão -->
+    <link rel="stylesheet" href="../../static/css/popup.css">           <!-- CSS do popup padrão -->
 </head>
 <body>
     <header>
@@ -40,6 +41,9 @@
                 <h2>Usuarios</h2>
                 <label for="search"></label><input type="text" id="search" placeholder="Pesquisar usuário">
                 <button id="novoCadastro">Novo cadastro</button>
+                <div id="popupContainer">
+                    {% include 'tela_cadastros/cadastro_usuarios.html' %}
+                </div>
             </div>
             <table>
                 <thead>
@@ -58,6 +62,7 @@
                 </tbody>
             </table>
         </div>
+    <script type="module" src="../../static/js/usuarios.js"></script>
     </main>
     <script>
         function editarUsuario(nome) {

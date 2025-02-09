@@ -15,6 +15,22 @@ document.getElementById("novoCadastro").addEventListener("click", function () {
         .catch(error => console.error("Erro ao carregar popup: ", error));
 });
 
+document.addEventListener("DOMContentLoaded", async function() {
+        let pacientes = document.querySelectorAll("[id^='tutor-']");
+
+        for (let elemento of pacientes) {
+            let pacienteId = elemento.id.split('-')[1]; // Extrai o ID do paciente
+
+            try {
+                let tutorNome = await buscarNomeIdTutor(pacienteId); // Aguarda a resposta da API
+                elemento.textContent = tutorNome || "Desconhecido"; // Se for null, exibe "Desconhecido"
+            } catch (error) {
+                console.error("Erro ao obter o nome do tutor:", error);
+                elemento.textContent = "Erro ao carregar";
+            }
+        }
+    });
+
 // Função para carregar os pacientes da API e atualizar a tabela (caso precise no futuro)
 function carregarPacientes() {
     fetch("/api/pacientes")
@@ -128,7 +144,6 @@ function enviarFormulario() {
 }
 
 function fecharPopupCadastro() {
-    console.log("Fechando popup de cadastro");
     document.getElementById("cadastro-popup").style.display = "none";
 }
 

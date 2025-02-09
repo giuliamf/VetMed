@@ -39,6 +39,15 @@ usuarios = [
      'senha': '0a3fa8009c0f56804c7bee62f18836d7bf84743d7ba2b2d0fb151e03b71a6b81'},
 ]
 
+especialidades = [
+    {'id': 1, 'nome': 'Clínica Geral'},
+    {'id': 2, 'nome': 'Ortopedia'},
+    {'id': 3, 'nome': 'Dermatologia'},
+    {'id': 4, 'nome': 'Oftalmologia'},
+    {'id': 5, 'nome': 'Cardiologia'},
+    {'id': 6, 'nome': 'Cirurgia'}
+]
+
 app = create_app()
 cursor, conn = connect_database()
 
@@ -158,9 +167,13 @@ def cadastro_tutor():
         data = {
             'nome': request.form.get('nome'),
             'cpf': request.form.get('cpf'),
-            'email': request.form.get('email'),
+            'nascimento': request.form.get('nascimento'),
             'telefone': request.form.get('telefone'),
-            'endereco': request.form.get('endereco')
+            'endereco': {
+                'bairro': request.form.get('bairro'),
+                'cidade': request.form.get('cidade'),
+                'estado': request.form.get('estado')
+            }
         }
         # Inserir no banco de dados aqui
         return jsonify({"mensagem": "Tutor cadastrado com sucesso!"}), 201
@@ -182,15 +195,22 @@ def usuarios_page():
 @app.route('/cadastro_usuario', methods=['GET', 'POST'])
 def cadastro_usuario():
     if request.method == 'POST':
+        senha = request.form.get('senha')
+        senha_criptografada = criptografar_senha(senha)
+
         data = {
             'nome': request.form.get('nome'),
             'email': request.form.get('email'),
-            'senha': request.form.get('senha')
+            'senha': senha_criptografada,
+            'cargo': request.form.get('cargo'),
         }
+        if data['cargo'] == 'vet':
+            data['especialidade'] = request.form.get('especialidade')
+
         # Inserir no banco de dados aqui
         return jsonify({"mensagem": "Usuário cadastrado com sucesso!"}), 201
 
-    return render_template('tela_cadastros/cadastro_usuarios.html')
+    return render_template('tela_cadastros/cadastro_usuarios.html', especialidades=especialidades)
 
 
 @app.route('/api/usuarios')

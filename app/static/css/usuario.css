@@ -1,0 +1,23 @@
+/* Estilização dos campos */
+.popup-content input {
+    width: 100%;
+    padding: 8px;
+    margin: 5px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+.popup-content select {
+    width: 320px;
+    padding: 8px;
+    margin: 5px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+/* Botões */
+.form-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+    margin-right: -18px;
+}
