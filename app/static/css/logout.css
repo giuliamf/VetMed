@@ -1,17 +1,25 @@
 /* Caixa do pop-up */
 .logout-content {
     background: white;
-    padding: 8px 52px 20px 35px;
+    padding: 8px 35px 20px 30px;
     border-radius: 10px;
-    width: 180px;
+    width: 200px; /* Aumentando um pouco para melhor alinhamento */
     max-width: 90%;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
     text-align: center;
-    position: relative;
+
+    /* Centralização absoluta */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
 /* Botões */
 .form-buttons {
     display: flex;
-    justify-content: space-between;
+    justify-content: center; /* Centraliza os botões */
+    gap: 20px; /* Adiciona espaçamento uniforme entre os botões */
 }
+
+

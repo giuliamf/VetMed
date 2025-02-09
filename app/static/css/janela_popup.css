@@ -7,24 +7,24 @@
     height: 100%;
     background: rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(5px);
-    justify-content: center;
-    align-items: center;
 }
 
-.cancelar {
-    background: red;
-    color: white;
-    padding: 10px 15px;
+/* Estilização dos botões */
+.salvar, .cancelar {
+    padding: 10px 20px; /* Ajusta o tamanho dos botões */
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    width: 100px; /* Define um tamanho fixo para garantir que os dois tenham o mesmo tamanho */
+    text-align: center;
 }
 
 .salvar {
     background: green;
     color: white;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
+}
+
+.cancelar {
+    background: red;
+    color: white;
 }
