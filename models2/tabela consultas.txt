@@ -1,0 +1,8 @@
+CREATE TABLE Consultas (
+    id_consulta SERIAL PRIMARY KEY,  -- Auto incremento de 6 dígitos
+    id_animal INT NOT NULL REFERENCES Animais(id_animal),
+    id_veterinario CHAR(11) NOT NULL REFERENCES Veterinarios(id_veterinario),
+    data DATE NOT NULL,
+    horario TIME NOT NULL,
+    id_tipo INT NOT NULL REFERENCES Tipo_Consulta(id_tipo)
+);
