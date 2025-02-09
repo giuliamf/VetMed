@@ -10,6 +10,9 @@
 }
 
 .table-header {
+    top: 0;
+    z-index: 100;
+    position: sticky;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -43,6 +46,7 @@
 table {
     width: 100%;
     border-collapse: collapse;
+    table-layout: fixed;
 }
 
 thead {
@@ -54,6 +58,7 @@ th, td {
     padding: 15px;
     text-align: left;
     border-bottom: 1px solid #ddd;
+    white-space: nowrap;
 }
 
 td button {
@@ -67,6 +72,10 @@ td button {
 
 td button:hover {
     background: darkgreen;
+}
+
+th:nth-child(1), td:nth-child(1) {
+    width: 980px; /* Define uma largura específica para a primeira coluna */
 }
 
 /* Estilos do Modal */
