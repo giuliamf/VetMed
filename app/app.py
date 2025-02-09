@@ -68,6 +68,14 @@ def login():
     return render_template('login.html')
 
 
+@app.context_processor
+def inject_user():
+    # Caso o usuário entre nessa página, com certeza ele estará logado.
+    usuario_id = session.get('usuario')
+    usuario = next((u for u in usuarios if u['id'] == usuario_id), {"nome": "Usuário"})
+    return {'usuario': usuario}
+
+
 @app.route('/inicio')
 def inicio():
     if 'usuario' in session:
