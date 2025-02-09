@@ -1,0 +1,33 @@
+<div id="cadastro-popup" class="popup-container">
+    <div class="popup-content">
+        <h2>Editar Tutor</h2>
+        <form id="cadastroForm">
+            <label for="nome">Nome</label>
+            <input type="text" id="nome" name="nome" required>
+
+            <label for="nascimento">Nascimento</label>
+            <input type="date" id="nascimento" name="nascimento" required>
+
+            <label for="telefone">Telefone</label>
+            <input type="text" pattern="\(\d{2}\) \d{4,5}-\d{4}" id="telefone" name="telefone" required>
+
+            <label for="cpf">CPF</label>
+            <input type="text" pattern="\d{3}\.\d{3}\.\d{3}-\d{2}" id="cpf" name="cpf" required>
+
+
+            <label for="bairro">Bairro</label>
+            <input type="text" id="bairro" name="bairro" required>
+
+            <label for="cidade">Cidade</label>
+            <input type="text" id="cidade" name="cidade" required>
+
+            <label for="uf">Estado</label>
+            <input type="text" maxlength="2" minlength="2" id="uf" name="uf" required>
+
+            <div class="form-buttons">
+                <button type="submit" class="salvar">Salvar</button>
+                <button type="button" class="cancelar" onclick="fecharPopupCadastro()">Cancelar</button>
+            </div>
+        </form>
+    </div>
+</div>
