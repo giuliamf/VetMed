@@ -24,7 +24,9 @@
             <li><a href="/financeiro">Financeiro</a></li>
             <li><a href="#" onclick="abrirPopupLogout()">Sair</a></li>
         </ul>
-        <div id="popup-container"></div>
+        <div id="popup-container">
+            {% include 'logout.html' %}
+        </div>
         <div class="user-info">
             <img src="../../static/profile_pictures/usuarios/anaclara.png" alt="Foto do Usuário">
             <span>Olá, Ana Clara!</span>
@@ -44,8 +46,9 @@
             <label for="search"></label>
             <input type="text" id="search" placeholder="Pesquisar paciente">
             <button id="novoCadastro">Novo Cadastro</button>
-            <div id="popupContainer"></div>
-            <script src="../../static/js/cadastro_paciente.js"></script>
+            <div id="popupContainer">
+                {% include 'tela_cadastros/cadastro_pacientes.html' %}
+            </div>
         </div>
         <table>
             <thead>
@@ -68,6 +71,7 @@
     </div>
 </main>
 <script src="../../static/js/logout.js"></script>
+<script src="../../static/js/cadastro_paciente.js"></script>
 </body>
 </html>
 

@@ -3,7 +3,7 @@ document.getElementById("novoCadastro").addEventListener("click", function () {
         .then(response => response.text())
         .then(html => {
             document.getElementById("popupContainer").innerHTML = html;
-            document.getElementById("popup").style.display = "flex";
+            document.getElementById("cadastro-popup").style.display = "flex";
 
             document.getElementById("cadastroForm").addEventListener("submit", function (event) {
                 event.preventDefault();
@@ -41,4 +41,8 @@ function enviarFormulario() {
 
 function editarPaciente(nome) {
     alert("Editar paciente: " + nome);
+}
+
+function fecharPopupCadastro() {
+    document.getElementById("cadastro-popup").style.display = "none";
 }
