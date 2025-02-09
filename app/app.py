@@ -1,6 +1,7 @@
-from flask import render_template, jsonify, request, redirect, send_from_directory
+from flask import render_template, jsonify, request, redirect, session
 from app.models.animal import Animal
 from app import connect_database, disconnect_database, create_app, db
+from app.criptografia_senhas import criptografar_senha, verificar_senha
 
 # Simulação de dados vindos do banco de dados
 pacientes = [
@@ -30,23 +31,48 @@ tutores = [
 ]
 
 usuarios = [
-    {'nome': 'Giulia Moura Ferreira'},
-    {'nome': 'Célio Eduardo Júnior'},
-    {'nome': 'Ana Luiza Campos'},
+    {'id': 1, 'nome': 'Giulia Moura Ferreira', 'email': 'giulia@gmail.com', 'cargo': 'vet', 'especialidade': 1, 'senha':
+        'e4c2eed8a6df0147265631e9ff25b70fd0e4b3a246896695b089584bf3ce8b90'},
+    {'id': 2, 'nome': 'Célio Eduardo Júnior', 'email': 'celio@gmail.com', 'cargo': 'sec', 'senha':
+        '60fe67ed8156498b9a17f3d983bcf3961d7aa8c36e33bf2edf2ccf1706d33fef'},
+    {'id': 3, 'nome': 'Ana Luiza Campos', 'email': 'analuiza@gmail.com', 'cargo': 'vet', 'especialidade': 2,
+     'senha': '0a3fa8009c0f56804c7bee62f18836d7bf84743d7ba2b2d0fb151e03b71a6b81'},
 ]
 
 app = create_app()
 cursor, conn = connect_database()
 
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def login():
+    if session:
+        return redirect('/inicio')
+    else:
+        if request.method == 'POST':
+            email = request.form.get('email')
+            senha = request.form.get('senha')
+
+            # Verificar se o usuário existe no banco de dados
+            # Se sim, verificar se a senha está correta
+            # Se sim, redirecionar para a página inicial
+            usuario = next((u for u in usuarios if u['email'] == email.lower()), None)
+
+            if usuario and verificar_senha(senha, usuario['senha']):
+                session['usuario'] = usuario['id']  # Salva o id do usuário na sessão
+                return redirect('/inicio')
+            elif not usuario:
+                return jsonify({"erro": "Usuário não encontrado!"}), 404
+            else:
+                return jsonify({"erro": "Senha incorreta!"}), 401
+
     return render_template('login.html')
 
 
 @app.route('/inicio')
 def inicio():
-    return render_template('inicio.html')
+    if 'usuario' in session:
+        return render_template('inicio.html')
+    return redirect('/')
 
 
 # Tela de agenda e suas funcionalidades
@@ -145,6 +171,26 @@ def usuarios_page():
     return render_template('tela_cadastros/usuarios.html', usuarios=usuarios)
 
 
+@app.route('/cadastro_usuario', methods=['GET', 'POST'])
+def cadastro_usuario():
+    if request.method == 'POST':
+        data = {
+            'nome': request.form.get('nome'),
+            'email': request.form.get('email'),
+            'senha': request.form.get('senha')
+        }
+        # Inserir no banco de dados aqui
+        return jsonify({"mensagem": "Usuário cadastrado com sucesso!"}), 201
+
+    return render_template('tela_cadastros/cadastro_usuarios.html')
+
+
+@app.route('/api/usuarios')
+def get_usuarios():
+    usuarios_lista = usuarios
+    return jsonify(usuarios_lista)
+
+
 # Tela de consultas e suas funcionalidades
 @app.route('/consultas')
 def consultas():
@@ -160,6 +206,7 @@ def financeiro():
 @app.route('/sair')
 def sair():
     # Fazer todos os processos de sair, tirar o usuário logado (?), desconectar o banco, etc
+    session.clear()     # Limpa a sessão
     return redirect('/')
 
 

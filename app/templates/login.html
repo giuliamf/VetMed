@@ -6,6 +6,7 @@
     <link rel="shortcut icon" href="../static/images/icon.png">
     <title>Login - VetMed</title>
     <link rel="stylesheet" href="../static/css/login.css">
+    <script src="../static/js/login.js" defer></script>
 </head>
 <body>
     <div class="container">
@@ -14,12 +15,13 @@
             <form class="login-form">
                 <h2>Digite seu E-mail</h2>
                 <label>
-                    <input type="email" placeholder="E-mail">
+                    <input id="email" type="email" placeholder="E-mail" required>
                 </label>
                 <h2>Digite sua Senha</h2>
                 <label>
-                    <input type="password" placeholder="Senha">
+                    <input id="senha" type="password" placeholder="Senha" required>
                 </label>
+                <div id="error-box" style="display: none; color: red; margin-top: 10px;"></div>
                 <button type="submit">Continuar</button>
             </form>
         </div>
