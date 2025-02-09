@@ -60,9 +60,9 @@
             <tbody>
             {% for paciente in pacientes %}
                 <tr>
-                    <td>{{ paciente.nome }}</td>
+                    <td>{{ paciente.nome + " (" + paciente.tutor + ")" }}</td>
                     <td>
-                        <button onclick="editarPaciente('{{ paciente.nome }}')">Editar</button>
+                        <button onclick="editarPaciente('{{ paciente.id }}')">Editar</button>
                     </td>
                 </tr>
             {% endfor %}
@@ -72,6 +72,7 @@
 </main>
 <script src="../../static/js/logout.js"></script>
 <script src="../../static/js/cadastro_paciente.js"></script>
+<script src="../../static/js/editar_paciente.js"></script>
 </body>
 </html>
 

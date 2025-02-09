@@ -7,6 +7,6 @@ function fecharPopupLogout() {
 }
 
 function logout() {
-    fecharPopup();
+    fecharPopupLogout();
     window.location.href = "/sair";
 }

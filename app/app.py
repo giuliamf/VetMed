@@ -4,11 +4,16 @@ from app import connect_database, disconnect_database, create_app, db
 
 # Simulação de dados vindos do banco de dados
 pacientes = [
-    {'nome': 'Marley (Ana Luiza Campos)'},
-    {'nome': 'Catherine (Célio Eduardo Júnior)'},
-    {'nome': 'Thor (João Pedro Souza)'},
-    {'nome': 'Mel (Fernanda Oliveira)'},
-    {'nome': 'Rex (Carlos Eduardo Santos)'}
+    {'id': 1, 'nome': 'Marley', 'tutor': 'Ana Luiza Campos', 'especie': 'Cachorro', 'raca': 'Labrador', 'nascimento':
+        '02-05-2018', 'sexo': 'M', 'peso': 10, 'cor': 'Preto'},
+    {'id': 2, 'nome': 'Catherine', 'tutor':  'Célio Eduardo Júnior', 'especie': 'Gato', 'raca': 'SRD', 'nascimento':
+        '15-08-2019', 'sexo': 'F', 'peso': 5, 'cor': 'Branco'},
+    {'id': 3, 'nome': 'Thor', 'tutor': 'João Pedro Souza', 'especie': 'Cachorro', 'raca': 'Pitbull', 'nascimento':
+        '10-10-2017', 'sexo': 'M', 'peso': 15, 'cor': 'Marrom'},
+    {'id': 4, 'nome': 'Mel', 'tutor': 'Fernanda Oliveira', 'especie': 'Cachorro', 'raca': 'Poodle', 'nascimento':
+        '25-12-2016', 'sexo': 'F', 'peso': 7.200, 'cor': 'Branco'},
+    {'id': 5, 'nome': 'Rex', 'tutor': 'Carlos Eduardo Santos', 'especie': 'Cachorro', 'raca': 'SRD', 'nascimento':
+        '30-07-2019', 'sexo': 'M', 'peso': 8, 'cor': 'Preto'}
 ]
 
 tutores = [
@@ -84,7 +89,7 @@ def cadastro_paciente():
 
 @app.route('/api/pacientes')
 def get_pacientes():
-    q_pacientes = Animal.query.all()
+    """q_pacientes = Animal.query.all()
     pacientes_lista = [{
         "id_animal": p.id_animal,
         "id_tutor": p.id_tutor,
@@ -95,7 +100,10 @@ def get_pacientes():
         "sexo": p.sexo,  # Retorna 'M' ou 'F'
         "peso": p.peso,
         "cor": p.cor
-    } for p in q_pacientes]
+    } for p in q_pacientes]"""
+
+    pacientes_lista = pacientes
+    # colocar o cpf do tutor em vez do nome do tutor
 
     return jsonify(pacientes_lista)
 
