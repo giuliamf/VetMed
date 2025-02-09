@@ -1,0 +1,17 @@
+/* Estilização dos campos */
+.popup-content input {
+    width: 100%;
+    padding: 8px;
+    margin: 5px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+/* Ajusta os campos menores */
+.popup-content input#uf,
+.popup-content input#cep,
+.popup-content input#cpf,
+.popup-content input#telefone {
+    width: calc(50% - 5px); /* Define a largura menor */
+    display: inline-block;
+}

@@ -1,3 +1,5 @@
+import { getTutor } from './buscas.js';
+
 document.addEventListener("DOMContentLoaded", function () {
     carregarPacientes();
 });
@@ -35,7 +37,15 @@ function editarPaciente(id) {
             document.getElementById("raca").value = paciente.raca;
             document.getElementById("peso").value = paciente.peso;
             document.getElementById("cor").value = paciente.cor;
-            document.getElementById("tutor").value = paciente.tutor;
+
+            // Pegar o objeto do tutor
+            getTutor(paciente.tutor)
+                .then(tutor => {
+                    if (tutor) {
+                        document.getElementById("tutor").value = tutor.cpf;
+                    }
+                })
+                .catch(error => console.error("Erro ao buscar tutor: ", error));
 
             // Definir sexo
             if (paciente.sexo === "M") {
@@ -50,9 +60,9 @@ function editarPaciente(id) {
         .catch(error => console.error("Erro ao buscar paciente:", error));
 }
 
-// Função para fechar o popup
-function fecharPopupCadastro() {
-    document.getElementById("cadastro-popup").style.display = "none";
+// Função para enviar o formulário de edição
+function enviarEdicao() {
+
 }
 
 // Formatar a data para YYYY-MM-DD (necessário para o input date)

@@ -9,6 +9,24 @@
     backdrop-filter: blur(5px);
 }
 
+.popup-content {
+    background: white;
+    padding-right: 52px;
+    padding-left: 35px;
+    padding-bottom: 20px;
+    border-radius: 10px;
+    width: 300px;
+    max-width: 90%;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    text-align: center;
+
+    /* Centralização absoluta */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
 /* Estilização dos botões */
 .salvar, .cancelar {
     padding: 10px 20px; /* Ajusta o tamanho dos botões */

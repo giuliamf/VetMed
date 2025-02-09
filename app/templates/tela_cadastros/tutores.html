@@ -5,9 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="../../static/images/icon.png">
     <title>Tutores - VetMed</title>
-    <link rel="stylesheet" href="../../static/css/cadastros.css">   <!-- CSS da página de cadastros (botões) -->
-    <link rel="stylesheet" href="../../static/css/usuarios.css">    <!-- CSS da tabela de usuários -->
-    <link rel="stylesheet" href="../../static/css/cabecalho.css">   <!-- CSS do cabeçalho -->
+    <link rel="stylesheet" href="../../static/css/cadastros.css">       <!-- CSS da página de cadastros (botões) -->
+    <link rel="stylesheet" href="../../static/css/usuarios.css">        <!-- CSS da tabela de usuários -->
+    <link rel="stylesheet" href="../../static/css/cabecalho.css">       <!-- CSS do cabeçalho -->
+    <link rel="stylesheet" href="../../static/css/cadastro_tutor.css">  <!-- CSS do popup de novo cadastro -->
     <link rel="stylesheet" href="../../static/css/logout.css">          <!-- CSS do popup de logout -->
     <link rel="stylesheet" href="../../static/css/janela_popup.css">    <!-- CSS do popup padrão -->
 
@@ -43,6 +44,9 @@
             <h2>Tutores</h2>
             <label for="search"></label><input type="text" id="search" placeholder="Pesquisar tutor">
             <button id="novoCadastro">Novo cadastro</button>
+            <div id="popupContainer">
+                {% include 'tela_cadastros/cadastro_tutores.html' %}
+            </div>
         </div>
         <table>
             <thead>
@@ -54,9 +58,9 @@
             <tbody>
             {% for tutor in tutores %}
                 <tr>
-                    <td>{{ tutor.nome }}</td>
+                    <td>{{ tutor.nome + "( " + tutor.cpf + ")" }}</td>
                     <td>
-                        <button onclick="editarTutor('{{ tutor.nome }}')">Editar</button>
+                        <button onclick="editarTutor('{{ tutor.id }}')">Editar</button>
                     </td>
                 </tr>
             {% endfor %}
@@ -64,12 +68,8 @@
         </table>
     </div>
 </main>
-
-<script>
-    function editarTutor(nome) {
-        alert("Editar tutor: " + nome);
-    }
-</script>
 <script src="../../static/js/logout.js"></script>
+<script src="../../static/js/cadastro_tutor.js"></script>
+<!-- editar tutor aqui -->
 </body>
 </html>

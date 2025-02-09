@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="../../static/css/cadastros.css">       <!-- CSS da tela de cadastros (botões) -->
     <link rel="stylesheet" href="../../static/css/usuarios.css">        <!-- CSS da tabela de usuários -->
     <link rel="stylesheet" href="../../static/css/cabecalho.css">       <!-- CSS do cabeçalho -->
-    <link rel="stylesheet" href="../../static/css/novo_cadastro.css">   <!-- CSS do popup de novo cadastro -->
+    <link rel="stylesheet" href="../../static/css/cadastro_paciente.css">   <!-- CSS do popup de novo cadastro -->
     <link rel="stylesheet" href="../../static/css/logout.css">          <!-- CSS do popup de logout -->
     <link rel="stylesheet" href="../../static/css/janela_popup.css">    <!-- CSS do popup padrão -->
 
@@ -60,19 +60,26 @@
             <tbody>
             {% for paciente in pacientes %}
                 <tr>
-                    <td>{{ paciente.nome + " (" + paciente.tutor + ")" }}</td>
+                    <td id="paciente-{{ paciente.id }}">
+                        {{ paciente.nome }} (<span id="tutor-{{ paciente.id }}"></span>)
+                    </td>
                     <td>
                         <button onclick="editarPaciente('{{ paciente.id }}')">Editar</button>
                     </td>
                 </tr>
+                <script>
+                    buscarNomeIdTutor(Number("{{ paciente.tutor }}")).then(nome => {
+                        document.getElementById("tutor-{{ paciente.id }}").innerText = nome;
+                    });
+                </script>
             {% endfor %}
             </tbody>
         </table>
+        <script type="module" src="../../static/js/editar_paciente.js"></script>
+        <script type="module" src="../../static/js/cadastro_paciente.js"></script>
     </div>
 </main>
 <script src="../../static/js/logout.js"></script>
-<script src="../../static/js/cadastro_paciente.js"></script>
-<script src="../../static/js/editar_paciente.js"></script>
 </body>
 </html>
 
