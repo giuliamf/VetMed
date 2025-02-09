@@ -55,8 +55,8 @@
                 <tbody>
                     {% for usuario in usuarios %}
                     <tr>
-                        <td>{{ usuario.nome }}</td>
-                        <td><button onclick="editarUsuario('{{ usuario.nome }}')">Editar</button></td>
+                        <td id="usuario-{{ usuario.id }}"> {{ usuario.nome }}</td>
+                        <td><button onclick="editarUsuario('{{ usuario.id }}')">Editar</button></td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -64,11 +64,6 @@
         </div>
     <script type="module" src="../../static/js/usuarios.js"></script>
     </main>
-    <script>
-        function editarUsuario(nome) {
-            alert("Editar usuário: " + nome);
-        }
-    </script>
     <script src="../../static/js/logout.js"></script>
 </body>
 </html>
