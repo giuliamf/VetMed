@@ -1,9 +1,5 @@
 import { getTutor } from './buscas.js';
 
-document.addEventListener("DOMContentLoaded", function () {
-    carregarPacientes();
-});
-
 // Função para carregar os pacientes da API e atualizar a tabela (caso precise no futuro)
 function carregarPacientes() {
     fetch("/api/pacientes")
@@ -20,11 +16,11 @@ function carregarPacientes() {
 }
 
 // Função para preencher os dados no popup de edição
-function editarPaciente(id) {
+export function editarPaciente(id) {
     fetch("/api/pacientes")
         .then(response => response.json())
         .then(pacientes => {
-            let paciente = pacientes.find(p => p.id === id);
+            let paciente = pacientes.find(p => p.id === parseInt(id));
             if (!paciente) {
                 console.error("Paciente não encontrado!");
                 return;
@@ -54,6 +50,8 @@ function editarPaciente(id) {
                 document.getElementById("femea").checked = true;
             }
 
+            console.log("Script editar_paciente.js carregado corretamente!");
+
             // Exibir o popup
             document.getElementById("cadastro-popup").style.display = "block";
         })
@@ -70,3 +68,5 @@ function formatarData(data) {
     let partes = data.split("-");
     return `${partes[2]}-${partes[1]}-${partes[0]}`; // Invertendo para formato esperado no input
 }
+
+window.editarPaciente = editarPaciente;

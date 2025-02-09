@@ -11,7 +11,6 @@
     <link rel="stylesheet" href="../../static/css/cadastro_paciente.css">   <!-- CSS do popup de novo cadastro -->
     <link rel="stylesheet" href="../../static/css/logout.css">          <!-- CSS do popup de logout -->
     <link rel="stylesheet" href="../../static/css/janela_popup.css">    <!-- CSS do popup padrão -->
-
 </head>
 <body>
 <header>
@@ -67,18 +66,31 @@
                         <button onclick="editarPaciente('{{ paciente.id }}')">Editar</button>
                     </td>
                 </tr>
-                <script>
-                    buscarNomeIdTutor(Number("{{ paciente.tutor }}")).then(nome => {
-                        document.getElementById("tutor-{{ paciente.id }}").innerText = nome;
-                    });
-                </script>
             {% endfor %}
             </tbody>
         </table>
-        <script type="module" src="../../static/js/editar_paciente.js"></script>
-        <script type="module" src="../../static/js/cadastro_paciente.js"></script>
     </div>
+    <script type="module" src="../../static/js/editar_paciente.js"></script>
+    <script type="module" src="../../static/js/cadastro_paciente.js"></script>
+    <script type="module" src="../../static/js/buscas.js"></script>
 </main>
+<script>
+    document.addEventListener("DOMContentLoaded", async function() {
+        let pacientes = document.querySelectorAll("[id^='tutor-']");
+
+        for (let elemento of pacientes) {
+            let pacienteId = elemento.id.split('-')[1]; // Extrai o ID do paciente
+
+            try {
+                let tutorNome = await buscarNomeIdTutor(pacienteId); // Aguarda a resposta da API
+                elemento.textContent = tutorNome || "Desconhecido"; // Se for null, exibe "Desconhecido"
+            } catch (error) {
+                console.error("Erro ao obter o nome do tutor:", error);
+                elemento.textContent = "Erro ao carregar";
+            }
+        }
+    });
+</script>
 <script src="../../static/js/logout.js"></script>
 </body>
 </html>

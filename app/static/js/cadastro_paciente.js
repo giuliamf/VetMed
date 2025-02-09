@@ -61,5 +61,8 @@ function enviarFormulario() {
 }
 
 function fecharPopupCadastro() {
+    console.log("Fechando popup de cadastro");
     document.getElementById("cadastro-popup").style.display = "none";
 }
+
+window.fecharPopupCadastro = fecharPopupCadastro; // Adiciona a função ao escopo global

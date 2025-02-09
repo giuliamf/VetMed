@@ -1,4 +1,4 @@
-from flask import render_template, jsonify, request, redirect
+from flask import render_template, jsonify, request, redirect, send_from_directory
 from app.models.animal import Animal
 from app import connect_database, disconnect_database, create_app, db
 

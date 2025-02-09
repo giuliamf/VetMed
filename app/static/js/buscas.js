@@ -18,15 +18,10 @@ export function buscarCpfPorId(id) {
 
 
 export function buscarNomeIdTutor(id) {
-    console.log("Chamando API de tutores para ID:", id);
-
     return fetch("/api/tutores")
         .then(response => response.json())
         .then(tutores => {
-            console.log("Tutores recebidos:", tutores);
-
-            const tutor = tutores.find(tutor => tutor.id === id);
-            console.log("Tutor encontrado:", tutor);
+            const tutor = tutores.find(tutor => tutor.id === parseInt(id));
 
             return tutor ? tutor.nome : null;
         })
@@ -48,5 +43,4 @@ export function buscarPacienteId(id) {
         .catch(error => console.error("Erro ao buscar paciente: ", error));
 }
 
-// Tornar global
-window.buscarNomeIdTutor = buscarNomeIdTutor;
+window.buscarNomeIdTutor = buscarNomeIdTutor; // Adiciona a função ao escopo global
