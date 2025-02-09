@@ -22,7 +22,9 @@
                 <li><a href="/financeiro">Financeiro</a></li>
                 <li><a href="#" onclick="abrirPopupLogout()">Sair</a></li>
             </ul>
-            <script src="../../static/js/logout.js"></script>
+            <div id="popup-container">
+            {% include 'logout.html' %}
+            </div>
             <div class="user-info">
                 <img src="../../static/profile_pictures/usuarios/anaclara.png" alt="Foto do Usuário">
                 <span>Olá, Ana Clara!</span>
@@ -65,6 +67,7 @@
             alert("Editar usuário: " + nome);
         }
     </script>
+    <script src="../../static/js/logout.js"></script>
 </body>
 </html>
 
