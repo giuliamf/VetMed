@@ -5,8 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="../static/images/icon.png">
     <title>Início - VetMed</title>
-    <link rel="stylesheet" href="../static/style_inicio.css">
-    <link rel="stylesheet" href="../static/style_cabecalho.css">
+    <link rel="stylesheet" href="../static/css/inicio.css">         <!-- CSS da página de início -->
+    <link rel="stylesheet" href="../static/css/cabecalho.css">      <!-- CSS do cabeçalho -->
+    <link rel="stylesheet" href="../static/css/logout.css">         <!-- CSS do popup de logout -->
+    <link rel="stylesheet" href="../static/css/janela_popup.css">   <!-- CSS do popup padrão -->
 </head>
 <body>
     <header>
@@ -40,10 +42,11 @@
                     <span>Financeiro</span>
                     <img src="../static/icones/financeiro.png" alt="Financeiro">
                 </a>
-                <a href="/" class="button">
+                <a href="#" class="button" onclick="abrirPopupLogout()">
                     <span>Sair</span>
                     <img src="../static/icones/saida.png" alt="Sair">
                 </a>
+                <script src="../static/js/logout.js"></script>
             </div>
         </div>
     </main>

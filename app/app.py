@@ -1,4 +1,4 @@
-from flask import render_template, jsonify, request
+from flask import render_template, jsonify, request, redirect
 from app.models.animal import Animal
 from app import connect_database, disconnect_database, create_app, db
 
@@ -125,6 +125,12 @@ def consultas():
 @app.route('/financeiro')
 def financeiro():
     return render_template('financeiro.html')
+
+
+@app.route('/sair')
+def sair():
+    # Fazer todos os processos de sair, tirar o usuário logado (?), desconectar o banco, etc
+    return redirect('/')
 
 
 if __name__ == '__main__':

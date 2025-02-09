@@ -5,111 +5,69 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="../../static/images/icon.png">
     <title>Pacientes - VetMed</title>
-    <link rel="stylesheet" href="../../static/style_cadastros.css">
-    <link rel="stylesheet" href="../../static/tela_cadastros/style_usuarios.css">
-    <link rel="stylesheet" href="../../static/style_cabecalho.css">
-    <link rel="stylesheet" href="../../static/tela_cadastros/style_novocadastro.css">
+    <link rel="stylesheet" href="../../static/css/cadastros.css">       <!-- CSS da tela de cadastros (botões) -->
+    <link rel="stylesheet" href="../../static/css/usuarios.css">        <!-- CSS da tabela de usuários -->
+    <link rel="stylesheet" href="../../static/css/cabecalho.css">       <!-- CSS do cabeçalho -->
+    <link rel="stylesheet" href="../../static/css/novo_cadastro.css">   <!-- CSS do popup de novo cadastro -->
+    <link rel="stylesheet" href="../../static/css/logout.css">          <!-- CSS do popup de logout -->
+    <link rel="stylesheet" href="../../static/css/janela_popup.css">    <!-- CSS do popup padrão -->
+
 </head>
 <body>
-    <header>
+<header>
         <nav class="navbar">
-            <ul>
-                <li><a href="/inicio">Início</a></li>
-                <li><a href="/agenda">Agenda</a></li>
-                <li><a href="/cadastros" class="active">Cadastros</a></li>
-                <li><a href="/consultas">Consultas</a></li>
-                <li><a href="/financeiro">Financeiro</a></li>
-                <li><a href="/">Sair</a></li>
-            </ul>
-            <div class="user-info">
-                <img src="../../static/profile_pictures/usuarios/anaclara.png" alt="Foto do Usuário">
-                <span>Olá, Ana Clara!</span>
-            </div>
-        </nav>
-    </header>
-    <main>
-        <div class="cadastro-container">
-            <button class="cadastro-button active" onclick="window.location.href='/pacientes'">Pacientes</button>
-            <button class="cadastro-button" onclick="window.location.href='/tutores'">Tutores</button>
-            <button class="cadastro-button" onclick="window.location.href='/usuarios'">Usuários</button>
+        <ul>
+            <li><a href="/inicio">Início</a></li>
+            <li><a href="/agenda">Agenda</a></li>
+            <li><a href="/cadastros" class="active">Cadastros</a></li>
+            <li><a href="/consultas">Consultas</a></li>
+            <li><a href="/financeiro">Financeiro</a></li>
+            <li><a href="#" onclick="abrirPopupLogout()">Sair</a></li>
+        </ul>
+        <div id="popup-container"></div>
+        <div class="user-info">
+            <img src="../../static/profile_pictures/usuarios/anaclara.png" alt="Foto do Usuário">
+            <span>Olá, Ana Clara!</span>
         </div>
+    </nav>
+</header>
+<main>
+    <div class="cadastro-container">
+        <button class="cadastro-button active" onclick="window.location.href='/pacientes'">Pacientes</button>
+        <button class="cadastro-button" onclick="window.location.href='/tutores'">Tutores</button>
+        <button class="cadastro-button" onclick="window.location.href='/usuarios'">Usuários</button>
+    </div>
 
-        <div class="usuarios-container">
-            <div class="table-header">
-                <h2>Pacientes</h2>
-                <label for="search"></label><input type="text" id="search" placeholder="Pesquisar paciente">
-
-                <button id="novoCadastro" onclick="cadastroPaciente()">Novo Cadastro</button>
-                <div id="popupContainer"></div>
-                <script>
-                    document.getElementById("novoCadastro").addEventListener("click", function () {
-                        fetch("/cadastro_paciente")
-                            .then(response => response.text())
-                            .then(html => {
-                                document.getElementById("popupContainer").innerHTML = html;
-                                document.getElementById("popup").style.display = "flex";
-
-                                document.getElementById("cadastroForm").addEventListener("submit", function(event) {
-                                    event.preventDefault();
-                                    enviarFormulario();
-                            });
-                        })
-                            .catch(error => console.error("Erro ao carregar popup: ", error));
-                    });
-
-                    function fecharPopup() {
-                        document.getElementById("popup").style.display = "none";
-                    }
-
-                    function enviarFormulario() {
-                        const form = document.getElementById("cadastroForm");
-                        const formData = new FormData(form);
-
-                        const data = {};
-                        formData.forEach((value, key) => data[key] = value);
-
-                        fetch("/cadastro_paciente", {
-                            method: "POST",
-                            headers: {
-                                "Content-Type": "application/json"
-                            },
-                            body: JSON.stringify(data)
-                        })
-                            .then(response => response.json())
-                            .then(response => {
-                                if (response.status === "success") {
-                                    alert("Paciente cadastrado com sucesso!");
-                                    fecharPopup();
-                                } else {
-                                    alert("Erro ao cadastrar paciente: " + response.message);
-                                }
-                            })
-                            .catch(error => console.error("Erro ao cadastrar paciente: ", error));
-                    }
-                    function editarPaciente(nome) {
-                        alert("Editar paciente: " + nome);
-                    }
-
-                </script>
-            </div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Nome</th>
-                        <th>Ações</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for paciente in pacientes %}
-                    <tr>
-                        <td>{{ paciente.nome }}</td>
-                        <td><button onclick="editarPaciente('{{ paciente.nome }}')">Editar</button></td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+    <div class="usuarios-container">
+        <div class="table-header">
+            <h2>Pacientes</h2>
+            <label for="search"></label>
+            <input type="text" id="search" placeholder="Pesquisar paciente">
+            <button id="novoCadastro">Novo Cadastro</button>
+            <div id="popupContainer"></div>
+            <script src="../../static/js/cadastro_paciente.js"></script>
         </div>
-    </main>
+        <table>
+            <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Ações</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for paciente in pacientes %}
+                <tr>
+                    <td>{{ paciente.nome }}</td>
+                    <td>
+                        <button onclick="editarPaciente('{{ paciente.nome }}')">Editar</button>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</main>
+<script src="../../static/js/logout.js"></script>
 </body>
 </html>
 

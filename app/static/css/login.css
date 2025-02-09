@@ -25,7 +25,7 @@ body {
 
 .left-side {
     flex: 2;
-    background: url('images/bg.png') no-repeat center center/cover;
+    background: url('../images/bg.png') no-repeat center center/cover;
     position: relative;
     padding-left: 600px;
 }

@@ -1,21 +1,7 @@
-/* Fundo escurecido para o pop-up */
-.popup-container {
-    display: none; /* Inicialmente escondido */
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(5px);
-    justify-content: center;
-    align-items: center;
-}
-
 /* Caixa do pop-up */
 .popup-content {
     background: white;
-    padding-right: 50px;
+    padding-right: 52px;
     padding-left: 35px;
     padding-bottom: 20px;
     border-radius: 10px;
@@ -57,22 +43,4 @@
     justify-content: space-between;
     margin-top: 10px;
     margin-right: -18px;
-}
-
-.salvar {
-    background: green;
-    color: white;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.cancelar {
-    background: red;
-    color: white;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
 }

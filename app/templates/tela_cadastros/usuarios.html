@@ -5,9 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="../../static/images/icon.png">
     <title>Usuarios - VetMed</title>
-    <link rel="stylesheet" href="../../static/style_cadastros.css">
-    <link rel="stylesheet" href="../../static/tela_cadastros/style_usuarios.css">
-    <link rel="stylesheet" href="../../static/style_cabecalho.css">
+    <link rel="stylesheet" href="../../static/css/cadastros.css">       <!-- CSS da página de cadastros (botões) -->
+    <link rel="stylesheet" href="../../static/css/usuarios.css">        <!-- CSS da tabela de usuários -->
+    <link rel="stylesheet" href="../../static/css/cabecalho.css">       <!-- CSS do cabeçalho -->
+    <link rel="stylesheet" href="../../static/css/logout.css">          <!-- CSS do popup de logout -->
+    <link rel="stylesheet" href="../../static/css/janela_popup.css">    <!-- CSS do popup padrão -->
 </head>
 <body>
     <header>
@@ -18,8 +20,9 @@
                 <li><a href="/cadastros" class="active">Cadastros</a></li>
                 <li><a href="/consultas">Consultas</a></li>
                 <li><a href="/financeiro">Financeiro</a></li>
-                <li><a href="/BDProjeto2024-2/app/static">Sair</a></li>
+                <li><a href="#" onclick="abrirPopupLogout()">Sair</a></li>
             </ul>
+            <script src="../../static/js/logout.js"></script>
             <div class="user-info">
                 <img src="../../static/profile_pictures/usuarios/anaclara.png" alt="Foto do Usuário">
                 <span>Olá, Ana Clara!</span>

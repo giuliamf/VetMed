@@ -1,0 +1,21 @@
+/* Caixa do pop-up */
+.logout-content {
+    background: white;
+    padding-right: 52px;
+    padding-left: 35px;
+    padding-bottom: 20px;
+    border-radius: 10px;
+    width: 100px;
+    max-width: 90%;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    position: relative;
+}
+
+/* Botões */
+.form-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+    margin-right: -18px;
+}
