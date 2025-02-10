@@ -48,7 +48,7 @@ especialidades = [
 ]
 
 agendamento = [
-    {'id': 1, 'hora': '11:20', 'data': datetime.strptime('19/02/2025', '%d/%m/%Y'), 'paciente': 4,
+    {'id': 1, 'hora': '11:30', 'data': datetime.strptime('19/02/2025', '%d/%m/%Y'), 'paciente': 4,
      'tutor': 4, 'status': 1},
     {'id': 2, 'hora': '14:30', 'data': datetime.strptime('19/02/2025', '%d/%m/%Y'), 'paciente': 2,
      'tutor': 3, 'status': 1},
@@ -58,7 +58,7 @@ agendamento = [
      'tutor': 2, 'status': 1}
 ]
 
-status = [
+listastatus = [
     {'id': 1, 'nome': 'Agendado'},
     {'id': 2, 'nome': 'Em andamento'},
     {'id': 3, 'nome': 'Realizado'},

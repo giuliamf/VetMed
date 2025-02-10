@@ -164,15 +164,74 @@ function formatarCPF(cpf) {
     return cpf;
 }
 
-function editarAgendamento(id) {
-    console.log("Editar agendamento com ID:", id);
+export async function editarAgendamento(id) {
+    try {
+        // Buscar os dados do agendamento selecionado
+        const response = await fetch("/api/agendamentos");
+        const agendamentos = await response.json();
+        const agendamento = agendamentos.find(a => a.id === parseInt(id));
+
+        if (!agendamento) {
+            console.error("Agendamento não encontrado!");
+            return;
+        }
+
+        // Buscar HTML do popup de edição
+        const htmlResponse = await fetch("/editar_agendamento");
+        // Inserir o HTML carregado dentro do container correto
+        document.getElementById("popupContainer").innerHTML = await htmlResponse.text();
+
+        // Garantir que os elementos foram carregados corretamente
+        const dataElement = document.getElementById("data");
+        const tutorElement = document.getElementById("tutor");
+        const pacienteElement = document.getElementById("paciente");
+        const horarioElement = document.getElementById("horario");
+        const statusElement = document.getElementById("status");
+
+        if (!dataElement || !tutorElement || !pacienteElement || !horarioElement || !statusElement) {
+            console.error("Elementos do popup de edição não encontrados!");
+            return;
+        }
+
+        // Formatar e preencher os dados
+        const dataFormatada = formatarData(agendamento.data);
+        const nomeTutor = await buscarNomeIdTutor(agendamento.tutor);
+        const nomePaciente = await buscarNomeIdPaciente(agendamento.paciente);
+
+        dataElement.value = dataFormatada;
+        tutorElement.value = nomeTutor;
+        pacienteElement.value = nomePaciente;
+        horarioElement.value = agendamento.hora;
+
+        // Buscar e preencher a lista de status
+        const statusResponse = await fetch("/api/status");
+        const statusList = await statusResponse.json();
+
+        statusElement.innerHTML = "";
+        statusList.forEach(status => {
+            let option = document.createElement("option");
+            option.value = status.id;
+            option.textContent = status.nome;
+            statusElement.appendChild(option);
+        });
+
+        // Definir o status selecionado
+        statusElement.value = agendamento.status;
+
+        // Exibir a popup de edição
+        document.getElementById("editar-popup").style.display = "flex";
+
+    } catch (error) {
+        console.error("Erro ao abrir popup de edição:", error);
+    }
 }
+
 
 function abrirPopupCadastro(dataSelecionada) {
     fetch("/cadastro_agendamento")
         .then(response => response.text())
         .then(html => {
-            document.getElementById("popupContainer").innerHTML = html;
+            // document.getElementById("popupContainer").innerHTML = html;
             document.getElementById("cadastro-popup").style.display = "flex";
 
             document.getElementById("dataSelecionadaPopup").textContent = formatarData(dataSelecionada);
@@ -183,6 +242,10 @@ function abrirPopupCadastro(dataSelecionada) {
 
 function fecharPopupCadastro() {
     document.getElementById("cadastro-popup").style.display = "none";
+}
+
+function fecharPopupEdicao() {
+    document.getElementById("editar-popup").style.display = "none";
 }
 
 function enviarFormulario() {
@@ -205,5 +268,9 @@ function formatarData(data) {
     return data.split("-").reverse().join("/");
 }
 
+
+
 window.abrirPopupCadastro = abrirPopupCadastro;
 window.fecharPopupCadastro = fecharPopupCadastro;
+window.editarAgendamento = editarAgendamento;
+window.fecharPopupEdicao = fecharPopupEdicao;

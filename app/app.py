@@ -2,7 +2,7 @@ from flask import render_template, jsonify, request, redirect, session
 from app.models.animal import Animal
 from app import connect_database, disconnect_database, create_app, db
 from app.criptografia_senhas import criptografar_senha, verificar_senha
-from app.simulação_bd import pacientes, tutores, usuarios, especialidades, agendamento, status
+from app.simulação_bd import pacientes, tutores, usuarios, especialidades, agendamento, listastatus
 from datetime import datetime
 
 
@@ -191,12 +191,31 @@ def cadastro_agendamento():
         # Inserir no banco de dados aqui
         return jsonify({"mensagem": "Agendamento realizado com sucesso!"}), 201
 
-    return render_template('tela_cadastros/cadastro_agendamentos.html', pacientes=pacientes, tutores=tutores)
+    return render_template('tela_cadastros/cadastro_agendamentos.html')
+
+
+@app.route('/editar_agendamento', methods=['GET', 'POST'])
+def editar_agendamento():
+    # quando post for chamado, as unicas informações que podem ser alteradas são hora e status
+    if request.method == 'POST':
+        hora = request.form.get('hora')
+        status = request.form.get('status')
+
+        # Atualizar no banco de dados aqui
+        return jsonify({"mensagem": "Agendamento atualizado com sucesso!"}), 200
+
+    return render_template('tela_cadastros/editar_agendamento.html', status=listastatus)
 
 
 @app.route('/api/status')
 def get_status():
-    return jsonify(status)
+    return jsonify(listastatus)
+
+
+@app.route('/api/agendamentos')
+def get_agendamentos():
+    lista_agendamentos = formatar_data(agendamento)
+    return jsonify(lista_agendamentos)
 
 
 # Tela de consultas e suas funcionalidades

@@ -66,7 +66,10 @@
                             <span class="status-nome">{{ agendamento.status }}</span>
                         </td>
                         <td>
-                            <button class="editar" onclick="editarAgendamento({{ agendamento.id }})">Editar</button>
+                            <button class="editar" onclick="editarAgendamento('{{ agendamento.id }}')">Editar</button>
+                            <div class="popupContainer">
+                                {% include 'tela_cadastros/editar_agendamento.html' %}
+                            </div>
                         </td>
                     </tr>
                 {% endfor %}

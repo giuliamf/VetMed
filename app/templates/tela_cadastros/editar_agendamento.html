@@ -1,24 +1,24 @@
-<div id="cadastro-popup" class="popup-container" style="display: none">
+<div id="editar-popup" class="popup-container" style="display: none">
     <div class="popup-content">
-        <h2>Agendamento - <span id="dataSelecionadaPopup"></span></h2>
-        <form id="cadastroForm" method="POST" action="/cadastro_agendamento">
-            <input type="hidden" id="data" name="data"> <!-- Campo oculto para a data -->
+        <h2>Editar Agendamento</h2>
+        <form id="cadastroForm">
 
-            <label for="tutor">Tutor (CPF)</label>
-            <div class="tutor-container">
-                <input type="text" id="tutor" name="tutor" required
-                       oninput="this.value = this.value.replace(/\D/g, '')"
-                       placeholder="Digite o CPF">
-                <button type="button" id="carregarTutor">Carregar tutor</button>
-                <span id="loadingTutor" style="display: none;">Carregando...</span>
-            </div>
+            <label for="data">Data</label>
+            <input type="text" disabled id="data" name="data" required>
+
+            <label for="tutor">Tutor</label>
+            <input type="text" disabled id="tutor" name="tutor" required>
 
             <label for="paciente">Paciente</label>
-            <select id="paciente" name="paciente" required>
-                <option value="">Selecione</option>
-            </select>
+            <input type="text" disabled id="paciente" name="paciente" required>
 
-            <p id="mensagemTutor" style="color: red; display: none;">Faça o cadastro do tutor antes de agendar uma consulta.</p>
+            <label for="status">Status</label>
+            <select id="status" name="status" required>
+                <option value="">Selecione</option>
+                { % for status in status % }
+                <option value="{{ status.id }}">{{ status.nome }}</option>
+                { % endfor % }
+            </select>
 
             <label for="horario">Horário</label>
             <select id="horario" name="horario" required>
@@ -45,11 +45,9 @@
                     <option value="17:30">17:30</option>
                 </optgroup>
             </select>
-
-
             <div class="form-buttons">
                 <button type="submit" class="salvar">Salvar</button>
-                <button type="button" class="cancelar" onclick="fecharPopupCadastro()">Cancelar</button>
+                <button type="button" class="cancelar" onclick="fecharPopupEdicao()">Cancelar</button>
             </div>
         </form>
     </div>
