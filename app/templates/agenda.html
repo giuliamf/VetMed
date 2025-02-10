@@ -1,10 +1,76 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="../static/images/icon.png">
+    <link rel="stylesheet" href="../static/css/cabecalho.css">  <!-- CSS do cabeçalho -->
+    <link rel="stylesheet" href="../static/css/agenda.css">  <!-- CSS da página de agenda -->
+     <link rel="stylesheet" href="../static/css/logout.css">  <!-- CSS do popup de logout -->
+    <link rel="stylesheet" href="../static/css/popup.css">  <!-- CSS do popup padrão -->
+    <title>Calendário de Agendamentos</title>
 </head>
 <body>
+    <header>
+        <nav class="navbar">
+            <ul>
+                <li><a href="/inicio">Início</a></li>
+                <li><a href="/agenda" class="active">Agenda</a></li>
+                <li><a href="/cadastros">Cadastros</a></li>
+                <li><a href="/consultas">Consultas</a></li>
+                <li><a href="/financeiro">Financeiro</a></li>
+                <li><a href="#" onclick="abrirPopupLogout()">Sair</a></li>
+            </ul>
+            <div id="popup-container">
+            {% include 'logout.html' %}
+            </div>
+            {% include 'partials/navbar.html' %}
+        </nav>
+    </header>
+    <main>
+        <div class="calendario-container">
+            <label for="dataSelecionada"></label>
+            <input type="date" id="dataSelecionada">
+            <button id="novoAgendamento">Novo Agendamento</button>
+            <div id="popupContainer">
+                {% include 'tela_cadastros/cadastro_agendamentos.html' %}
+        </div>
+        <div class="agenda" id="agenda" style="display: none;">
+            <h2>Agendamentos: <span id="dataAtual">Selecione um dia</span></h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Hora</th>
+                        <th>Paciente</th>
+                        <th>Status</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="listaAgendamentos">
+                {% for agendamento in agendamentos %}
+                    <tr>
+                        <td>{{ agendamento.hora }}</td>
+                        <td>
+                            <span class="paciente-nome" data-paciente-id="{{ agendamento.paciente }}"></span>
+                            (<span class="tutor-nome" data-tutor-id="{{ agendamento.tutor }}"></span>)
+                        </td>
+                        <td>
+                            <span class="status-nome">{{ agendamento.status }}</span>
+                        </td>
+                        <td>
+                            <button class="editar" onclick="editarAgendamento({{ agendamento.id }})">Editar</button>
+                            <button class="excluir" onclick="excluirAgendamento({{ agendamento.id }})">Excluir</button>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </main>
+    <script type="application/json" id="agendamentos-data">{{ agendamento | tojson }}</script>
 
+    <script type="module" src="../static/js/agenda.js"></script>
+    <script type="module" src="../static/js/buscas.js"></script>
+    <script src="../static/js/logout.js"></script>
 </body>
-</html>
+</html>>

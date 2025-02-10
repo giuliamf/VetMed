@@ -96,7 +96,7 @@ class Animal:
             cursor.close()
             conn.close()
 
-      def deletar_animal(id_animal):
+    def deletar_animal(id_animal):
         conn = get_db_connection()
         cursor = conn.cursor()
         query = sql.SQL("""

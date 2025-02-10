@@ -10,7 +10,6 @@ body {
 }
 
 .cadastro-container {
-    flex: 1;  /* Ocupa o espaço disponivel */
     display: flex;
     flex-direction: column;
     align-items: flex-start;

@@ -1,4 +1,5 @@
 import hashlib
+from datetime import datetime
 
 
 def criptografar_senha(senha):

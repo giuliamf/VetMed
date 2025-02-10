@@ -1,0 +1,135 @@
+/* Estilos gerais */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Montserrat, sans-serif;
+    background-color: #f0f0f0;
+}
+
+/* Layout principal */
+main {
+    display: flex;  /* Torna o conteúdo principal um flex container */
+    /* justify-content: center;
+    align-items: center;
+    flex-direction: column;*/
+}
+
+/* Estilizando o calendário */
+.calendario-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: right;
+    height: calc(80vh - 60px);
+    padding: 50px 0 0 50px;
+}
+
+.calendario-container input[type="date"] {
+    font-size: 1.2rem;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+}
+
+/* Estilizando a agenda (inicialmente oculta) */
+.agenda {
+    display: none;
+    margin-top: 50px;
+    width: 71%;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    margin-left: 190px;
+    padding: 20px;
+}
+
+.agenda h2 {
+    text-align: left;
+    font-size: 1.5rem;
+    color: #004070;
+    font-weight: bold;
+}
+
+
+/* Estilizando a tabela */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+.table-header {
+    top: 0;
+    z-index: 100;
+    position: sticky;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+th, td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+    white-space: nowrap;
+}
+
+td button {
+    background: green;
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+td button:hover {
+    background: darkgreen;
+}
+
+
+th {
+    background-color: #004070;
+    color: white;
+}
+
+/* Estilizando os botões dos agendamentos */
+.agendamento-button {
+    background: white;
+    border: 1px solid #ccc;
+    padding: 15px 30px;
+    margin: 10px;
+    border-radius: 50px;
+    font-weight: lighter;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 250px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    text-align: center;
+}
+
+.agendamento-button:hover {
+    background-color: #9abad4;
+}
+
+.agendamento-button.active {
+    background-color: #004070;
+    color: white;
+}
+
+
+#novoAgendamento {
+    background: #007bff;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#novoAgendamento:hover {
+    background: #0056b3;
+}

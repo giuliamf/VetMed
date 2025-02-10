@@ -51,6 +51,7 @@ def obter_animal(id_animal):
         "cor": animal.cor
     })
 
+
 @animais_bp.route('/animais/<int:id_animal>', methods=['PUT'])
 def atualizar_animal(id_animal):
     animal = Animal.query.get_or_404(id_animal)
@@ -73,6 +74,7 @@ def atualizar_animal(id_animal):
     
     db.session.commit()
     return jsonify({"mensagem": "Animal atualizado com sucesso!"}), 200
+
 
 @animais_bp.route('/animais/<int:id_animal>', methods=['DELETE'])
 def excluir_animal(id_animal):
