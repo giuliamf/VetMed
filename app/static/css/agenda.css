@@ -57,20 +57,18 @@ main {
     font-weight: bold;
 }
 
-/* Ajustando o cabeçalho da agenda */
 .agenda-header {
     display: flex;
-    justify-content: space-between; /* Título à esquerda, botões à direita */
+    justify-content: space-between; /* Mantém o título à esquerda e os botões à direita */
     align-items: center;
-    margin-bottom: 20px;
     width: 100%;
+    margin-bottom: 20px;
 }
 
-/* Agrupando os botões de pesquisa e novo agendamento */
 .agenda-controls {
     display: flex;
+    gap: 10px; /* Espaço entre o campo de pesquisa e o botão */
     align-items: center;
-    gap: 10px; /* Espaço entre os botões */
 }
 
 /* Ajustes para o campo de pesquisa */
@@ -127,4 +125,45 @@ td button {
 
 td button:hover {
     background: darkgreen;
+}
+
+/* Estilização dos campos */
+.popup-content input {
+    width: 100%;
+    padding: 8px;
+    margin: 5px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+.popup-content select {
+    width: 320px;
+    padding: 8px;
+    margin: 5px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+/* Botões */
+.form-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+    margin-right: -18px;
+}
+
+.tutor-container {
+    display: inherit;
+}
+
+.tutor-container button {
+    background: #007bff;
+    color: white;
+    padding: 10px 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    white-space: nowrap;
+    margin-top: 10px;
+    margin-bottom: 10px;
+
 }

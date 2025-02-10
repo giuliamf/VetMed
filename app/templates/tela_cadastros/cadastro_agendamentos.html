@@ -1,17 +1,52 @@
 <div id="cadastro-popup" class="popup-container">
     <div class="popup-content">
-        <h2>Cadastro de Paciente</h2>
-        <form id="cadastroForm" method="POST" action="/cadastro_paciente">
+        <h2>Agendamento - <span id="dataSelecionadaPopup"></span></h2>
+        <form id="cadastroForm" method="POST" action="/cadastro_agendamento">
+            <input type="hidden" id="data" name="data"> <!-- Campo oculto para a data -->
+
             <label for="tutor">Tutor (CPF)</label>
-            <input type="text" id="tutor" name="tutor" required>
+            <div class="tutor-container">
+                <input type="text" id="tutor" name="tutor" required
+                       oninput="this.value = this.value.replace(/\D/g, '')"
+                       placeholder="Digite o CPF">
+                <button type="button" id="carregarTutor">Carregar tutor</button>
+                <span id="loadingTutor" style="display: none;">Carregando...</span>
+            </div>
 
             <label for="paciente">Paciente</label>
             <select id="paciente" name="paciente" required>
                 <option value="">Selecione</option>
-                {% for paciente in pacientes %}
-                <option value="{{ paciente.id }}">{{ paciente.nome }}</option>
-                {% endfor %}
             </select>
+
+            <p id="mensagemTutor" style="color: red; display: none;">Faça o cadastro do tutor antes de agendar uma consulta.</p>
+
+        <!-- ALGUM TIPO DE BLOCO DE HORÁRIOS -SELECT/TOGGLE- ENTRE 8H30 - 12H E 13H - 17H30 -->
+            <label for="horario">Horário</label>
+            <select id="horario" name="horario" required>
+                <optgroup label="Manhã">
+                    <option value="08:30">08:00</option>
+                    <option value="08:30">08:30</option>
+                    <option value="09:00">09:00</option>
+                    <option value="09:30">09:30</option>
+                    <option value="10:00">10:00</option>
+                    <option value="10:30">10:30</option>
+                    <option value="11:00">11:00</option>
+                    <option value="11:30">11:30</option>
+                </optgroup>
+                <optgroup label="Tarde">
+                    <option value="13:00">13:00</option>
+                    <option value="13:30">13:30</option>
+                    <option value="14:00">14:00</option>
+                    <option value="14:30">14:30</option>
+                    <option value="15:00">15:00</option>
+                    <option value="15:30">15:30</option>
+                    <option value="16:00">16:00</option>
+                    <option value="16:30">16:30</option>
+                    <option value="17:00">17:00</option>
+                    <option value="17:30">17:30</option>
+                </optgroup>
+            </select>
+
 
             <div class="form-buttons">
                 <button type="submit" class="salvar">Salvar</button>

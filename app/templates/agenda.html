@@ -34,16 +34,17 @@
         </div>
 
         <div class="agenda" id="agenda" style="display: none;">
-            <h2>Agendamentos: <span id="dataAtual">Selecione um dia</span></h2>
             <div class="agenda-header">
+            <h2>Agendamentos: <span id="dataAtual">Selecione um dia</span></h2>
+                <div class="agenda-controls">
                 <label for="search"></label>
                     <input type="text" id="search" placeholder="Pesquisar agendamento">
                 <button id="novoAgendamento">Novo Agendamento</button>
                     <div id="popupContainer">
                         {% include 'tela_cadastros/cadastro_agendamentos.html' %}
                     </div>
+                </div>
             </div>
-
             <table>
                 <thead>
                     <tr>
@@ -66,7 +67,6 @@
                         </td>
                         <td>
                             <button class="editar" onclick="editarAgendamento({{ agendamento.id }})">Editar</button>
-                            <button class="excluir" onclick="excluirAgendamento({{ agendamento.id }})">Excluir</button>
                         </td>
                     </tr>
                 {% endfor %}

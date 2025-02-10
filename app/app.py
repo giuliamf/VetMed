@@ -178,6 +178,22 @@ def agenda():
     return render_template('agenda.html', agendamento=lista_agendamento)
 
 
+@app.route('/cadastro_agendamento', methods=['GET', 'POST'])
+def cadastro_agendamento():
+    if request.method == 'POST':
+        data = {
+            'hora': request.form.get('hora'),
+            'data': request.form.get('data'),
+            'paciente': request.form.get('paciente'),
+            'tutor': request.form.get('tutor'),
+            'status': 1  # status de agendado
+        }
+        # Inserir no banco de dados aqui
+        return jsonify({"mensagem": "Agendamento realizado com sucesso!"}), 201
+
+    return render_template('tela_cadastros/cadastro_agendamentos.html', pacientes=pacientes, tutores=tutores)
+
+
 @app.route('/api/status')
 def get_status():
     return jsonify(status)
