@@ -1,11 +1,7 @@
-<<<<<<< Updated upstream
-from app import db
-=======
 import psycopg2
 from psycopg2 import sql
 from datetime import datetime
 from app.validators.animal_validator import AnimalValidator
->>>>>>> Stashed changes
 
 def get_db_connection():
     conn = psycopg2.connect(
@@ -17,23 +13,6 @@ def get_db_connection():
     )
     return conn
 
-<<<<<<< Updated upstream
-class Animal(db.Model):
-    __tablename__ = 'animais'
-
-    id_animal = db.Column(db.Integer, primary_key=True)  # Gerado automaticamente pelo banco
-    id_tutor = db.Column(db.Integer, nullable=False)
-    nome = db.Column(db.String(100), nullable=False)
-    especie = db.Column(db.String(50), nullable=False)
-    raca = db.Column(db.String(50))
-    ano_nascimento = db.Column(db.Integer)
-    sexo = db.Column(db.String(1), nullable=False)  # 'Macho' ou 'Fêmea'
-    peso = db.Column(db.String(20))
-    cor = db.Column(db.String(30))
-
-    def __repr__(self):
-        return f"<Animal {self.nome} ({self.id_animal})>"
-=======
 class Animal:
     def __init__(self, id_animal, id_tutor, nome, especie, raca, ano_nascimento, sexo, peso, cor):
         self.id_animal = id_animal
@@ -146,4 +125,3 @@ class Animal:
         conn.commit()
         cursor.close()
         conn.close()
->>>>>>> Stashed changes

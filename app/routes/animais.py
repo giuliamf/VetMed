@@ -1,51 +1,20 @@
 from flask import Blueprint, request, jsonify
 from app.models.animal import Animal
 from app.validators.animal_validator import AnimalValidator
-<<<<<<< Updated upstream:app/routes/animal_route.py
-from app import db
-=======
->>>>>>> Stashed changes:app/routes/animais.py
 
 animais_bp = Blueprint('animais', __name__)
 
-
 @animais_bp.route('/animais', methods=['POST'])
-<<<<<<< Updated upstream:app/routes/animal_route.py
-def criar_animal():
-    """
-    Rota para criar um novo animal no banco de dados.
-    """
-    data = request.get_json()
-=======
 def criar_animal_route():
     try:
         # Obter os dados do corpo da requisição
         dados = request.json
->>>>>>> Stashed changes:app/routes/animais.py
 
         # Validar os dados antes de criar o animal
         valido, mensagem = AnimalValidator.validar_criar_animal(dados)
         if not valido:
             return jsonify({"erro": mensagem}), 400  # Bad Request
 
-<<<<<<< Updated upstream:app/routes/animal_route.py
-    # Criar animal
-    novo_animal = Animal(
-        id_tutor=data['id_tutor'],
-        nome=data['nome'],
-        especie=data['especie'],
-        raca=data.get('raca'),
-        ano_nascimento=data.get('ano_nascimento'),
-        sexo=data.get('sexo'),
-        peso=data.get('peso'),
-        cor=data['cor']
-    )
-
-    db.session.add(novo_animal)
-    db.session.commit()
-
-    return jsonify({"mensagem": "Animal criado com sucesso!", "id_animal": novo_animal.id_animal}), 201
-=======
         # Criar o animal no banco de dados
         id_animal = Animal.criar_animal(dados)
 
@@ -59,8 +28,6 @@ def criar_animal_route():
     except Exception as e:
         # Capturar outros erros inesperados (ex: erros no banco de dados)
         return jsonify({"erro": f"Erro interno no servidor: {str(e)}"}), 500  # Internal Server Error
->>>>>>> Stashed changes:app/routes/animais.py
-
 
 @animais_bp.route('/animais/<int:id_animal>', methods=['GET'])
 def obter_animal_route(id_animal):
@@ -78,7 +45,6 @@ def obter_animal_route(id_animal):
             "cor": animal.cor
         })
     return jsonify({"mensagem": "Animal não encontrado"}), 404
-
 
 @animais_bp.route('/animais/<int:id_animal>', methods=['PUT'])
 def atualizar_animal_route(id_animal):
@@ -104,7 +70,6 @@ def atualizar_animal_route(id_animal):
     except Exception as e:
         # Capturar outros erros inesperados (ex: erros no banco de dados)
         return jsonify({"erro": f"Erro interno no servidor: {str(e)}"}), 500  # Internal Server Error
-
 
 @animais_bp.route('/animais/<int:id_animal>', methods=['DELETE'])
 def excluir_animal_route(id_animal):

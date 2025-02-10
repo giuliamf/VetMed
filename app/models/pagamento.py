@@ -1,9 +1,3 @@
-<<<<<<< Updated upstream
-class Pagamento:
-    def __init__(self, id_pagamento, id_consulta, data_pagamento, id_meio_pagamento):
-        self.id_pagamento = id_pagamento
-        self.id_consulta = id_consulta
-=======
 from app import db
 
 class Pagamento:
@@ -11,23 +5,11 @@ class Pagamento:
         self.id_pagamento = id_pagamento
         self.id_consulta = id_consulta
         self.valor = valor
->>>>>>> Stashed changes
         self.data_pagamento = data_pagamento
         self.id_meio_pagamento = id_meio_pagamento
 
     def __repr__(self):
         return f"<Pagamento {self.id_pagamento}>"
-<<<<<<< Updated upstream
-
-
-def criar_pagamento(data):   #verificar esse dicinário de entrada com o célio!!!
-        """
-        Cria um novo pagamento no banco de dados.
-        Recebe um dicionário `data` com os campos do agendamento.
-        """
-        # Validar os dados
-        valido, mensagem = PagamentoValidator.validar_criar_pagamento(data) 
-=======
     
     def criar_pagamento(data):
         """
@@ -36,17 +18,13 @@ def criar_pagamento(data):   #verificar esse dicinário de entrada com o célio!
         """
         # Validar os dados
         valido, mensagem = PagamentoValidator.validar_criar_pagamento(data)
->>>>>>> Stashed changes
         if not valido:
             raise ValueError(mensagem)
 
         # Extrair os valores do dicionário
         id_pagamento = data['id_pagamento']
         id_consulta = data['id_consulta']
-<<<<<<< Updated upstream
-=======
         valor = data['valor']
->>>>>>> Stashed changes
         data_pagamento = datetime.strptime(data['data_pagamento'], '%d/%m/%Y').date()
         id_meio_pagamento = data['id_meio_pagamento']
 
@@ -54,19 +32,11 @@ def criar_pagamento(data):   #verificar esse dicinário de entrada com o célio!
         conn = get_db_connection()
         cursor = conn.cursor()
         query = sql.SQL("""
-<<<<<<< Updated upstream
-            INSERT INTO pagamento (id_pagamento, id_consulta, data_pagamento, id_meio_pagamento)
-            VALUES (%s, %s, %s, %s)
-            RETURNING id_pagamento
-        """)
-        cursor.execute(query, (id_pagamento, id_consulta, data_pagamento, id_meio_pagamento))
-=======
             INSERT INTO Pagamento (id_pagamento, id_consulta, valor, data_pagamento, id_meio_pagamento))
             VALUES (%s, %s, %s, %s, %s)
             RETURNING id_pagamento
         """)
         cursor.execute(query, (id_consulta, valor, data_pagamento, id_meio_pagamento, id_status))
->>>>>>> Stashed changes
         id_pagamento = cursor.fetchone()[0]
         conn.commit()
         cursor.close()
@@ -77,11 +47,7 @@ def criar_pagamento(data):   #verificar esse dicinário de entrada com o célio!
         conn = get_db_connection()
         cursor = conn.cursor()
         query = sql.SQL("""
-<<<<<<< Updated upstream
-            SELECT * FROM pagamento WHERE id_pagamento = %s
-=======
             SELECT * FROM Pagamento WHERE id_pagamento = %s
->>>>>>> Stashed changes
         """)
         cursor.execute(query, (id_pagamento,))
         pagamento = cursor.fetchone()
@@ -91,21 +57,6 @@ def criar_pagamento(data):   #verificar esse dicinário de entrada com o célio!
             return Pagamento(*pagamento)
         return None
 
-<<<<<<< Updated upstream
-    def atualizar_pagamento(id_pagamento, id_consulta, data_pagamento, id_meio_pagamento):
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        query = sql.SQL("""
-            UPDATE pagamento
-            SET id_pagamento = %s, id_consulta = %s, data_pagamento = %s, id_meio_pagamento = %s
-            WHERE id_pagamento = %s
-        """)
-        cursor.execute(query, (id_pagamento, id_consulta, data_pagamento, id_meio_pagamento))
-        conn.commit()
-        cursor.close()
-        conn.close()
- 
-=======
     def atualizar_pagamento(id_pagamento, **kwargs):
         """
         Atualiza os campos fornecidos em kwargs para o pagamento com o id_pagamento especificado.
@@ -155,4 +106,3 @@ def criar_pagamento(data):   #verificar esse dicinário de entrada com o célio!
         conn.commit()
         cursor.close()
         conn.close()
->>>>>>> Stashed changes
