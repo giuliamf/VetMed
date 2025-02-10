@@ -10,3 +10,7 @@ function logout() {
     fecharPopupLogout();
     window.location.href = "/sair";
 }
+
+window.fecharPopupLogout = fecharPopupLogout;
+window.logout = logout;
+window.abrirPopupLogout = abrirPopupLogout;
