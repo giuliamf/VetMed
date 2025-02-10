@@ -1,7 +1,6 @@
 class Agendamento:
-    def __init__(self, id_agendamento, id_tutor, id_animal, data, hora, id_status):
+    def __init__(self, id_agendamento, id_animal, data, hora, id_status):
         self.id_agendamento = id_agendamento
-        self.id_tutor = id_tutor
         self.id_animal = id_animal
         self.data = data
         self.hora = hora
@@ -21,7 +20,6 @@ class Agendamento:
             raise ValueError(mensagem)
 
         # Extrair os valores do dicionário
-        id_tutor = data['id_tutor']
         id_animal = data['id_animal']
         data_agendamento = datetime.strptime(data['data'], '%d/%m/%Y').date()
         hora_agendamento = datetime.strptime(data['hora'], '%H:%M').time()
@@ -31,8 +29,8 @@ class Agendamento:
         conn = get_db_connection()
         cursor = conn.cursor()
         query = sql.SQL("""
-            INSERT INTO agendamentos (id_tutor, id_animal, data, hora, id_status)
-            VALUES (%s, %s, %s, %s, %s)
+            INSERT INTO agendamento (id_animal, data, hora, id_status)
+            VALUES (%s, %s, %s, %s)
             RETURNING id_agendamento
         """)
         cursor.execute(query, (id_tutor, id_animal, data_agendamento, hora_agendamento, id_status))
@@ -46,7 +44,7 @@ class Agendamento:
         conn = get_db_connection()
         cursor = conn.cursor()
         query = sql.SQL("""
-            SELECT * FROM agendamentos WHERE id_agendamento = %s
+            SELECT * FROM agendamento WHERE id_agendamento = %s
         """)
         cursor.execute(query, (id_agendamento,))
         agendamento = cursor.fetchone()
@@ -56,21 +54,6 @@ class Agendamento:
             return Agendamento(*agendamento)
         return None
 
-    def atualizar_agendamento(id_agendamento, id_tutor, id_animal, data, hora, id_status):
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        query = sql.SQL("""
-            UPDATE agendamentos
-            SET id_tutor = %s, id_animal = %s, data = %s, hora = %s, id_status = %s
-            WHERE id_agendamento = %s
-        """)
-        cursor.execute(query, (id_tutor, id_animal, data, hora, id_status, id_agendamento))
-        conn.commit()
-        cursor.close()
-        conn.close()
-        
-    CAMPOS_VALIDOS = {'id_tutor', 'id_animal', 'data', 'hora', 'id_status'}
-    
     def atualizar_agendamento(id_agendamento, **kwargs):
         """
         Atualiza os campos fornecidos em kwargs para o agendamento com o id_agendamento especificado.
@@ -97,7 +80,7 @@ class Agendamento:
         valores.append(id_agendamento)  # Adicionar o id_agendamento no final
 
         query = sql.SQL("""
-            UPDATE agendamentos
+            UPDATE agendamento
             SET {campos}
             WHERE id_agendamento = %s
         """).format(
@@ -116,7 +99,7 @@ class Agendamento:
         conn = get_db_connection()
         cursor = conn.cursor()
         query = sql.SQL("""
-            DELETE FROM agendamentos WHERE id_agendamento = %s
+            DELETE FROM agendamento WHERE id_agendamento = %s
         """)
         cursor.execute(query, (id_agendamento,))
         conn.commit()
