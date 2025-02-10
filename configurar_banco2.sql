@@ -100,8 +100,6 @@ CREATE TABLE IF NOT EXISTS Agendamento (
 CREATE TABLE IF NOT EXISTS Tipo_Consulta (
     id_tipo SERIAL PRIMARY KEY,
     nome VARCHAR(50) NOT NULL,
-    categoria VARCHAR(50),
-    descricao TEXT
 );
 
 CREATE TABLE IF NOT EXISTS Consulta (
@@ -112,7 +110,7 @@ CREATE TABLE IF NOT EXISTS Consulta (
     horario TIME NOT NULL,
     id_tipo INTEGER NOT NULL,
     valor_total NUMERIC(10, 2) GENERATED ALWAYS AS (
-        (SELECT COALESCE(SUM(p.preco * cp.quantidade), 0)
+        (SELECT COALESCE(SUM(p.preco), 0)
          FROM Consulta_Tratamento cp
          JOIN Tratamento p ON cp.id_tratamento = p.id_tratamento
          WHERE cp.id_consulta = Consulta.id_consulta)
@@ -125,7 +123,6 @@ CREATE TABLE IF NOT EXISTS Consulta (
 
 CREATE TABLE IF NOT EXISTS Tratamento (
     id_tratamento SERIAL PRIMARY KEY,
-    tipo VARCHAR(50) NOT NULL,
     descricao TEXT NOT NULL,
     preco NUMERIC(10, 2) NOT NULL
 );
@@ -134,7 +131,6 @@ CREATE TABLE IF NOT EXISTS Consulta_Tratamento (
     id_consulta_procedimento SERIAL PRIMARY KEY,
     id_tratamento INTEGER NOT NULL,
     id_consulta INTEGER NOT NULL,
-    quantidade INTEGER NOT NULL,
     CONSTRAINT fk_tratamento FOREIGN KEY (id_tratamento) REFERENCES Tratamento(id_tratamento),
     CONSTRAINT fk_consulta FOREIGN KEY (id_consulta) REFERENCES Consulta(id_consulta)
 );
