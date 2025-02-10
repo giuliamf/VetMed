@@ -13,7 +13,6 @@ pacientes = [
      'nascimento': '30-07-2019', 'sexo': 'M', 'peso': 8, 'cor': 'Preto'},
     {'id': 6, 'nome': 'Luna', 'tutor': 1, 'especie': 'Cachorro', 'raca': 'SRD', 'nascimento': '02-05-2018', 'sexo': 'F',
      'peso': 10, 'cor': 'Preto'}
-
 ]
 
 tutores = [
@@ -27,6 +26,19 @@ tutores = [
         '(61) 66666-6666', 'endereco': {'bairro': 'Ceilândia', 'cidade': 'Brasília', 'estado': 'DF'}},
     {'id': 5, 'nome': 'Carlos Eduardo Santos', 'cpf': '321.654.987-00', 'nascimento': '30-07-1998', 'telefone':
         '(61) 55555-4444', 'endereco': {'bairro': 'Asa Norte', 'cidade': 'Brasília', 'estado': 'DF'}}
+]
+
+tutores_new = [
+    {'id': 1, 'nome': 'Ana Luiza Campos', 'cpf': '123.456.789-00', 'nascimento': '02-05-1995', 'telefone':
+        '(61) 99999-9999', 'endereco': 'Asa Sul, Brasília - DF'},
+    {'id': 2, 'nome': 'João Pedro Souza', 'cpf': '456.789.123-00', 'nascimento': '10-10-1996', 'telefone':
+        '(61) 77777-7777', 'endereco': 'Taguatinga, Brasília - DF'},
+    {'id': 3, 'nome': 'Célio Eduardo Júnior', 'cpf': '987.654.321-00', 'nascimento': '15-08-1994', 'telefone':
+        '(61) 88888-8888', 'endereco': 'Samambaia, Brasília - DF'},
+    {'id': 4, 'nome': 'Fernanda Oliveira', 'cpf': '789.123.456-00', 'nascimento': '25-12-1997', 'telefone':
+        '(61) 66666-6666', 'endereco': 'Ceilândia, Brasília - DF'},
+    {'id': 5, 'nome': 'Carlos Eduardo Santos', 'cpf': '321.654.987-00', 'nascimento': '30-07-1998', 'telefone':
+        '(61) 55555-4444', 'endereco': 'Asa Norte, Brasília - DF'}
 ]
 
 usuarios = [
@@ -63,4 +75,29 @@ listastatus = [
     {'id': 2, 'nome': 'Em andamento'},
     {'id': 3, 'nome': 'Realizado'},
     {'id': 4, 'nome': 'Cancelado'}
+]
+
+consultas = [
+    {'id': 1, 'agendamento': 1, 'vet': 1, 'tipo': 4},
+    {'id': 2, 'agendamento': 2, 'vet': 1, 'tipo': 2},
+    {'id': 3, 'agendamento': 3, 'vet': 1, 'tipo': 1},
+    {'id': 4, 'agendamento': 4, 'vet': 1, 'tipo': 3}
+]
+
+tipos_consulta = [
+    {'id': 1, 'nome': 'Retorno'},
+    {'id': 2, 'nome': 'Pré-consulta'},
+    {'id': 3, 'nome': 'Pós-cirúrgico'},
+    {'id': 4, 'nome': 'Consulta de rotina'}
+]
+
+consulta_tratamentos = [
+    {'id': 1, 'consulta': 1, 'tratamento': 2}
+]
+
+tratamento = [
+    {'id': 1, 'nome': 'Consulta', 'valor': 100},
+    {'id': 2, 'nome': 'Cirurgia', 'valor': 500},
+    {'id': 3, 'nome': 'Exames laboratoriais', 'valor': 200},
+    {'id': 4, 'nome': 'Exames de imagem', 'valor': 300},
 ]

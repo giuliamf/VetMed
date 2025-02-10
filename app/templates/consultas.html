@@ -1,10 +1,35 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="../static/images/icon.png">
+    <link rel="stylesheet" href="../static/css/cabecalho.css">  <!-- CSS do cabeçalho -->
+    <link rel="stylesheet" href="../static/css/agenda.css">  <!-- CSS da página de agenda -->
+     <link rel="stylesheet" href="../static/css/logout.css">  <!-- CSS do popup de logout -->
+    <link rel="stylesheet" href="../static/css/popup.css">  <!-- CSS do popup padrão -->
+    <title>Consultas de hoje</title>
 </head>
 <body>
+    <header>
+        <nav class="navbar">
+            <ul>
+                <li><a href="/inicio">Início</a></li>
+                <li><a href="/agenda">Agenda</a></li>
+                <li><a href="/cadastros">Cadastros</a></li>
+                <li><a href="/consultas" class="active">Consultas</a></li>
+                <li><a href="/financeiro">Financeiro</a></li>
+                <li><a href="#" onclick="abrirPopupLogout()">Sair</a></li>
+            </ul>
+            <div id="popup-container">
+            {% include 'logout.html' %}
+            </div>
+            {% include 'partials/navbar.html' %}
+        </nav>
+    </header>
 
+    <script type="module" src="../static/js/agenda.js"></script>
+    <script type="module" src="../static/js/buscas.js"></script>
+    <script src="../static/js/logout.js"></script>
 </body>
-</html>
+</html>>
