@@ -31,12 +31,19 @@
         <div class="calendario-container">
             <label for="dataSelecionada"></label>
             <input type="date" id="dataSelecionada">
-            <button id="novoAgendamento">Novo Agendamento</button>
-            <div id="popupContainer">
-                {% include 'tela_cadastros/cadastro_agendamentos.html' %}
         </div>
+
         <div class="agenda" id="agenda" style="display: none;">
             <h2>Agendamentos: <span id="dataAtual">Selecione um dia</span></h2>
+            <div class="agenda-header">
+                <label for="search"></label>
+                    <input type="text" id="search" placeholder="Pesquisar agendamento">
+                <button id="novoAgendamento">Novo Agendamento</button>
+                    <div id="popupContainer">
+                        {% include 'tela_cadastros/cadastro_agendamentos.html' %}
+                    </div>
+            </div>
+
             <table>
                 <thead>
                     <tr>

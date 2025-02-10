@@ -5,6 +5,13 @@
             <label for="tutor">Tutor (CPF)</label>
             <input type="text" id="tutor" name="tutor" required>
 
+            <label for="paciente">Paciente</label>
+            <select id="paciente" name="paciente" required>
+                <option value="">Selecione</option>
+                {% for paciente in pacientes %}
+                <option value="{{ paciente.id }}">{{ paciente.nome }}</option>
+                {% endfor %}
+            </select>
 
             <div class="form-buttons">
                 <button type="submit" class="salvar">Salvar</button>

@@ -10,7 +10,10 @@ pacientes = [
     {'id': 4, 'nome': 'Mel', 'tutor': 4, 'especie': 'Cachorro', 'raca': 'Poodle',
      'nascimento': '25-12-2016', 'sexo': 'F', 'peso': 7.200, 'cor': 'Branco'},
     {'id': 5, 'nome': 'Rex', 'tutor': 5, 'especie': 'Cachorro', 'raca': 'SRD',
-     'nascimento': '30-07-2019', 'sexo': 'M', 'peso': 8, 'cor': 'Preto'}
+     'nascimento': '30-07-2019', 'sexo': 'M', 'peso': 8, 'cor': 'Preto'},
+    {'id': 6, 'nome': 'Luna', 'tutor': 1, 'especie': 'Cachorro', 'raca': 'SRD', 'nascimento': '02-05-2018', 'sexo': 'F',
+     'peso': 10, 'cor': 'Preto'}
+
 ]
 
 tutores = [

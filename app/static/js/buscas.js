@@ -56,6 +56,13 @@ export function buscarNomeIdPaciente(id) {
             return "Erro";
         });
 }
+    // buscar todos os pacientes com o id do tutor
+export function buscarPacientesPorTutor(id) {
+    return fetch("/api/pacientes")
+        .then(response => response.json())
+        .then(pacientes => pacientes.filter(paciente => paciente.tutor === parseInt(id)))
+        .catch(error => console.error("Erro ao buscar pacientes do tutor: ", error));
+}
 
 // FUNCOES DE BUSCAR USUÁRIO
 
