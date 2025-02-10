@@ -1,17 +1,16 @@
 from app.validators.base_validator import BaseValidator
 
-
 class AnimalValidator(BaseValidator):
     @staticmethod
     def validar_criar_animal(data):
         # Campos obrigatórios
-        campos_obrigatorios = ['id_tutor', 'nome', 'especie', 'cor']
+        campos_obrigatorios = ['cpf_tutor', 'nome', 'especie', 'cor']
         valido, mensagem = BaseValidator.validar_campos_obrigatorios(data, campos_obrigatorios)
         if not valido:
             return False, mensagem
 
         # Validar ID Tutor (CPF)
-        valido, mensagem = BaseValidator.validar_formato_cpf(data, 'id_tutor')
+        valido, mensagem = BaseValidator.validar_formato_cpf(data, 'cpf_tutor')
         if not valido:
             return False, mensagem
 

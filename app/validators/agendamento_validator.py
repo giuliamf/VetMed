@@ -5,7 +5,7 @@ class AgendamentoValidator:
     def validar_criar_agendamento(data):
         """Valida os campos ao criar um agendamento."""
         # Campos obrigatórios
-        campos_obrigatorios = ['id_tutor', 'id_animal', 'data', 'hora', 'id_status']
+        campos_obrigatorios = ['id_animal', 'data', 'hora', 'id_status']
         for campo in campos_obrigatorios:
             if campo not in data or not data[campo]:
                 return False, f"Campo obrigatório faltando: {campo}"

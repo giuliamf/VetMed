@@ -31,9 +31,17 @@ SET search_path TO vet_schema;
 -- Comentarios adicionais
 COMMENT ON DATABASE VetMed IS 'Banco de dados para gestao da clínica veterinaria VETMED.';
 
+CREATE TABLE IF NOT EXISTS Usuario (
+    email_usuario CHAR(50) PRIMARY KEY,  -- E-mail do usuário
+    nome VARCHAR(90) NOT NULL,
+    telefone VARCHAR(20) NOT NULL,
+    endereco VARCHAR(120) NOT NULL,
+    senha VARCHAR(256) NOT NULL,
+);
+
 
 CREATE TABLE IF NOT EXISTS Tutor (
-    id_tutor SERIAL PRIMARY KEY,
+    cpf_tutor VARCHAR(14) PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
     data_nascimento DATE,
     telefone VARCHAR(15),
@@ -44,7 +52,7 @@ CREATE TABLE IF NOT EXISTS Tutor (
 
 CREATE TABLE IF NOT EXISTS Animal (
     id_animal SERIAL PRIMARY KEY,
-    id_tutor INTEGER NOT NULL,
+    cpf_tutor VARCHAR NOT NULL,
     nome VARCHAR(100) NOT NULL,
     especie VARCHAR(50) NOT NULL,
     raca VARCHAR(50),
@@ -52,7 +60,7 @@ CREATE TABLE IF NOT EXISTS Animal (
     sexo CHAR(1) CHECK (sexo IN ('M', 'F')) NOT NULL,
     peso FLOAT,
     cor VARCHAR(50),
-    CONSTRAINT fk_tutor FOREIGN KEY (id_tutor) REFERENCES Tutor(id_tutor)
+    CONSTRAINT fk_tutor FOREIGN KEY (cpf_tutor) REFERENCES Tutor(cpf_tutor)
 );
 
 
@@ -77,6 +85,22 @@ CREATE TABLE IF NOT EXISTS Veterinario_Especialidade (
 );
 
 
+CREATE TABLE IF NOT EXISTS Status (
+    id_status SERIAL PRIMARY KEY,
+    nome VARCHAR(50) NOT NULL UNIQUE
+);
+
+CREATE TABLE IF NOT EXISTS Agendamento (
+    id_agendamento SERIAL PRIMARY KEY,
+    id_animal INTEGER NOT NULL,
+    data DATE NOT NULL,
+    hora TIME NOT NULL,
+    id_status INTEGER NOT NULL,
+    CONSTRAINT fk_animal FOREIGN KEY (id_animal) REFERENCES Animal(id_animal),
+    CONSTRAINT fk_status FOREIGN KEY (id_status) REFERENCES Status(id_status)
+);
+
+
 CREATE TABLE IF NOT EXISTS Tipo_Consulta (
     id_tipo SERIAL PRIMARY KEY,
     nome VARCHAR(50) NOT NULL,
@@ -86,14 +110,15 @@ CREATE TABLE IF NOT EXISTS Tipo_Consulta (
 
 CREATE TABLE IF NOT EXISTS Consulta (
     id_consulta SERIAL PRIMARY KEY,
-    id_animal INTEGER NOT NULL,
     id_veterinario VARCHAR(11) NOT NULL,
+    id_agendamento SERIAL NOT NULL,
     data DATE NOT NULL,
     horario TIME NOT NULL,
     id_tipo INTEGER NOT NULL,
-    CONSTRAINT fk_animal FOREIGN KEY (id_animal) REFERENCES Animal(id_animal),
+    id_pagamento INTEGER NOT NULL,
     CONSTRAINT fk_veterinario FOREIGN KEY (id_veterinario) REFERENCES Veterinario(id_veterinario),
-    CONSTRAINT fk_tipo FOREIGN KEY (id_tipo) REFERENCES Tipo_Consulta(id_tipo)
+    CONSTRAINT fk_tipo FOREIGN KEY (id_tipo) REFERENCES Tipo_Consulta(id_tipo),
+    CONSTRAINT fk_tipo FOREIGN KEY (id_agendamento) REFERENCES Agendamento(id_agendamento)
 );
 
 
@@ -124,13 +149,11 @@ CREATE TABLE IF NOT EXISTS Tipo_Exame (
 CREATE TABLE IF NOT EXISTS Exame (
     id_exame SERIAL PRIMARY KEY,
     id_consulta INTEGER NOT NULL,
-    id_animal INTEGER NOT NULL,
     id_tipo_exame INTEGER NOT NULL,
     resultado TEXT,
     data_exame DATE NOT NULL,
     observacoes VARCHAR(150),
     CONSTRAINT fk_consulta FOREIGN KEY (id_consulta) REFERENCES Consulta(id_consulta),
-    CONSTRAINT fk_animal FOREIGN KEY (id_animal) REFERENCES Animal(id_animal),
     CONSTRAINT fk_tipo_exame FOREIGN KEY (id_tipo_exame) REFERENCES Tipo_Exame(id_tipo_exame)
 );
 
@@ -144,27 +167,15 @@ CREATE TABLE IF NOT EXISTS Medicamento (
     uso VARCHAR(25) NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS Receita_Medica (
-    id_receita SERIAL PRIMARY KEY,
-    id_consulta INTEGER NOT NULL,
+CREATE TABLE IF NOT EXISTS Tratamento_Medicamento (
     id_tratamento INTEGER NOT NULL,
-    id_veterinario VARCHAR(11) NOT NULL,
-    data DATE NOT NULL,
-    observacoes VARCHAR(150),
-    CONSTRAINT fk_consulta FOREIGN KEY (id_consulta) REFERENCES Consulta(id_consulta),
-    CONSTRAINT fk_tratamento FOREIGN KEY (id_tratamento) REFERENCES Tratamento(id_tratamento),
-    CONSTRAINT fk_veterinario FOREIGN KEY (id_veterinario) REFERENCES Veterinario(id_veterinario)
-);
-
-CREATE TABLE IF NOT EXISTS Receita_Medicamento (
-    id_receita INTEGER NOT NULL,
     id_medicamento INTEGER NOT NULL,
     quantidade INTEGER NOT NULL,
     tipo_quantidade VARCHAR(5) NOT NULL,
     frequencia VARCHAR(25) NOT NULL,
     duracao VARCHAR(75) NOT NULL,
-    PRIMARY KEY (id_receita, id_medicamento),
-    CONSTRAINT fk_receita FOREIGN KEY (id_receita) REFERENCES Receita_Medica(id_receita),
+    PRIMARY KEY (id_tratamento, id_medicamento),
+    CONSTRAINT fk_tratamento FOREIGN KEY (id_tratamento) REFERENCES Tratamento(id_tratamento),
     CONSTRAINT fk_medicamento FOREIGN KEY (id_medicamento) REFERENCES Medicamento(id_medicamento)
 );
 
@@ -182,22 +193,4 @@ CREATE TABLE IF NOT EXISTS Pagamento (
     id_meio_pagamento INTEGER NOT NULL,
     CONSTRAINT fk_consulta FOREIGN KEY (id_consulta) REFERENCES Consulta(id_consulta),
     CONSTRAINT fk_meio_pagamento FOREIGN KEY (id_meio_pagamento) REFERENCES Meio_Pagamento(id_meio_pagamento)
-);
-
-
-CREATE TABLE IF NOT EXISTS Status (
-    id_status SERIAL PRIMARY KEY,
-    nome VARCHAR(50) NOT NULL UNIQUE
-);
-
-CREATE TABLE IF NOT EXISTS Agendamento (
-    id_agendamento SERIAL PRIMARY KEY,
-    id_tutor INTEGER NOT NULL,
-    id_animal INTEGER NOT NULL,
-    data DATE NOT NULL,
-    hora TIME NOT NULL,
-    id_status INTEGER NOT NULL,
-    CONSTRAINT fk_tutor FOREIGN KEY (id_tutor) REFERENCES Tutor(id_tutor),
-    CONSTRAINT fk_animal FOREIGN KEY (id_animal) REFERENCES Animal(id_animal),
-    CONSTRAINT fk_status FOREIGN KEY (id_status) REFERENCES Status(id_status)
 );
