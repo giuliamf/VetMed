@@ -211,7 +211,7 @@ CREATE TABLE IF NOT EXISTS Especialidade (
 );
 
 CREATE TABLE IF NOT EXISTS Veterinario (
-    id_veterinario SERIAL PRIMARY KEY REFERENCES Usuario(id_usuario),  -- id do veterinário -chave estrangeira-
+    id_veterinario INT PRIMARY KEY REFERENCES Usuario(id_usuario) ON DELETE CASCADE,  -- id do veterinário -chave estrangeira-
     id_especialidade INT NOT NULL REFERENCES Especialidade(id_especialidade)    -- id da especialidade -chave estrangeira-
 );
 
