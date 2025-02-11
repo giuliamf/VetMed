@@ -132,11 +132,7 @@ def cadastro_tutor():
             'cpf': request.form.get('cpf'),
             'nascimento': request.form.get('nascimento'),
             'telefone': request.form.get('telefone'),
-            'endereco': {
-                'bairro': request.form.get('bairro'),
-                'cidade': request.form.get('cidade'),
-                'estado': request.form.get('estado')
-            }
+            'endereco': request.form.get('endereco')
         }
         # Inserir no banco de dados aqui
         return jsonify({"mensagem": "Tutor cadastrado com sucesso!"}), 201

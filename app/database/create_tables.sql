@@ -1,15 +1,15 @@
--- Nome do banco de dados: vetmed
--- Codificação: UTF-8
--- Região: Brasil (pt_BR)
--- Porta padrão: 5432 (PostgreSQL)
--- Propósito: Banco de dados para sistema de gestão de clínica veterinária
+-- Nome do banco de dados: VetMed
+-- Codificacao: UTF-8
+-- Regiao: Brasil (pt_BR)
+-- Porta padrao: 5432 (PostgreSQL)
+-- Proposito: Banco de dados para sistema de gestao de clinica veterinaria
 
--- Configurações adicionais do banco de dados
+-- Configuracoes adicionais do banco de dados
 SET client_encoding = 'UTF8';
-SET TIMEZONE = 'America/Sao_Paulo'; -- Fuso horário do Brasil
+SET TIMEZONE = 'America/Sao_Paulo'; -- Fuso horario do Brasil
 
--- Permissões e roles (opcional, dependendo do ambiente)
--- Cria um role específico para o banco de dados (substitua 'admin' e 'senha_segura' conforme necessário)
+-- Permissoes e roles (opcional, dependendo do ambiente)
+-- Cria um role especifico para o banco de dados (substitua 'admin' e 'senha_segura' conforme necessario)
 DO $$
 BEGIN
     IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'admin') THEN
@@ -17,40 +17,40 @@ BEGIN
     END IF;
 END $$;
 
-GRANT ALL PRIVILEGES ON DATABASE vetmed TO admin;
+GRANT ALL PRIVILEGES ON DATABASE VetMed TO admin;
 
--- Configurações de extensões (opcional, se necessário)
--- Exemplo: Habilita a extensão pgcrypto para criptografia
+-- Configuracoes de extensoes (opcional, se necessario)
+-- Exemplo: Habilita a extensao pgcrypto para criptografia
 -- CREATE EXTENSION IF NOT EXISTS pgcrypto; -criptografia feita no front-end-
 
--- Configurações de tabelas e esquemas (opcional)
--- Cria um esquema específico para organizar as tabelas (substitua 'vet_schema' pelo nome desejado)
+-- Configuracoes de tabelas e esquemas (opcional)
+-- Cria um esquema especifico para organizar as tabelas (substitua 'vet_schema' pelo nome desejado)
 CREATE SCHEMA IF NOT EXISTS vet_schema;
 SET search_path TO vet_schema;
 
--- Comentários adicionais
-COMMENT ON DATABASE vetmed IS 'Banco de dados para gestão da clínica veterinária MED VET.';
+-- Comentarios adicionais
+COMMENT ON DATABASE VetMed IS 'Banco de dados para gestao da clinica veterinaria MED VET.';
 
 -- Tabela 'super'
 CREATE TABLE IF NOT EXISTS Usuario (
-    id_usuario SERIAL PRIMARY KEY,  -- id serial automático
+    id_usuario SERIAL PRIMARY KEY,  -- id serial automatico
     email VARCHAR(50) UNIQUE NOT NULL,  -- Unique para evitar emails iguais
     nome VARCHAR(90) NOT NULL,
-    senha VARCHAR(64) NOT NULL, -- Senha criptografada com hash SHA-256 (64 caracteres - 32 bytes)
-    cargo VARCHAR(3) CHECK (cargo IN ('vet', 'sec', 'adm')) NOT NULL  -- Restrição CHECK para aceitar valores específicos, adm para o usuario 0
+    senha VARCHAR(256) NOT NULL,
+    cargo VARCHAR(3) CHECK (cargo IN ('vet', 'sec')) NOT NULL  -- Restricao CHECK para aceitar valores especificos
 );
 
--- Tabela de Especialidades (cadastra as possíveis especialidades)
+-- Tabela de Especialidades (cadastra as possiveis especialidades)
 CREATE TABLE IF NOT EXISTS Especialidade (
     id_especialidade SERIAL PRIMARY KEY,
     nome VARCHAR(50) NOT NULL UNIQUE
 );
 
--- Sub-tabela de Veterinário (herda de Usuario)
+-- Sub-tabela de Veterinario (herda de Usuario)
 CREATE TABLE IF NOT EXISTS Veterinario (
     id_veterinario INT PRIMARY KEY REFERENCES Usuario(id_usuario) ON DELETE CASCADE,  -- Herda ID de Usuario
     id_especialidade INT NOT NULL REFERENCES Especialidade(id_especialidade)
-    -- Especialidade obrigatória, não é PK porque cada veterinário tem apenas uma especialidade e ela é obrigatória
+    -- Especialidade obrigatoria, nao eh PK porque cada veterinario tem apenas uma especialidade e ela eh obrigatoria
 );
 
 CREATE TABLE IF NOT EXISTS Tutor (
@@ -69,7 +69,7 @@ CREATE TABLE IF NOT EXISTS Animal (
     especie VARCHAR(50) NOT NULL,
     raca VARCHAR(50) NOT NULL,
     nascimento DATE NOT NULL,
-    sexo CHAR(1) CHECK (sexo IN ('F', 'M')) NOT NULL, -- CHAR porque tem obrigatoriamente um único caractere
+    sexo CHAR(1) CHECK (sexo IN ('F', 'M')) NOT NULL, -- CHAR porque tem obrigatoriamente um unico caractere
     peso NUMERIC(5,2) NOT NULL,
     cor VARCHAR(50) NOT NULL,
     CONSTRAINT fk_tutor FOREIGN KEY (id_tutor) REFERENCES Tutor(id_tutor)
@@ -85,7 +85,7 @@ CREATE TABLE IF NOT EXISTS Agendamento (
     id_animal INTEGER NOT NULL,
     id_status INTEGER NOT NULL DEFAULT 1,
     data DATE NOT NULL,
-    horario CHAR(5) NOT NULL, -- Time retorna HH:MM:SS, nesse caso apenas a string HH:MM é suficiente
+    horario CHAR(5) NOT NULL, -- Time retorna HH:MM:SS, nesse caso apenas a string HH:MM eh suficiente
     CONSTRAINT fk_animal FOREIGN KEY (id_animal) REFERENCES Animal(id_animal),
     CONSTRAINT fk_status FOREIGN KEY (id_status) REFERENCES StatusAgendamento(id_status)
 );
@@ -102,6 +102,12 @@ CREATE TABLE IF NOT EXISTS Consulta (
     data DATE NOT NULL,
     horario TIME NOT NULL,
     id_tipo INTEGER NOT NULL,
+    valor_total NUMERIC(10, 2) GENERATED ALWAYS AS (
+        (SELECT COALESCE(SUM(p.preco), 0)
+         FROM Consulta_Tratamento cp
+         JOIN Tratamento p ON cp.id_tratamento = p.id_tratamento
+         WHERE cp.id_consulta = Consulta.id_consulta)
+    ) STORED,
     status VARCHAR(20) NOT NULL DEFAULT 'em aberto',
     CONSTRAINT fk_veterinario FOREIGN KEY (id_veterinario) REFERENCES Veterinario(id_veterinario),
     CONSTRAINT fk_tipo FOREIGN KEY (id_tipo) REFERENCES Tipo_Consulta(id_tipo),
@@ -137,7 +143,7 @@ CREATE TABLE IF NOT EXISTS Pagamento (
     CONSTRAINT fk_meio_pagamento FOREIGN KEY (id_meio_pagamento) REFERENCES Meio_Pagamento(id_meio_pagamento)
 );
 
--- Trigger para atualizar o status da consulta para 'pago' quando o pagamento é registrado
+-- Trigger para atualizar o status da consulta para 'pago' quando o pagamento eh registrado
 CREATE OR REPLACE FUNCTION AtualizarStatusConsulta() RETURNS TRIGGER AS $$
 BEGIN
     -- Atualiza o status da consulta se o valor total foi pago
@@ -162,9 +168,16 @@ LEFT JOIN Tratamento t ON ct.id_tratamento = t.id_tratamento
 GROUP BY c.id_consulta;
 
 
+-- Verifica e remove o trigger caso já exista antes de recriá-lo
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'atualizar_status_consulta') THEN
+        DROP TRIGGER atualizar_status_consulta ON Pagamento;
+    END IF;
+END $$;
+
+-- Criar o trigger após garantir que ele não existe
 CREATE TRIGGER atualizar_status_consulta
 AFTER INSERT ON Pagamento
 FOR EACH ROW
 EXECUTE FUNCTION AtualizarStatusConsulta();
--- PARA PEGAR O VALOR TOTAL DA CONSULTA DEVE-SE CONSULTAR A VIEW:
--- SELECT * FROM View_Consulta_Valor WHERE id_consulta = ?;

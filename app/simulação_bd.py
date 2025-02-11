@@ -15,7 +15,7 @@ pacientes = [
      'peso': 10, 'cor': 'Preto'}
 ]
 
-tutores = [
+tutores_old = [
     {'id': 1, 'nome': 'Ana Luiza Campos', 'cpf': '123.456.789-00', 'nascimento': '02-05-1995', 'telefone':
         '(61) 99999-9999', 'endereco': {'bairro': 'Asa Sul', 'cidade': 'Brasília', 'estado': 'DF'}},
     {'id': 2, 'nome': 'João Pedro Souza', 'cpf': '456.789.123-00', 'nascimento': '10-10-1996', 'telefone':
@@ -28,7 +28,7 @@ tutores = [
         '(61) 55555-4444', 'endereco': {'bairro': 'Asa Norte', 'cidade': 'Brasília', 'estado': 'DF'}}
 ]
 
-tutores_new = [
+tutores = [
     {'id': 1, 'nome': 'Ana Luiza Campos', 'cpf': '123.456.789-00', 'nascimento': '02-05-1995', 'telefone':
         '(61) 99999-9999', 'endereco': 'Asa Sul, Brasília - DF'},
     {'id': 2, 'nome': 'João Pedro Souza', 'cpf': '456.789.123-00', 'nascimento': '10-10-1996', 'telefone':

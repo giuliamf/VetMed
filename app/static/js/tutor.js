@@ -35,9 +35,7 @@ function editarTutor(id) {
             document.getElementById("nascimento").value = formatarData(tutor.nascimento);
             document.getElementById("cpf").value = tutor.cpf;
             document.getElementById("telefone").value = tutor.telefone;
-            document.getElementById("bairro").value = tutor.endereco.bairro;
-            document.getElementById("cidade").value = tutor.endereco.cidade;
-            document.getElementById("uf").value = tutor.endereco.estado;
+            document.getElementById("endereco").value = tutor.endereco;
 
             // Exibir o popup
             document.getElementById("cadastro-popup").style.display = "block";
