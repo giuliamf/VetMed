@@ -55,7 +55,7 @@ CREATE TABLE IF NOT EXISTS Veterinario (
 
 CREATE TABLE IF NOT EXISTS Tutor (
     id_tutor SERIAL PRIMARY KEY,
-    cpf VARCHAR(14) UNIQUE NOT NULL,
+    cpf CHAR(14) UNIQUE NOT NULL CHECK ( cpf ~ '^\d{3}\.\d{3}\.\d{3}-\d{2}$' ), -- Restricao CHECK para CPF
     nome VARCHAR(100) NOT NULL,
     data_nascimento DATE NOT NULL,
     telefone VARCHAR(15) NOT NULL,
