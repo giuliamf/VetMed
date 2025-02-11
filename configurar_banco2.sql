@@ -32,55 +32,48 @@ SET search_path TO vet_schema;
 -- Comentários adicionais
 COMMENT ON DATABASE med_vet_bd IS 'Banco de dados para gestão da clínica veterinária MED VET.';
 
-
+-- Tabela 'super'
 CREATE TABLE IF NOT EXISTS Usuario (
-    email_usuario CHAR(50) PRIMARY KEY,  -- E-mail do usuário
+    id_usuario SERIAL PRIMARY KEY,  -- id serial automático
+    email VARCHAR(50) UNIQUE NOT NULL,  -- Unique para evitar emails iguais
     nome VARCHAR(90) NOT NULL,
-    telefone VARCHAR(20) NOT NULL,
-    endereco VARCHAR(120) NOT NULL,
-    senha VARCHAR(256) NOT NULL
+    senha VARCHAR(256) NOT NULL,
+    cargo VARCHAR(3) CHECK (cargo IN ('vet', 'sec')) NOT NULL  -- Restrição CHECK para aceitar valores específicos
 );
 
-CREATE TABLE IF NOT EXISTS Tutor (
-    cpf_tutor VARCHAR(14) PRIMARY KEY,
-    nome VARCHAR(100) NOT NULL,
-    data_nascimento DATE,
-    telefone VARCHAR(15),
-    endereco VARCHAR(200),
-    email VARCHAR(100) UNIQUE
-);
-
-CREATE TABLE IF NOT EXISTS Animal (
-    id_animal SERIAL PRIMARY KEY,
-    cpf_tutor VARCHAR(14) NOT NULL,
-    nome VARCHAR(100) NOT NULL,
-    especie VARCHAR(50) NOT NULL,
-    raca VARCHAR(50),
-    ano_nascimento INTEGER,
-    sexo VARCHAR(1),
-    peso FLOAT,
-    cor VARCHAR(50),
-    CONSTRAINT fk_tutor FOREIGN KEY (cpf_tutor) REFERENCES Tutor(cpf_tutor)
-);
-
-CREATE TABLE IF NOT EXISTS Veterinario (
-    id_veterinario CHAR(11) PRIMARY KEY,  -- CPF do veterinário
-    nome VARCHAR(90) NOT NULL,
-    telefone VARCHAR(20) NOT NULL,
-    endereco VARCHAR(120) NOT NULL,
-    email VARCHAR(100) NOT NULL,
-    crmv CHAR(9) NOT NULL UNIQUE          -- Formato: XX (estado) + 7 dígitos
-);
-
+-- Tabela de Especialidades (cadastra as possíveis especialidades)
 CREATE TABLE IF NOT EXISTS Especialidade (
     id_especialidade SERIAL PRIMARY KEY,
     nome VARCHAR(50) NOT NULL UNIQUE
 );
 
-CREATE TABLE IF NOT EXISTS Veterinario_Especialidade (
-    id_veterinario CHAR(11) REFERENCES Veterinario(id_veterinario),
-    id_especialidade INT REFERENCES Especialidade(id_especialidade),
-    PRIMARY KEY (id_veterinario, id_especialidade)
+-- Sub-tabela de Veterinário (herda de Usuario)
+CREATE TABLE IF NOT EXISTS Veterinario (
+    id_veterinario INT PRIMARY KEY REFERENCES Usuario(id_usuario) ON DELETE CASCADE,  -- Herda ID de Usuario
+    id_especialidade INT NOT NULL REFERENCES Especialidade(id_especialidade)
+    -- Especialidade obrigatória, não é PK porque cada veterinário tem apenas uma especialidade e ela é obrigatória
+);
+
+CREATE TABLE IF NOT EXISTS Tutor (
+    id_tutor SERIAL PRIMARY KEY,
+    cpf VARCHAR(14) UNIQUE NOT NULL,
+    nome VARCHAR(100) NOT NULL,
+    data_nascimento DATE NOT NULL,
+    telefone VARCHAR(15) NOT NULL,
+    endereco VARCHAR(200) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS Animal (
+    id_animal SERIAL PRIMARY KEY,
+    id_tutor INT NOT NULL,
+    nome VARCHAR(100) NOT NULL,
+    especie VARCHAR(50) NOT NULL,
+    raca VARCHAR(50) NOT NULL,
+    nascimento DATE NOT NULL,
+    sexo CHAR(1) CHECK (sexo IN ('F', 'M')) NOT NULL, -- CHAR pq tem obrigatoriamente um único caractere
+    peso NUMERIC(5,2) NOT NULL,
+    cor VARCHAR(50) NOT NULL,
+    CONSTRAINT fk_tutor FOREIGN KEY (id_tutor) REFERENCES Tutor(id_tutor)
 );
 
 CREATE TABLE IF NOT EXISTS Status (
@@ -91,9 +84,9 @@ CREATE TABLE IF NOT EXISTS Status (
 CREATE TABLE IF NOT EXISTS Agendamento (
     id_agendamento SERIAL PRIMARY KEY,
     id_animal INTEGER NOT NULL,
-    data DATE NOT NULL,
-    hora TIME NOT NULL,
     id_status INTEGER NOT NULL,
+    data DATE NOT NULL,
+    hora CHAR(5) NOT NULL, -- Time retorna HH:MM:SS, nesse caso apenas a string é suficiente
     CONSTRAINT fk_animal FOREIGN KEY (id_animal) REFERENCES Animal(id_animal),
     CONSTRAINT fk_status FOREIGN KEY (id_status) REFERENCES Status(id_status)
 );

@@ -1,5 +1,5 @@
 from flask import render_template, jsonify, request, redirect, session
-from app.models.animal import Animal
+#from app.models.animal import Animal
 from app import connect_database, disconnect_database, create_app, db
 from app.criptografia_senhas import criptografar_senha, verificar_senha
 from app.simulação_bd import pacientes, tutores, usuarios, especialidades, agendamento, listastatus
@@ -63,6 +63,7 @@ def pacientes_page():
 
 @app.route('/cadastro_paciente', methods=['GET', 'POST'])
 def cadastro_paciente():
+    """
     if request.method == 'POST':
         data = {
             'id_tutor': request.form.get('tutor'),  # pegar o cpf (?) do tutor e achar o id
@@ -83,7 +84,7 @@ def cadastro_paciente():
         except Exception as e:
             db.session.rollback()
             return jsonify({"erro": f"Erro ao cadastrar paciente: {str(e)}"}), 500
-
+"""
     return render_template('tela_cadastros/cadastro_pacientes.html')
 
 
