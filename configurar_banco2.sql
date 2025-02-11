@@ -22,7 +22,7 @@ GRANT ALL PRIVILEGES ON DATABASE VetMed TO admin;
 
 -- Configurações de extensões (opcional, se necessário)
 -- Exemplo: Habilita a extensão pgcrypto para criptografia
-CREATE EXTENSION IF NOT EXISTS pgcrypto;
+-- CREATE EXTENSION IF NOT EXISTS pgcrypto; -criptografia feita no front-end-
 
 -- Configurações de tabelas e esquemas (opcional)
 -- Cria um esquema específico para organizar as tabelas (substitua 'vet_schema' pelo nome desejado)
@@ -76,7 +76,7 @@ CREATE TABLE IF NOT EXISTS Animal (
     CONSTRAINT fk_tutor FOREIGN KEY (id_tutor) REFERENCES Tutor(id_tutor)
 );
 
-CREATE TABLE IF NOT EXISTS Status (
+CREATE TABLE IF NOT EXISTS StatusAgendamento (
     id_status SERIAL PRIMARY KEY,
     nome VARCHAR(50) NOT NULL UNIQUE
 );
@@ -84,11 +84,11 @@ CREATE TABLE IF NOT EXISTS Status (
 CREATE TABLE IF NOT EXISTS Agendamento (
     id_agendamento SERIAL PRIMARY KEY,
     id_animal INTEGER NOT NULL,
-    id_status INTEGER NOT NULL,
+    id_status INTEGER NOT NULL DEFAULT 1,
     data DATE NOT NULL,
     horario CHAR(5) NOT NULL, -- Time retorna HH:MM:SS, nesse caso apenas a string é suficiente
     CONSTRAINT fk_animal FOREIGN KEY (id_animal) REFERENCES Animal(id_animal),
-    CONSTRAINT fk_status FOREIGN KEY (id_status) REFERENCES Status(id_status)
+    CONSTRAINT fk_status FOREIGN KEY (id_status) REFERENCES StatusAgendamento(id_status)
 );
 
 CREATE TABLE IF NOT EXISTS Tipo_Consulta (
