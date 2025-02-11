@@ -19,7 +19,6 @@ def connect_database():
 
 def disconnect_database():
     """ Fecha a conexão com o banco """
-    global cursor, conn
     cursor.close()
     conn.close()
 
@@ -47,7 +46,6 @@ def create_database():
 
 def create_tables():
     """ Executa o SQL de criação de tabelas do arquivo create_tables.sql """
-    global cursor, conn
     try:
         with open('app/database/create_tables.sql', 'r', encoding='utf-8') as file:
             sql_scrypt = file.read()
@@ -68,7 +66,6 @@ def execute_sql(query, params=None, fetch_one=False, fetch_all=False):
     :param fetch_all: Se True, retorna todos os resultados da consulta.
     :return: Retorna os dados buscados no banco ou None se for um comando sem retorno.
     """
-    global cursor, conn
     try:
         if params:
             cursor.execute(query, params)
@@ -92,6 +89,8 @@ def execute_sql(query, params=None, fetch_one=False, fetch_all=False):
 """ FUNÇÕES DE MÉTODOS """
 # Criar conexão única no início
 cursor, conn = connect_database()
+globals()['cursor'] = cursor
+globals()['conn'] = conn
 
 
 # Função específica para buscar usuários no banco
