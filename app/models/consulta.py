@@ -1,7 +1,7 @@
 from app import db
 
 class Consulta:
-    def __init__(self, id_consulta, id_agendamento, id_veterinario, data, horario, id_tipo):
+    def __init__(self, id_consulta, id_agendamento, id_veterinario, data, horario, id_tipo, valor_total):
         self.id_consulta = id_consulta
         self.id_agendamento = id_agendamento
         self.id_veterinario = id_veterinario
@@ -13,7 +13,7 @@ class Consulta:
     def __repr__(self):
         return f"<Consulta {self.id_consulta}>"
     
-    @staticmethod
+    
     def criar_consulta(data):
         """
         Cria uma nova consulta no banco de dados.
@@ -46,7 +46,7 @@ class Consulta:
         conn.close()
         return id_consulta
 
-    @staticmethod
+   
     def atualizar_consulta(id_consulta, **kwargs):
         """
         Atualiza os campos fornecidos em kwargs para a consulta com o id_consulta especificado.
@@ -87,7 +87,7 @@ class Consulta:
         cursor.close()
         conn.close()
 
-    @staticmethod
+    
     def deletar_consulta(id_consulta):
         conn = get_db_connection()
         cursor = conn.cursor()
@@ -99,7 +99,7 @@ class Consulta:
         cursor.close()
         conn.close()
 
-    @staticmethod
+    
     def adicionar_tratamento(id_consulta, id_tratamento):
         """
         Adiciona um tratamento a uma consulta específica.
