@@ -82,8 +82,8 @@ CREATE TABLE IF NOT EXISTS StatusAgendamento (
 
 CREATE TABLE IF NOT EXISTS Agendamento (
     id_agendamento SERIAL PRIMARY KEY,
-    id_animal INTEGER NOT NULL,
-    id_status INTEGER NOT NULL DEFAULT 1,
+    id_animal INT NOT NULL,
+    id_status INT NOT NULL DEFAULT 1,
     data DATE NOT NULL,
     horario CHAR(5) NOT NULL, -- Time retorna HH:MM:SS, nesse caso apenas a string HH:MM eh suficiente
     CONSTRAINT fk_animal FOREIGN KEY (id_animal) REFERENCES Animal(id_animal),
@@ -102,12 +102,6 @@ CREATE TABLE IF NOT EXISTS Consulta (
     data DATE NOT NULL,
     horario TIME NOT NULL,
     id_tipo INTEGER NOT NULL,
-    valor_total NUMERIC(10, 2) GENERATED ALWAYS AS (
-        (SELECT COALESCE(SUM(p.preco), 0)
-         FROM Consulta_Tratamento cp
-         JOIN Tratamento p ON cp.id_tratamento = p.id_tratamento
-         WHERE cp.id_consulta = Consulta.id_consulta)
-    ) STORED,
     status VARCHAR(20) NOT NULL DEFAULT 'em aberto',
     CONSTRAINT fk_veterinario FOREIGN KEY (id_veterinario) REFERENCES Veterinario(id_veterinario),
     CONSTRAINT fk_tipo FOREIGN KEY (id_tipo) REFERENCES Tipo_Consulta(id_tipo),
@@ -122,8 +116,8 @@ CREATE TABLE IF NOT EXISTS Tratamento (
 
 CREATE TABLE IF NOT EXISTS Consulta_Tratamento (
     id_consulta_procedimento SERIAL PRIMARY KEY,
-    id_tratamento INTEGER NOT NULL,
-    id_consulta INTEGER NOT NULL,
+    id_tratamento INT NOT NULL,
+    id_consulta INT NOT NULL,
     CONSTRAINT fk_tratamento FOREIGN KEY (id_tratamento) REFERENCES Tratamento(id_tratamento),
     CONSTRAINT fk_consulta FOREIGN KEY (id_consulta) REFERENCES Consulta(id_consulta)
 );
@@ -135,10 +129,10 @@ CREATE TABLE IF NOT EXISTS Meio_Pagamento (
 
 CREATE TABLE IF NOT EXISTS Pagamento (
     id_pagamento SERIAL PRIMARY KEY,
-    id_consulta INTEGER NOT NULL,
+    id_consulta INT NOT NULL,
     valor NUMERIC(15, 2) NOT NULL,
     data_pagamento DATE NOT NULL,
-    id_meio_pagamento INTEGER NOT NULL,
+    id_meio_pagamento INT NOT NULL,
     CONSTRAINT fk_consulta FOREIGN KEY (id_consulta) REFERENCES Consulta(id_consulta),
     CONSTRAINT fk_meio_pagamento FOREIGN KEY (id_meio_pagamento) REFERENCES Meio_Pagamento(id_meio_pagamento)
 );
@@ -168,6 +162,24 @@ LEFT JOIN Tratamento t ON ct.id_tratamento = t.id_tratamento
 GROUP BY c.id_consulta;
 
 
+-- Verifica e remove o trigger caso já exista antes de recriá-lo
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'atualizar_status_consulta') THEN
+        DROP TRIGGER atualizar_status_consulta ON Pagamento;
+    END IF;
+END $$;
+
+CREATE OR REPLACE VIEW View_Consulta_Valor AS
+SELECT
+    c.id_consulta,
+    COALESCE(SUM(t.preco), 0) AS valor_total_atualizado
+FROM Consulta c
+LEFT JOIN Consulta_Tratamento ct ON c.id_consulta = ct.id_consulta
+LEFT JOIN Tratamento t ON ct.id_tratamento = t.id_tratamento
+GROUP BY c.id_consulta;
+
+-- Criar o trigger após garantir que ele não existe
 -- Verifica e remove o trigger caso já exista antes de recriá-lo
 DO $$
 BEGIN
