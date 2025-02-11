@@ -56,9 +56,7 @@
             <tbody>
             {% for paciente in pacientes %}
                 <tr>
-                    <td id="paciente-{{ paciente.id }}">
-                        {{ paciente.nome }} (<span id="tutor-{{ paciente.tutor }}"></span>)
-                    </td>
+                    {{ paciente.nome }} (<span id="tutor-{{ paciente.tutor }}"></span>)
                     <td>
                         <button onclick="editarPaciente('{{ paciente.id_animal }}')">Editar</button>
                     </td>

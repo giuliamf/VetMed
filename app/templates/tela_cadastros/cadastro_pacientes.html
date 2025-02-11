@@ -1,7 +1,7 @@
-<div id="cadastro-popup" class="popup-container">
+<div id="cadastro-popup" class="popup-container" style="display: none;">
     <div class="popup-content">
         <h2>Cadastro de Paciente</h2>
-        <form id="cadastroForm" method="POST" action="/cadastro_paciente">
+        <form id="cadastroForm">
             <label for="nome">Nome</label>
             <input type="text" id="nome" name="nome" required>
 
@@ -12,7 +12,6 @@
                 <label for="macho">
                     <input type="radio" id="macho" name="sexo" value="M" required>Macho
                 </label>
-
                 <label for="femea">
                     <input type="radio" id="femea" name="sexo" value="F">Fêmea
                 </label>
@@ -24,7 +23,7 @@
             <label for="raca">Raça</label>
             <input type="text" id="raca" name="raca" required>
 
-            <label for="peso">Peso</label>
+            <label for="peso">Peso (kg)</label>
             <input type="number" min="0" step="0.001" id="peso" name="peso" required>
 
             <label for="cor">Cor</label>
@@ -32,6 +31,7 @@
 
             <label for="tutor">Tutor (CPF)</label>
             <input type="text" id="tutor" name="tutor" required>
+            <span id="tutor-verificacao" class="cpf-invalido" style="display:none; color:red;"></span>
 
             <div class="form-buttons">
                 <button type="submit" class="salvar">Salvar</button>

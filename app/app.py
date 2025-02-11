@@ -68,33 +68,49 @@ def pacientes_page():
     return render_template('tela_cadastros/pacientes.html')
 
 
-@app.route('/cadastro_paciente', methods=['GET', 'POST'])
-def cadastro_paciente():
+@app.route('/cadastro_paciente', methods=['GET'])
+def cadastro_paciente_page():
     return render_template('tela_cadastros/cadastro_pacientes.html')
 
 
-"""
-    if request.method == 'POST':
-        data = {
-            'id_tutor': request.form.get('tutor'),  # pegar o cpf (?) do tutor e achar o id
-            'nome': request.form.get('nome'),
-            'ano_nascimento': request.form.get('nascimento'),
-            'sexo': request.form.get('sexo'),
-            'especie': request.form.get('especie'),
-            'raca': request.form.get('raca'),
-            'peso': request.form.get('peso'),
-            'cor': request.form.get('cor')
-        }
-        # Inserir no banco de dados aqui
-        try:
-            novo_animal = Animal(**data)
-            db.session.add(novo_animal)
-            db.session.commit()
-            return jsonify({"mensagem": "Paciente cadastrado com sucesso!", "id_animal": novo_animal.id_animal}), 201
-        except Exception as e:
-            db.session.rollback()
-            return jsonify({"erro": f"Erro ao cadastrar paciente: {str(e)}"}), 500
-"""
+@app.route('/cadastro_paciente', methods=['POST'])
+def cadastro_paciente():
+    """ Cadastro de novo paciente verificando se o tutor existe """
+    try:
+        data = request.json
+        cpf_tutor = data.get('tutor')   # CPF do tutor que veio da interface
+
+        # Buscar ID do tutor pelo CPF
+        query_tutor = "SELECT id_tutor FROM Tutor WHERE cpf = %s"
+        tutor_result = execute_sql(query_tutor, (cpf_tutor,), fetch_one=True)
+
+        if not tutor_result:
+            return jsonify({"erro": "Tutor não encontrado! Cadastre o tutor antes."}), 400  # Bad Request
+
+        id_tutor = tutor_result[0]  # Obtém o ID do tutor encontrado
+
+        # Inserção do paciente no banco
+        query_paciente = """
+                INSERT INTO Animal (id_tutor, nome, especie, raca, nascimento, sexo, peso, cor)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                RETURNING id_animal
+            """
+        params = (
+            id_tutor,
+            data.get("nome"),
+            data.get("especie"),
+            data.get("raca"),
+            data.get("nascimento"),
+            data.get("sexo"),
+            data.get("peso"),
+            data.get("cor")
+        )
+        id_animal = execute_sql(query_paciente, params, fetch_one=True)
+
+        return jsonify({"mensagem": "Paciente cadastrado com sucesso!", "id_animal": id_animal[0]}), 201  # Created
+
+    except Exception as e:
+        return jsonify({"erro": f"Erro ao cadastrar paciente: {str(e)}"}), 500  # Internal Server Error
 
 
 @app.route('/api/pacientes')
@@ -132,7 +148,12 @@ def tutores_page():
     return render_template('tela_cadastros/tutores.html')
 
 
-@app.route('/cadastro_tutor', methods=['GET', 'POST'])
+@app.route('/cadastro_tutor', methods=['GET'])
+def cadastro_tutor_page():
+    return render_template('tela_cadastros/cadastro_tutores.html')
+
+
+@app.route('/cadastro_tutor', methods=['POST'])
 def cadastro_tutor():
     if request.method == 'POST':
         data = {

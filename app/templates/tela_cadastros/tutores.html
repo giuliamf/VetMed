@@ -52,15 +52,8 @@
                 <th>Ações</th>
             </tr>
             </thead>
-            <tbody>
-            {% for tutor in tutores %}
-                <tr>
-                    <td>{{ tutor.nome + " (" + tutor.cpf + ")" }}</td>
-                    <td>
-                        <button onclick="editarTutor('{{ tutor.id }}')">Editar</button>
-                    </td>
-                </tr>
-            {% endfor %}
+            <tbody id="tabelaTutores">
+                <!-- Os tutores serão inseridos aqui dinamicamente -->
             </tbody>
         </table>
     </div>
