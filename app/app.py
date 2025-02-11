@@ -1,31 +1,31 @@
 from flask import render_template, jsonify, request, redirect, session
 #from app.models.animal import Animal
-from app import connect_database, disconnect_database, create_app, db
+from app import create_app, db
+from app.database import disconnect_database, buscar_dados_usuario_por_email, buscar_usuario_por_id
 from app.criptografia_senhas import criptografar_senha, verificar_senha
 from app.simulação_bd import pacientes, tutores, usuarios, especialidades, agendamento, listastatus
 from datetime import datetime
 
 
 app = create_app()
-cursor, conn = connect_database()
 
 
 @app.route('/', methods=['GET', 'POST'])
 def login():
-    if session:
+    if 'usuario' in session:
         return redirect('/inicio')
     else:
         if request.method == 'POST':
             email = request.form.get('email')
             senha = request.form.get('senha')
 
+            usuario = buscar_dados_usuario_por_email(email.lower())     # [id, email, senha]
             # Verificar se o usuário existe no banco de dados
             # Se sim, verificar se a senha está correta
             # Se sim, redirecionar para a página inicial
-            usuario = next((u for u in usuarios if u['email'] == email.lower()), None)
 
-            if usuario and verificar_senha(senha, usuario['senha']):
-                session['usuario'] = usuario['id']  # Salva o id do usuário na sessão
+            if usuario and verificar_senha(senha, usuario[2]):
+                session['usuario'] = usuario[0]  # Salva o id do usuário na sessão
                 return redirect('/inicio')
             elif not usuario:
                 return jsonify({"erro": "Usuário não encontrado!"}), 404
@@ -39,7 +39,17 @@ def login():
 def inject_user():
     # Caso o usuário entre nessa página, com certeza ele estará logado.
     usuario_id = session.get('usuario')
-    usuario = next((u for u in usuarios if u['id'] == usuario_id), {"nome": "Usuário"})
+    usuario = {"nome": "Usuário"}  # Valor padrão caso o usuário não seja encontrado
+    if usuario_id:
+        user_data = buscar_usuario_por_id(usuario_id)
+        if user_data:
+            usuario = {
+                "id": user_data[0],
+                "nome": user_data[1],
+                "email": user_data[2],
+                "cargo": user_data[3]
+            }
+
     return {'usuario': usuario}
 
 
@@ -234,6 +244,7 @@ def financeiro():
 @app.route('/sair')
 def sair():
     # Fazer todos os processos de sair, tirar o usuário logado (?), desconectar o banco, etc
+    disconnect_database()
     session.clear()  # Limpa a sessão
     return redirect('/')
 
