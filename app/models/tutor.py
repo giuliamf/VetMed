@@ -1,13 +1,12 @@
 from app import db
 
 class Tutor:
-    def __init__(self, id_tutor, nome, data_nascimento, telefone, endereco, email):
+    def __init__(self, id_tutor, nome, data_nascimento, telefone, endereco):
         self.id_tutor = id_tutor
         self.nome = nome
         self.data_nascimento = data_nascimento
         self.telefone = telefone
         self.endereco = endereco
-        self.email = email
 
     def __repr__(self):
         return f"<Tutor {self.id_tutor}>"
@@ -28,18 +27,17 @@ class Tutor:
         data_nascimento = data['data_nascimento']
         telefone = data['telefone']
         endereco = data['endereco']
-        email = data['email']
         id_tutor = data['id_tutor']
         
         # Inserir no banco de dados
         conn = get_db_connection()
         cursor = conn.cursor()
         query = sql.SQL("""
-            INSERT INTO Tutor (id_tutor, nome, data_nascimento, telefone, endereco, email)
+            INSERT INTO Tutor (id_tutor, nome, data_nascimento, telefone, endereco)
             VALUES (%s, %s, %s, %s, %s, %s)
             RETURNING id_tutor
         """)
-        cursor.execute(query, (id_tutor, nome, data_nascimento, telefone, endereco, email))
+        cursor.execute(query, (id_tutor, nome, data_nascimento, telefone, endereco))
         id_tutor = cursor.fetchone()[0]
         conn.commit()
         cursor.close()

@@ -11,7 +11,7 @@ class Usuario:
     def __repr__(self):
         return f"<Usuario {self.email_usuario}>"
 
-    @staticmethod
+    
     def criar_usuario(data):
         """
         Cria um novo usuário no banco de dados.
@@ -41,7 +41,7 @@ class Usuario:
         cursor.close()
         conn.close()
 
-    @staticmethod
+    
     def buscar_usuario_por_email(email_usuario):
         conn = get_db_connection()
         cursor = conn.cursor()
@@ -56,7 +56,7 @@ class Usuario:
             return Usuario(*usuario)
         return None
 
-    @staticmethod
+  
     def atualizar_usuario(email_usuario, **kwargs):
         """
         Atualiza os campos fornecidos em kwargs para o usuário com o email_usuario especificado.
@@ -91,7 +91,7 @@ class Usuario:
         cursor.close()
         conn.close()
 
-    @staticmethod
+    
     def deletar_usuario(email_usuario):
         conn = get_db_connection()
         cursor = conn.cursor()

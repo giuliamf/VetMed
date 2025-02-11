@@ -9,7 +9,7 @@ class Tratamento:
     def __repr__(self):
         return f"<Tratamento {self.id_tratamento}>"
     
-    @staticmethod
+
     def criar_tratamento(data):
         """
         Cria um novo tratamento no banco de dados.
@@ -39,7 +39,7 @@ class Tratamento:
         conn.close()
         return id_tratamento
 
-    @staticmethod
+    
     def buscar_tratamento_por_id(id_tratamento):
         conn = get_db_connection()
         cursor = conn.cursor()
@@ -54,7 +54,7 @@ class Tratamento:
             return Tratamento(*tratamento)
         return None
 
-    @staticmethod
+    
     def atualizar_tratamento(id_tratamento, **kwargs):
         """
         Atualiza os campos fornecidos em kwargs para o tratamento com o id_tratamento especificado.
@@ -90,7 +90,7 @@ class Tratamento:
         conn.close()
     
     
-    @staticmethod
+   
     def deletar_tratamento(id_tratamento):
         conn = get_db_connection()
         cursor = conn.cursor()
