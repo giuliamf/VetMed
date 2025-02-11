@@ -1,6 +1,6 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from app.database import create_database
+from app.database import create_database, create_tables
 
 db = SQLAlchemy()
 
@@ -12,6 +12,7 @@ def create_app():
     
     db.init_app(app)
     create_database()   # para o banco de dados ser criado na inicialização do app, caso ele nao exista
+    create_tables()     # para as tabelas serem criadas na inicialização do app, caso elas nao existam
     
     # Registrar blueprints (rotas)
     #from app.routes.animal_route import animais_bp
