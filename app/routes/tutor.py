@@ -2,6 +2,8 @@ from flask import Blueprint, request, jsonify, render_template
 from psycopg2.errors import UniqueViolation
 from app.database import execute_sql
 
+from app.utils.formatar_cpf import formatar_cpf
+
 tutores_bp = Blueprint('tutores', __name__)
 
 
@@ -43,6 +45,7 @@ def cadastro_tutor():
     if not all(data.values()):
         return jsonify({"erro": "Preencha todos os campos!"}), 400
 
+    data['cpf'] = formatar_cpf(data['cpf'])
     try:
         query = """
             INSERT INTO Tutor (cpf, nome, data_nascimento, telefone, endereco)

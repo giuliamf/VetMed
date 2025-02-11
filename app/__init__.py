@@ -21,7 +21,7 @@ def create_app():
 
     # Registrar blueprints (rotas)
     #from app.routes.animal_route import animais_bp
-    from app.routes.tutores import tutores_bp
+    from app.routes.tutor import tutores_bp
     #app.register_blueprint(animais_bp, url_prefix='/api')
     app.register_blueprint(tutores_bp)
     

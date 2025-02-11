@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", carregarTutores);
 
 document.getElementById("novoCadastro").addEventListener("click", function () {
-    fetch("//cadastro_tutor_page")
+    fetch("/cadastro_tutor_page")
         .then(response => response.text())
         .then(html => {
             document.getElementById("popupContainer").innerHTML = html;
@@ -18,7 +18,6 @@ document.getElementById("novoCadastro").addEventListener("click", function () {
 function carregarTutores() {
     fetch("/api/tutores")
         .then(response => {
-            console.log("Resposta recebida do servidor:", response);
             if (!response.ok) {
                 throw new Error("Erro ao buscar tutores");
             }
@@ -29,7 +28,6 @@ function carregarTutores() {
             tabela.innerHTML = ""; // Limpa a tabela antes de recarregar os dados
 
             tutores.forEach(tutor => {
-                console.log("Dados dos tutores recebidos:", tutores);
                 let linha = document.createElement("tr");
                 linha.innerHTML = `
                     <td>${tutor.nome} (${tutor.cpf})</td>

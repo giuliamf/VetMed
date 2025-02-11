@@ -5,8 +5,6 @@ from app.criptografia_senhas import criptografar_senha, verificar_senha
 from app.simulação_bd import usuarios, especialidades, agendamento, listastatus
 from datetime import datetime
 
-from psycopg2.errors import UniqueViolation
-
 app = create_app()
 
 
