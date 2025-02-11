@@ -5,6 +5,8 @@ from app.criptografia_senhas import criptografar_senha, verificar_senha
 from app.simulação_bd import usuarios, especialidades, agendamento, listastatus
 from datetime import datetime
 
+from psycopg2.errors import UniqueViolation
+
 app = create_app()
 
 
@@ -141,46 +143,6 @@ def get_pacientes():
     ]
 
     return jsonify(pacientes_lista)
-
-
-@app.route('/tutores')
-def tutores_page():
-    return render_template('tela_cadastros/tutores.html')
-
-
-@app.route('/cadastro_tutor', methods=['GET'])
-def cadastro_tutor_page():
-    return render_template('tela_cadastros/cadastro_tutores.html')
-
-
-@app.route('/cadastro_tutor', methods=['POST'])
-def cadastro_tutor():
-    if request.method == 'POST':
-        data = {
-            'nome': request.form.get('nome'),
-            'cpf': request.form.get('cpf'),
-            'nascimento': request.form.get('nascimento'),
-            'telefone': request.form.get('telefone'),
-            'endereco': request.form.get('endereco')
-        }
-        # Inserir no banco de dados aqui
-        return jsonify({"mensagem": "Tutor cadastrado com sucesso!"}), 201
-
-    return render_template('tela_cadastros/cadastro_tutores.html')
-
-
-@app.route('/api/tutores')
-def get_tutores():
-    """ Retorna a lista de tutores do banco de dados """
-    query = "SELECT id_tutor, cpf, nome FROM Tutor"
-
-    tutores = execute_sql(query, fetch_all=True)
-
-    tutores_lista = [
-        {"id_tutor": t[0], "cpf": t[1], "nome": t[2]} for t in tutores
-    ]
-
-    return jsonify(tutores_lista)
 
 
 @app.route('/usuarios')

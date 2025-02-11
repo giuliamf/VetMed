@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", carregarTutores);
 
 document.getElementById("novoCadastro").addEventListener("click", function () {
-    fetch("/cadastro_tutor")
+    fetch("//cadastro_tutor_page")
         .then(response => response.text())
         .then(html => {
             document.getElementById("popupContainer").innerHTML = html;
@@ -17,12 +17,19 @@ document.getElementById("novoCadastro").addEventListener("click", function () {
 
 function carregarTutores() {
     fetch("/api/tutores")
-        .then(response => response.json())
+        .then(response => {
+            console.log("Resposta recebida do servidor:", response);
+            if (!response.ok) {
+                throw new Error("Erro ao buscar tutores");
+            }
+            return response.json();
+        })
         .then(tutores => {
             let tabela = document.getElementById("tabelaTutores");
             tabela.innerHTML = ""; // Limpa a tabela antes de recarregar os dados
 
             tutores.forEach(tutor => {
+                console.log("Dados dos tutores recebidos:", tutores);
                 let linha = document.createElement("tr");
                 linha.innerHTML = `
                     <td>${tutor.nome} (${tutor.cpf})</td>
@@ -39,12 +46,20 @@ function enviarFormulario() {
     const formData = new FormData(form);
 
     const dados = {
-        nome: formData.get("nome"),
-        cpf: formData.get("cpf"),
-        nascimento: formData.get("nascimento"),
-        telefone: formData.get("telefone"),
-        endereco: formData.get("endereco"),
+        nome: formData.get("nome")?.trim() || "",
+        cpf: formData.get("cpf")?.trim() || "",
+        nascimento: formData.get("nascimento") || "",
+        telefone: formData.get("telefone")?.trim() || "",
+        endereco: formData.get("endereco")?.trim() || "",
     };
+
+    // Validação: Todos os campos devem estar preenchidos
+    if (!dados.nome || !dados.cpf || !dados.nascimento || !dados.telefone || !dados.endereco) {
+        alert("Por favor, preencha todos os campos.");
+        return;
+    }
+
+    console.log("Enviando dados:", JSON.stringify(dados));
 
     fetch("/cadastro_tutor", {
         method: "POST",
@@ -53,15 +68,16 @@ function enviarFormulario() {
         },
         body: JSON.stringify(dados)
     })
-    .then(response => response.json())
     .then(response => {
-        if (response.mensagem) {
-            alert("Tutor cadastrado com sucesso!");
-            fecharPopupCadastro();
-            carregarTutores();  // Atualiza a lista na tela
-        } else {
-            alert("Erro ao cadastrar tutor: " + response.erro);
+        if (!response.ok) {
+            return response.json().then(error => { throw new Error(error.erro || "Erro desconhecido"); });
         }
+        return response.json();
+    })
+    .then(response => {
+        alert(response.mensagem || "Tutor cadastrado com sucesso!");
+        fecharPopupCadastro();
+        carregarTutores(); // Recarregar a lista de tutores
     })
     .catch(error => console.error("Erro ao cadastrar tutor:", error));
 }

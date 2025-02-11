@@ -23,6 +23,6 @@ def create_app():
     #from app.routes.animal_route import animais_bp
     from app.routes.tutores import tutores_bp
     #app.register_blueprint(animais_bp, url_prefix='/api')
-    app.register_blueprint(tutores_bp, url_prefix='/api')
+    app.register_blueprint(tutores_bp)
     
     return app

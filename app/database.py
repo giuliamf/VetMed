@@ -68,6 +68,7 @@ def execute_sql(query, params=None, fetch_one=False, fetch_all=False):
     :param fetch_all: Se True, retorna todos os resultados da consulta.
     :return: Retorna os dados buscados no banco ou None se for um comando sem retorno.
     """
+    print('Executando o SQL:', query)
     try:
         if params:
             cursor.execute(query, params)
