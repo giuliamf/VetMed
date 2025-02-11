@@ -1,47 +1,47 @@
 import psycopg2
+import traceback
 
 
 def connect_database():
     """ Conectar ao banco de dados PostgreSQL """
     user, password = 'postgres', 'giulia'
-    connection = psycopg2.connect(
-        dbname='VetMed',
-        user=user,
-        host='localhost',
-        password=password,
-        port='5432',
-        client_encoding="utf8"
-    )
-    conn.autocommit = True
-    c = conn.cursor()
-    return c, connection
+    try:
+        connection = psycopg2.connect(
+            dbname="vetmed",
+            user=user,
+            host='localhost',
+            password=password,
+            port='5432',
+        )
+        connection.autocommit = True
+        c = connection.cursor()
+        c.execute("SHOW client_encoding")
+        print(c.fetchone())
+        print("Conectado ao banco de dados com sucesso!")
+        return c, connection
+    except psycopg2.Error as e:
+        tb = traceback.extract_tb(e.__traceback__)
+        for frame in tb:
+            print(f"Erro no arquivo: {frame.filename}, linha {frame.lineno}, função {frame.name}")
+        print(f"Mensagem do PostgreSQL: {e.pgcode} - {e.pgerror}")
+    except Exception as e:
+        tb = traceback.extract_tb(e.__traceback__)
+        for frame in tb:
+            print(f"Erro no arquivo: {frame.filename}, linha: {frame.lineno}, função: {frame.name}")
+
+        print(f"Erro inesperado: {str(e)}")
 
 
 def disconnect_database():
     """ Fecha a conexão com o banco """
-    cursor.close()
-    conn.close()
-
-
-def create_database():
-    db_name = 'VetMed'
-
-    """ Cria o banco de dados caso ele não exista """
     try:
-        cursor.execute("SELECT 1 FROM pg_database WHERE datname = %s;", (db_name,))
-        exists = cursor.fetchone()
-
-        if not exists:
-            cursor.execute(f"CREATE DATABASE \"{db_name}\" "
-                           f"ENCODING 'UTF8' "
-                           f"LC_COLLATE 'pt_BR.UTF-8' "
-                           f"LC_CTYPE 'pt_BR.UTF-8' "
-                           f"TEMPLATE template0;")
-            print(f'Banco de dados >{db_name}< criado com sucesso!')
-        else:
-            print(f'Banco de dados >{db_name}< já existe!')
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+        print("Conexão com o banco de dados fechada com sucesso!")
     except Exception as e:
-        print(f'Erro ao criar o banco de dados: {e}')
+        print(f"Erro ao fechar conexão com o banco de dados: {e}")
 
 
 def create_tables():
@@ -57,6 +57,8 @@ def create_tables():
 
 
 def execute_sql(query, params=None, fetch_one=False, fetch_all=False):
+    if not verify_connection():
+        connect_database()
     """
     Executa um comando SQL genérico.
 
@@ -86,21 +88,65 @@ def execute_sql(query, params=None, fetch_one=False, fetch_all=False):
         return None
 
 
+def verify_connection():
+    """ Verifica se a conexão com o banco de dados está ativa """
+    global cursor, conn
+    if conn is None or conn.closed or cursor is None:
+        return False
+    return True
+
+
 """ FUNÇÕES DE MÉTODOS """
-# Criar conexão única no início
-cursor, conn = connect_database()
-globals()['cursor'] = cursor
-globals()['conn'] = conn
+# Inicializando as variáveis globais cursor e conn
+
+
+def globalizar_cursor_e_conexao():
+    cursor, conn = connect_database()
+    globals()['cursor'] = cursor
+    globals()['conn'] = conn
+    print("Variáveis globais cursor e conn inicializadas com sucesso!")
 
 
 # Função específica para buscar usuários no banco
 def buscar_dados_usuario_por_email(email):
     """ Retorna os dados de um usuário pelo email """
     query = "SELECT id_usuario, email, senha FROM Usuario WHERE email = %s"
-    return execute_sql(query, (email,), fetch_one=True)     # Retorna apenas um resultado
+    try:
+        cursor.execute(query, (email,))
+        result = cursor.fetchone()
+        return result  # Retorna apenas um resultado
+    except Exception as e:
+        print(f"Erro ao buscar usuário: {e}")
+        return None
 
 
 def buscar_usuario_por_id(usuario_id):
     """ Retorna os dados de um usuário pelo ID """
-    query = "SELECT id_usuario, nome, email, cargo FROM Usuario WHERE id_usuario = %s"
-    return execute_sql(query, (usuario_id,), fetch_one=True)
+    query = "SELECT id_usuario, nome, email FROM Usuario WHERE id_usuario = %s"
+    try:
+        cursor.execute(query, (usuario_id,))
+        result = cursor.fetchone()
+        return result  # Retorna apenas um resultado
+    except Exception as e:
+        print(f"Erro ao buscar usuário: {e}")
+        return None
+
+
+# criar UM usuario para entrar no sistema
+def criar_usuario():
+    """ Cria um usuário padrão para o sistema caso ele não exista """
+    query_check = "SELECT 1 FROM Usuario WHERE email = %s"
+    query = "INSERT INTO Usuario (nome, email, senha, cargo) VALUES (%s, %s, %s, %s)"
+    params = ('admin', 'admin@vetmed.com', '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918', 'adm')
+
+    try:
+        usuario_exite = execute_sql(query_check, (params[1],), fetch_one=True)
+    except Exception as e:
+        print(f"Erro ao verificar usuário padrão: {e}")
+        usuario_exite = None
+
+    if not usuario_exite:
+        execute_sql(query, params)
+        print('Usuário padrão criado com sucesso!')
+    else:
+        print('Usuário padrão já existe!')

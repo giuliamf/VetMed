@@ -6,7 +6,6 @@ from app.criptografia_senhas import criptografar_senha, verificar_senha
 from app.simulação_bd import pacientes, tutores, usuarios, especialidades, agendamento, listastatus
 from datetime import datetime
 
-
 app = create_app()
 
 
@@ -19,7 +18,7 @@ def login():
             email = request.form.get('email')
             senha = request.form.get('senha')
 
-            usuario = buscar_dados_usuario_por_email(email.lower())     # [id, email, senha]
+            usuario = buscar_dados_usuario_por_email(email.lower())  # [id, email, senha]
             # Verificar se o usuário existe no banco de dados
             # Se sim, verificar se a senha está correta
             # Se sim, redirecionar para a página inicial
@@ -47,7 +46,6 @@ def inject_user():
                 "id": user_data[0],
                 "nome": user_data[1],
                 "email": user_data[2],
-                "cargo": user_data[3]
             }
 
     return {'usuario': usuario}
@@ -73,7 +71,10 @@ def pacientes_page():
 
 @app.route('/cadastro_paciente', methods=['GET', 'POST'])
 def cadastro_paciente():
-    """
+    return render_template('tela_cadastros/cadastro_pacientes.html')
+
+
+"""
     if request.method == 'POST':
         data = {
             'id_tutor': request.form.get('tutor'),  # pegar o cpf (?) do tutor e achar o id
@@ -95,7 +96,6 @@ def cadastro_paciente():
             db.session.rollback()
             return jsonify({"erro": f"Erro ao cadastrar paciente: {str(e)}"}), 500
 """
-    return render_template('tela_cadastros/cadastro_pacientes.html')
 
 
 @app.route('/api/pacientes')
@@ -243,8 +243,6 @@ def financeiro():
 
 @app.route('/sair')
 def sair():
-    # Fazer todos os processos de sair, tirar o usuário logado (?), desconectar o banco, etc
-    disconnect_database()
     session.clear()  # Limpa a sessão
     return redirect('/')
 
@@ -253,9 +251,9 @@ def sair():
 # MODIFICAR AQUI QUANDO DEFINIR A FUNCAO QUE VAI PEGAR A LISTA DE AGENDAMENTOS DO BD (ou colocar em outro lugar)
 def formatar_data(lista_agenda):
     for a in lista_agenda:
-        if type(a['data']) != datetime:     # Se a data já estiver no formato datetime, não precisa converter
+        if type(a['data']) != datetime:  # Se a data já estiver no formato datetime, não precisa converter
             try:
-                a['data'] = datetime.strptime(a['data'], '%d/%m/%Y')    # Converte a data para o formato datetime
+                a['data'] = datetime.strptime(a['data'], '%d/%m/%Y')  # Converte a data para o formato datetime
             except ValueError:
                 continue
         a['data'] = a['data'].strftime('%Y-%m-%d')  # Converte a data para o formato 'AAAA-MM-DD'

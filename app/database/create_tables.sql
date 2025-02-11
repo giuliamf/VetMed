@@ -1,5 +1,4 @@
-<<<<<<< Updated upstream
--- Nome do banco de dados: VetMed
+-- Nome do banco de dados: vetmed
 -- Codificação: UTF-8
 -- Região: Brasil (pt_BR)
 -- Porta padrão: 5432 (PostgreSQL)
@@ -18,7 +17,7 @@ BEGIN
     END IF;
 END $$;
 
-GRANT ALL PRIVILEGES ON DATABASE VetMed TO admin;
+GRANT ALL PRIVILEGES ON DATABASE vetmed TO admin;
 
 -- Configurações de extensões (opcional, se necessário)
 -- Exemplo: Habilita a extensão pgcrypto para criptografia
@@ -30,15 +29,15 @@ CREATE SCHEMA IF NOT EXISTS vet_schema;
 SET search_path TO vet_schema;
 
 -- Comentários adicionais
-COMMENT ON DATABASE VetMed IS 'Banco de dados para gestão da clínica veterinária MED VET.';
+COMMENT ON DATABASE vetmed IS 'Banco de dados para gestão da clínica veterinária MED VET.';
 
 -- Tabela 'super'
 CREATE TABLE IF NOT EXISTS Usuario (
     id_usuario SERIAL PRIMARY KEY,  -- id serial automático
     email VARCHAR(50) UNIQUE NOT NULL,  -- Unique para evitar emails iguais
     nome VARCHAR(90) NOT NULL,
-    senha VARCHAR(256) NOT NULL,
-    cargo VARCHAR(3) CHECK (cargo IN ('vet', 'sec')) NOT NULL  -- Restrição CHECK para aceitar valores específicos
+    senha VARCHAR(64) NOT NULL, -- Senha criptografada com hash SHA-256 (64 caracteres - 32 bytes)
+    cargo VARCHAR(3) CHECK (cargo IN ('vet', 'sec', 'adm')) NOT NULL  -- Restrição CHECK para aceitar valores específicos, adm para o usuario 0
 );
 
 -- Tabela de Especialidades (cadastra as possíveis especialidades)
@@ -103,12 +102,6 @@ CREATE TABLE IF NOT EXISTS Consulta (
     data DATE NOT NULL,
     horario TIME NOT NULL,
     id_tipo INTEGER NOT NULL,
-    valor_total NUMERIC(10, 2) GENERATED ALWAYS AS (
-        (SELECT COALESCE(SUM(p.preco), 0)
-         FROM Consulta_Tratamento cp
-         JOIN Tratamento p ON cp.id_tratamento = p.id_tratamento
-         WHERE cp.id_consulta = Consulta.id_consulta)
-    ) STORED,
     status VARCHAR(20) NOT NULL DEFAULT 'em aberto',
     CONSTRAINT fk_veterinario FOREIGN KEY (id_veterinario) REFERENCES Veterinario(id_veterinario),
     CONSTRAINT fk_tipo FOREIGN KEY (id_tipo) REFERENCES Tipo_Consulta(id_tipo),
@@ -172,5 +165,6 @@ GROUP BY c.id_consulta;
 CREATE TRIGGER atualizar_status_consulta
 AFTER INSERT ON Pagamento
 FOR EACH ROW
->>>>>>> Stashed changes
 EXECUTE FUNCTION AtualizarStatusConsulta();
+-- PARA PEGAR O VALOR TOTAL DA CONSULTA DEVE-SE CONSULTAR A VIEW:
+-- SELECT * FROM View_Consulta_Valor WHERE id_consulta = ?;

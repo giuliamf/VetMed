@@ -1,19 +1,24 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from app.database import create_database, create_tables
+
+from app.database import criar_usuario, create_tables, globalizar_cursor_e_conexao, connect_database
 
 db = SQLAlchemy()
 
 
 def create_app():
     app = Flask(__name__)
-    app.config.from_object('config.Config')
+    app.config.from_object('config.Config')     # Importa as configurações do arquivo config.py (createdb, createtables,
+    # etc)
     app.secret_key = 'supersecretkey'
     
     db.init_app(app)
-    create_database()   # para o banco de dados ser criado na inicialização do app, caso ele nao exista
-    create_tables()     # para as tabelas serem criadas na inicialização do app, caso elas nao existam
-    
+
+    with app.app_context():
+        globalizar_cursor_e_conexao()
+        create_tables()
+        criar_usuario()
+
     # Registrar blueprints (rotas)
     #from app.routes.animal_route import animais_bp
     from app.routes.tutores import tutores_bp
