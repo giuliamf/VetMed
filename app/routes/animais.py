@@ -29,6 +29,7 @@ def criar_animal_route():
         # Capturar outros erros inesperados (ex: erros no banco de dados)
         return jsonify({"erro": f"Erro interno no servidor: {str(e)}"}), 500  # Internal Server Error
 
+
 @animais_bp.route('/animais/<int:id_animal>', methods=['GET'])
 def obter_animal_route(id_animal):
     animal = Animal.buscar_animal_por_id(id_animal)
@@ -45,6 +46,7 @@ def obter_animal_route(id_animal):
             "cor": animal.cor
         })
     return jsonify({"mensagem": "Animal não encontrado"}), 404
+
 
 @animais_bp.route('/animais/<int:id_animal>', methods=['PUT'])
 def atualizar_animal_route(id_animal):

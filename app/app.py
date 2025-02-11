@@ -1,9 +1,8 @@
 from flask import render_template, jsonify, request, redirect, session
-#from app.models.animal import Animal
 from app import create_app, db
-from app.database import disconnect_database, buscar_dados_usuario_por_email, buscar_usuario_por_id
+from app.database import disconnect_database, buscar_dados_usuario_por_email, buscar_usuario_por_id, execute_sql
 from app.criptografia_senhas import criptografar_senha, verificar_senha
-from app.simulação_bd import pacientes, tutores, usuarios, especialidades, agendamento, listastatus
+from app.simulação_bd import usuarios, especialidades, agendamento, listastatus
 from datetime import datetime
 
 app = create_app()
@@ -66,7 +65,7 @@ def cadastro():
 
 @app.route('/pacientes')
 def pacientes_page():
-    return render_template('tela_cadastros/pacientes.html', pacientes=pacientes)
+    return render_template('tela_cadastros/pacientes.html')
 
 
 @app.route('/cadastro_paciente', methods=['GET', 'POST'])
@@ -100,28 +99,37 @@ def cadastro_paciente():
 
 @app.route('/api/pacientes')
 def get_pacientes():
-    """q_pacientes = Animal.query.all()
-    pacientes_lista = [{
-        "id_animal": p.id_animal,
-        "id_tutor": p.id_tutor,
-        "nome": p.nome,
-        "especie": p.especie,
-        "raca": p.raca,
-        "ano_nascimento": p.ano_nascimento,
-        "sexo": p.sexo,  # Retorna 'M' ou 'F'
-        "peso": p.peso,
-        "cor": p.cor
-    } for p in q_pacientes]"""
+    """" Retorna a lista de pacientes do banco de dados com o CPF do tutor """
+    query = """
+            SELECT a.id_animal, t.cpf AS cpf_tutor, a.nome, a.especie, a.raca, 
+                   a.nascimento, a.sexo, a.peso, a.cor
+            FROM Animal a
+            JOIN Tutor t ON a.id_tutor = t.id_tutor
+        """
 
-    pacientes_lista = pacientes
-    # colocar o id em vez do nome do tutor
+    pacientes = execute_sql(query, fetch_all=True)
+
+    pacientes_lista = [
+        {
+            "id_animal": p[0],
+            "cpf_tutor": p[1],
+            "nome": p[2],
+            "especie": p[3],
+            "raca": p[4],
+            "nascimento": p[5],
+            "sexo": p[6],
+            "peso": float(p[7]),
+            "cor": p[8],
+        }
+        for p in pacientes
+    ]
 
     return jsonify(pacientes_lista)
 
 
 @app.route('/tutores')
 def tutores_page():
-    return render_template('tela_cadastros/tutores.html', tutores=tutores)
+    return render_template('tela_cadastros/tutores.html')
 
 
 @app.route('/cadastro_tutor', methods=['GET', 'POST'])
@@ -142,7 +150,15 @@ def cadastro_tutor():
 
 @app.route('/api/tutores')
 def get_tutores():
-    tutores_lista = tutores
+    """ Retorna a lista de tutores do banco de dados """
+    query = "SELECT id_tutor, cpf, nome FROM Tutor"
+
+    tutores = execute_sql(query, fetch_all=True)
+
+    tutores_lista = [
+        {"id_tutor": t[0], "cpf": t[1], "nome": t[2]} for t in tutores
+    ]
+
     return jsonify(tutores_lista)
 
 
