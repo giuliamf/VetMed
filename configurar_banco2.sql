@@ -1,5 +1,5 @@
 <<<<<<< Updated upstream
--- Nome do banco de dados: med_vet_bd
+-- Nome do banco de dados: VetMed
 -- Codificação: UTF-8
 -- Região: Brasil (pt_BR)
 -- Porta padrão: 5432 (PostgreSQL)
@@ -10,15 +10,15 @@ SET client_encoding = 'UTF8';
 SET TIMEZONE = 'America/Sao_Paulo'; -- Fuso horário do Brasil
 
 -- Permissões e roles (opcional, dependendo do ambiente)
--- Cria um role específico para o banco de dados (substitua 'med_vet_user' e 'senha_segura' conforme necessário)
+-- Cria um role específico para o banco de dados (substitua 'admin' e 'senha_segura' conforme necessário)
 DO $$
 BEGIN
-    IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'med_vet_user') THEN
-        CREATE ROLE med_vet_user WITH LOGIN PASSWORD 'senha_segura';
+    IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'admin') THEN
+        CREATE ROLE admin WITH LOGIN PASSWORD 'senha_segura';
     END IF;
 END $$;
 
-GRANT ALL PRIVILEGES ON DATABASE med_vet_bd TO med_vet_user;
+GRANT ALL PRIVILEGES ON DATABASE VetMed TO admin;
 
 -- Configurações de extensões (opcional, se necessário)
 -- Exemplo: Habilita a extensão pgcrypto para criptografia
@@ -30,7 +30,7 @@ CREATE SCHEMA IF NOT EXISTS vet_schema;
 SET search_path TO vet_schema;
 
 -- Comentários adicionais
-COMMENT ON DATABASE med_vet_bd IS 'Banco de dados para gestão da clínica veterinária MED VET.';
+COMMENT ON DATABASE VetMed IS 'Banco de dados para gestão da clínica veterinária MED VET.';
 
 -- Tabela 'super'
 CREATE TABLE IF NOT EXISTS Usuario (
@@ -70,7 +70,7 @@ CREATE TABLE IF NOT EXISTS Animal (
     especie VARCHAR(50) NOT NULL,
     raca VARCHAR(50) NOT NULL,
     nascimento DATE NOT NULL,
-    sexo CHAR(1) CHECK (sexo IN ('F', 'M')) NOT NULL, -- CHAR pq tem obrigatoriamente um único caractere
+    sexo CHAR(1) CHECK (sexo IN ('F', 'M')) NOT NULL, -- CHAR porque tem obrigatoriamente um único caractere
     peso NUMERIC(5,2) NOT NULL,
     cor VARCHAR(50) NOT NULL,
     CONSTRAINT fk_tutor FOREIGN KEY (id_tutor) REFERENCES Tutor(id_tutor)
@@ -86,14 +86,14 @@ CREATE TABLE IF NOT EXISTS Agendamento (
     id_animal INTEGER NOT NULL,
     id_status INTEGER NOT NULL,
     data DATE NOT NULL,
-    hora CHAR(5) NOT NULL, -- Time retorna HH:MM:SS, nesse caso apenas a string é suficiente
+    horario CHAR(5) NOT NULL, -- Time retorna HH:MM:SS, nesse caso apenas a string é suficiente
     CONSTRAINT fk_animal FOREIGN KEY (id_animal) REFERENCES Animal(id_animal),
     CONSTRAINT fk_status FOREIGN KEY (id_status) REFERENCES Status(id_status)
 );
 
 CREATE TABLE IF NOT EXISTS Tipo_Consulta (
     id_tipo SERIAL PRIMARY KEY,
-    nome VARCHAR(50) NOT NULL,
+    nome VARCHAR(50) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS Consulta (
@@ -162,7 +162,7 @@ CREATE TRIGGER atualizar_status_consulta
 AFTER INSERT ON Pagamento
 FOR EACH ROW
 =======
--- Nome do banco de dados: med_vet_bd
+-- Nome do banco de dados: VetMed
 -- Codificação: UTF-8
 -- Região: Brasil (pt_BR)
 -- Porta padrão: 5432 (PostgreSQL)
@@ -173,15 +173,15 @@ SET client_encoding = 'UTF8';
 SET TIMEZONE = 'America/Sao_Paulo'; -- Fuso horário do Brasil
 
 -- Permissões e roles (opcional, dependendo do ambiente)
--- Cria um role específico para o banco de dados (substitua 'med_vet_user' e 'senha_segura' conforme necessário)
+-- Cria um role específico para o banco de dados (substitua 'admin' e 'senha_segura' conforme necessário)
 DO $$
 BEGIN
-    IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'med_vet_user') THEN
-        CREATE ROLE med_vet_user WITH LOGIN PASSWORD 'senha_segura';
+    IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'admin') THEN
+        CREATE ROLE admin WITH LOGIN PASSWORD 'senha_segura';
     END IF;
 END $$;
 
-GRANT ALL PRIVILEGES ON DATABASE med_vet_bd TO med_vet_user;
+GRANT ALL PRIVILEGES ON DATABASE VetMed TO admin;
 
 -- Configurações de extensões (opcional, se necessário)
 -- Exemplo: Habilita a extensão pgcrypto para criptografia
@@ -193,57 +193,49 @@ CREATE SCHEMA IF NOT EXISTS vet_schema;
 SET search_path TO vet_schema;
 
 -- Comentários adicionais
-COMMENT ON DATABASE med_vet_bd IS 'Banco de dados para gestão da clínica veterinária MED VET.';
+COMMENT ON DATABASE VetMed IS 'Banco de dados para gestão da clínica veterinária MED VET.';
 
 
 CREATE TABLE IF NOT EXISTS Usuario (
-    email_usuario CHAR(50) PRIMARY KEY,  -- E-mail do usuário
-    nome VARCHAR(90) NOT NULL,
-    telefone VARCHAR(20) NOT NULL,
-    endereco VARCHAR(120) NOT NULL,
-    senha VARCHAR(256) NOT NULL
+    id_usuario SERIAL PRIMARY KEY,  -- id serial automático
+    email VARCHAR(50) UNIQUE NOT NULL,  -- E-mail do usuário
+    nome VARCHAR(90) NOT NULL,  -- Nome do usuário
+    senha VARCHAR(256) NOT NULL,    -- Senha do usuário -criptografada-
+    cargo VARCHAR(3) CHECK (cargo IN ('vet', 'sec')) NOT NULL  -- Restrição CHECK para aceitar valores específicos
 );
 
+
+CREATE TABLE IF NOT EXISTS Especialidade (
+    id_especialidade SERIAL PRIMARY KEY,    -- id da especialidade
+    nome VARCHAR(50) NOT NULL UNIQUE    -- nome da especialidade
+);
+
+CREATE TABLE IF NOT EXISTS Veterinario (
+    id_veterinario SERIAL PRIMARY KEY REFERENCES Usuario(id_usuario),  -- id do veterinário -chave estrangeira-
+    id_especialidade INT NOT NULL REFERENCES Especialidade(id_especialidade)    -- id da especialidade -chave estrangeira-
+);
+
+
 CREATE TABLE IF NOT EXISTS Tutor (
-    cpf_tutor VARCHAR(14) PRIMARY KEY,
-    nome VARCHAR(100) NOT NULL,
-    data_nascimento DATE,
-    telefone VARCHAR(15),
-    endereco VARCHAR(200),
-    email VARCHAR(100) UNIQUE
+    id_tutor SERIAL PRIMARY KEY,    -- id do tutor
+    cpf VARCHAR(14) UNIQUE NOT NULL,    -- CPF do tutor
+    nome VARCHAR(100) NOT NULL,   -- nome do tutor
+    data_nascimento DATE NOT NULL,  -- data de nascimento do tutor
+    telefone VARCHAR(15) NOT NULL,  -- telefone do tutor
+    endereco VARCHAR(200) NOT NULL -- endereço do tutor
 );
 
 CREATE TABLE IF NOT EXISTS Animal (
     id_animal SERIAL PRIMARY KEY,
-    cpf_tutor VARCHAR(14) NOT NULL,
+    id_tutor INT NOT NULL,
     nome VARCHAR(100) NOT NULL,
     especie VARCHAR(50) NOT NULL,
-    raca VARCHAR(50),
-    ano_nascimento INTEGER,
-    sexo VARCHAR(1),
-    peso FLOAT,
-    cor VARCHAR(50),
-    CONSTRAINT fk_tutor FOREIGN KEY (cpf_tutor) REFERENCES Tutor(cpf_tutor)
-);
-
-CREATE TABLE IF NOT EXISTS Veterinario (
-    id_veterinario CHAR(11) PRIMARY KEY,  -- CPF do veterinário
-    nome VARCHAR(90) NOT NULL,
-    telefone VARCHAR(20) NOT NULL,
-    endereco VARCHAR(120) NOT NULL,
-    email VARCHAR(100) NOT NULL,
-    crmv CHAR(9) NOT NULL UNIQUE          -- Formato: XX (estado) + 7 dígitos
-);
-
-CREATE TABLE IF NOT EXISTS Especialidade (
-    id_especialidade SERIAL PRIMARY KEY,
-    nome VARCHAR(50) NOT NULL UNIQUE
-);
-
-CREATE TABLE IF NOT EXISTS Veterinario_Especialidade (
-    id_veterinario CHAR(11) REFERENCES Veterinario(id_veterinario),
-    id_especialidade INT REFERENCES Especialidade(id_especialidade),
-    PRIMARY KEY (id_veterinario, id_especialidade)
+    raca VARCHAR(50) NOT NULL,
+    data_nascimento DATE NOT NULL,
+    sexo CHAR(1) CHECK ( sexo IN ('F', 'M')) NOT NULL,  -- CHAR porque tem obrigatoriamente um único caractere
+    peso NUMERIC(5,2) NOT NULL,
+    cor VARCHAR(50) NOT NULL,
+    CONSTRAINT fk_tutor FOREIGN KEY (id_tutor) REFERENCES Tutor(id_tutor)
 );
 
 CREATE TABLE IF NOT EXISTS Status (
@@ -254,16 +246,16 @@ CREATE TABLE IF NOT EXISTS Status (
 CREATE TABLE IF NOT EXISTS Agendamento (
     id_agendamento SERIAL PRIMARY KEY,
     id_animal INTEGER NOT NULL,
-    data DATE NOT NULL,
-    hora TIME NOT NULL,
     id_status INTEGER NOT NULL,
+    data DATE NOT NULL,
+    horario CHAR(5) NOT NULL, -- Time retorna HH:MM:SS, nesse caso apenas a string é suficiente
     CONSTRAINT fk_animal FOREIGN KEY (id_animal) REFERENCES Animal(id_animal),
     CONSTRAINT fk_status FOREIGN KEY (id_status) REFERENCES Status(id_status)
 );
 
 CREATE TABLE IF NOT EXISTS Tipo_Consulta (
     id_tipo SERIAL PRIMARY KEY,
-    nome VARCHAR(50) NOT NULL,
+    nome VARCHAR(50) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS Consulta (
