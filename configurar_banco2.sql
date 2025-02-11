@@ -260,11 +260,11 @@ CREATE TABLE IF NOT EXISTS Tipo_Consulta (
 
 CREATE TABLE IF NOT EXISTS Consulta (
     id_consulta SERIAL PRIMARY KEY,
-    id_veterinario CHAR(11) NOT NULL,
-    id_agendamento INTEGER NOT NULL,
+    id_veterinario INT NOT NULL,
+    id_agendamento INT NOT NULL,
+    id_tipo INT NOT NULL,
     data DATE NOT NULL,
-    horario TIME NOT NULL,
-    id_tipo INTEGER NOT NULL,
+    horario CHAR(5) NOT NULL,
     valor_total NUMERIC(10, 2) GENERATED ALWAYS AS (
         (SELECT COALESCE(SUM(p.preco), 0)
          FROM Consulta_Tratamento cp
