@@ -1,22 +1,7 @@
-import psycopg2
-from psycopg2 import sql
-from datetime import datetime
-from app.validators.animal_validator import AnimalValidator
-
-def get_db_connection():
-    conn = psycopg2.connect(
-        dbname='your_dbname',
-        user='your_user',
-        password='your_password',
-        host='your_host',
-        port='your_port'
-    )
-    return conn
-
 class Animal:
-    def __init__(self, id_animal, id_tutor, nome, especie, raca, ano_nascimento, sexo, peso, cor):
+    def __init__(self, id_animal, cpf_tutor, nome, especie, raca, ano_nascimento, sexo, peso, cor):
         self.id_animal = id_animal
-        self.id_tutor = id_tutor
+        self.cpf_tutor = cpf_tutor
         self.nome = nome
         self.especie = especie
         self.raca = raca
@@ -28,7 +13,7 @@ class Animal:
     def __repr__(self):
         return f"<Animal {self.id_animal}>"
 
-    @staticmethod
+
     def criar_animal(data):
         """
         Cria um novo animal no banco de dados.
@@ -40,7 +25,7 @@ class Animal:
             raise ValueError(mensagem)
 
         # Extrair os valores do dicionário
-        id_tutor = data['id_tutor']
+        cpf_tutor = data['cpf_tutor']
         nome = data['nome']
         especie = data['especie']
         raca = data['raca']
@@ -53,18 +38,18 @@ class Animal:
         conn = get_db_connection()
         cursor = conn.cursor()
         query = """
-            INSERT INTO animal (id_tutor, nome, especie, raca, ano_nascimento, sexo, peso, cor)
+            INSERT INTO animal (cpf_tutor, nome, especie, raca, ano_nascimento, sexo, peso, cor)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
             RETURNING id_animal
         """
-        cursor.execute(query, (id_tutor, nome, especie, raca, ano_nascimento, sexo, peso, cor))
+        cursor.execute(query, (cpf_tutor, nome, especie, raca, ano_nascimento, sexo, peso, cor))
         id_animal = cursor.fetchone()[0]
         conn.commit()
         cursor.close()
         conn.close()
         return id_animal
 
-    @staticmethod
+    
     def buscar_animal_por_id(id_animal):
         conn = get_db_connection()
         cursor = conn.cursor()
@@ -79,7 +64,7 @@ class Animal:
             return Animal(*animal)
         return None
 
-    @staticmethod
+   
     def atualizar_animal(id_animal, **kwargs):
         """
         Atualiza os campos fornecidos em kwargs para o animal com o id_animal especificado.
@@ -114,7 +99,7 @@ class Animal:
         cursor.close()
         conn.close()
 
-    @staticmethod
+    
     def deletar_animal(id_animal):
         conn = get_db_connection()
         cursor = conn.cursor()
