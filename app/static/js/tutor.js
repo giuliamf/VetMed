@@ -120,6 +120,10 @@ function editarTutor(id) {
                 return;
             }
 
+            console.log(tutor); // Verifique o conteúdo real do objeto tutor
+            console.log("Nome:", tutor.nome);
+            console.log("Nascimento:", tutor.nascimento);
+
             // Preenche os campos com os dados do tutor
             document.getElementById("nome").value = tutor.nome;
             document.getElementById("nascimento").value = formatarData(tutor.nascimento);
@@ -147,7 +151,6 @@ function formatarData(dataCompleta) {
     let data = new Date(dataCompleta); // Converte para objeto Date
     return data.toISOString().split("T")[0]; // Extrai apenas yyyy-MM-dd
 }
-
 
 function fecharPopupCadastro() {
     document.getElementById("cadastro-popup").style.display = "none";

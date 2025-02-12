@@ -84,11 +84,11 @@ def editar_tutor(id_tutor):
         if not resultado:
             return jsonify({"erro": "Tutor não encontrado"}), 404
 
+        cpf_formatado = formatar_cpf(resultado[1])
         tutor = {
-            "id": resultado[0],
-            "nome": resultado[1],
-            "nascimento": resultado[2],
-            "cpf": resultado[3],
+            "cpf": cpf_formatado,
+            "nome": resultado[2],
+            "nascimento": resultado[3],
             "telefone": resultado[4],
             "endereco": resultado[5]
         }
@@ -121,7 +121,7 @@ def editar_tutor(id_tutor):
             id_tutor
         )
         try:
-            execute_sql(query, (params, id_tutor))
+            execute_sql(query, params)
             return jsonify({"mensagem": "Tutor atualizado com sucesso!"}), 200
         except Exception as e:
             return jsonify({"erro": f"Erro ao atualizar tutor: {str(e)}"}), 500
