@@ -7,7 +7,6 @@ caso seja vet = id_vet:
 
 SELECT * FROM Horarios_Agendados_Veterinario WHERE id_veterinario = $s;
 
-
 procedure:
 
 CALL realizar_agendamento(id_animal, id_veterinario, data, hora);

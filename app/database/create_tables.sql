@@ -38,7 +38,11 @@ CREATE TABLE IF NOT EXISTS Usuario (
     nome VARCHAR(90) NOT NULL,
     senha VARCHAR(64) NOT NULL,
     cargo VARCHAR(3) CHECK (cargo IN ('vet', 'sec', 'adm')) NOT NULL,  -- Restricao CHECK para aceitar valores especificos
-    foto bytea
+);
+
+CREATE TABLE IF NOT EXISTS Usuario_Foto (
+    id_usuario INT PRIMARY KEY REFERENCES Usuario(id_usuario) ON DELETE CASCADE,
+    foto bytea NOT NULL -- ver oq fazer aqui com a foto!! default
 );
 
 -- Tabela de Especialidades (cadastra as possiveis especialidades)
@@ -74,7 +78,7 @@ CREATE TABLE IF NOT EXISTS Animal (
     sexo CHAR(1) CHECK (sexo IN ('F', 'M')) NOT NULL, -- CHAR porque tem obrigatoriamente um unico caractere
     peso NUMERIC(5,2) NOT NULL,
     cor VARCHAR(50) NOT NULL,
-    CONSTRAINT fk_tutor FOREIGN KEY (id_tutor) REFERENCES Tutor(id_tutor)
+    CONSTRAINT fk_tutor FOREIGN KEY (id_tutor) REFERENCES Tutor(id_tutor) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS Status_Agendamento (
@@ -89,9 +93,9 @@ CREATE TABLE IF NOT EXISTS Agendamento (
     id_veterinario INT NOT NULL,
     data DATE NOT NULL,
     horario TIME NOT NULL, -- Time retorna HH:MM:SS tratar como HH:MM no select/back end
-    CONSTRAINT fk_animal FOREIGN KEY (id_animal) REFERENCES Animal(id_animal),
+    CONSTRAINT fk_animal FOREIGN KEY (id_animal) REFERENCES Animal(id_animal) ON DELETE CASCADE,
     CONSTRAINT fk_status FOREIGN KEY (id_status) REFERENCES Status_Agendamento(id_status),
-    CONSTRAINT fk_veterinario FOREIGN KEY (id_veterinario) REFERENCES Veterinario(id_veterinario)
+    CONSTRAINT fk_veterinario FOREIGN KEY (id_veterinario) REFERENCES Veterinario(id_veterinario) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS Horario_Funcionamento (
@@ -133,7 +137,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Conferir se o trigger já existe antes de re-criar
+-- Conferir se o trigger de remover horário já existe antes de re-criar
 DO $$
 BEGIN
     IF EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'trg_remover_horario_ocupado') THEN
@@ -142,11 +146,75 @@ BEGIN
 END $$;
 
 -- Criar (ou recriar, caso já exista antes) o trigger para remover horario ocupado
-CREATE TRIGGER trg_remover_horario_ocupado
-AFTER UPDATE OF id_status ON Agendamento
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'trg_definir_foto_padrao') THEN
+        DROP TRIGGER trg_definir_foto_padrao ON Usuario;
+    END IF;
+END $$;
+
+-- Trigger para definir foto padrão do usuário
+CREATE OR REPLACE FUNCTION definir_foto_padrao()
+RETURNS TRIGGER AS $$
+DECLARE
+    v_foto_padrao BYTEA;
+BEGIN
+    -- Carrega a imagem padrão do diretório
+    SELECT pg_read_binary_file('app/static/profile_pictures/padrao.jpg') INTO v_foto_padrao;
+
+    -- Se a foto for NULL (inserção ou remoção da foto pelo usuário), definir imagem padrão
+    IF NEW.foto IS NULL THEN
+        NEW.foto := v_foto_padrao;
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Chamada para criar o trigger
+CREATE TRIGGER trg_definir_foto_padrao
+BEFORE INSERT OR UPDATE ON Usuario
 FOR EACH ROW
-WHEN (NEW.id_status = 2)
-EXECUTE FUNCTION remover_horario_ocupado();
+EXECUTE FUNCTION definir_foto_padrao();
+
+-- Conferir se o trigger de foto já existe
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'trg_definir_foto_padrao') THEN
+        DROP TRIGGER trg_definir_foto_padrao ON Usuario;
+    END IF;
+END $$;
+
+-- Trigger para definir foto padrão do usuário
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'trg_definir_foto_padrao') THEN
+        DROP TRIGGER trg_definir_foto_padrao ON Usuario;
+    END IF;
+END $$;
+
+CREATE OR REPLACE FUNCTION definir_foto_padrao()
+RETURNS TRIGGER AS $$
+DECLARE
+    v_foto_padrao BYTEA;
+BEGIN
+    -- Carrega a imagem padrão do diretório para armazenar no banco
+    SELECT pg_read_binary_file('app/static/profile_pictures/padrao.jpg') INTO v_foto_padrao;
+
+    -- Se o usuário não enviou uma foto, define a imagem padrão
+    IF NEW.foto IS NULL THEN
+        NEW.foto := v_foto_padrao;
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_definir_foto_padrao
+BEFORE INSERT ON Usuario
+FOR EACH ROW
+EXECUTE FUNCTION definir_foto_padrao();
+
 
 -- View para listar horários que um veterinário tem agendamento
 CREATE OR REPLACE VIEW Horarios_Agendados_Veterinario AS
