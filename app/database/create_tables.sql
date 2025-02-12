@@ -37,7 +37,8 @@ CREATE TABLE IF NOT EXISTS Usuario (
     email VARCHAR(50) UNIQUE NOT NULL,  -- Unique para evitar emails iguais
     nome VARCHAR(90) NOT NULL,
     senha VARCHAR(64) NOT NULL,
-    cargo VARCHAR(3) CHECK (cargo IN ('vet', 'sec', 'adm')) NOT NULL  -- Restricao CHECK para aceitar valores especificos
+    cargo VARCHAR(3) CHECK (cargo IN ('vet', 'sec', 'adm')) NOT NULL,  -- Restricao CHECK para aceitar valores especificos
+    foto bytea
 );
 
 -- Tabela de Especialidades (cadastra as possiveis especialidades)
@@ -49,7 +50,8 @@ CREATE TABLE IF NOT EXISTS Especialidade (
 -- Sub-tabela de Veterinario (herda de Usuario)
 CREATE TABLE IF NOT EXISTS Veterinario (
     id_veterinario INT PRIMARY KEY REFERENCES Usuario(id_usuario) ON DELETE CASCADE,  -- Herda ID de Usuario
-    id_especialidade INT NOT NULL REFERENCES Especialidade(id_especialidade)
+    id_especialidade INT NOT NULL REFERENCES Especialidade(id_especialidade),
+    carga_horaria CHAR(5) CHECK (carga_horaria IN ('manhã', 'tarde')) NOT NULL,
     -- Especialidade obrigatoria, nao eh PK porque cada veterinario tem apenas uma especialidade e ela eh obrigatoria
 );
 
@@ -84,94 +86,139 @@ CREATE TABLE IF NOT EXISTS Agendamento (
     id_agendamento SERIAL PRIMARY KEY,
     id_animal INT NOT NULL,
     id_status INT NOT NULL DEFAULT 1,
+    id_veterinario INT NOT NULL,
     data DATE NOT NULL,
-    horario CHAR(5) NOT NULL, -- Time retorna HH:MM:SS, nesse caso apenas a string HH:MM eh suficiente
+    horario TIME NOT NULL, -- Time retorna HH:MM:SS tratar como HH:MM no select/back end
     CONSTRAINT fk_animal FOREIGN KEY (id_animal) REFERENCES Animal(id_animal),
-    CONSTRAINT fk_status FOREIGN KEY (id_status) REFERENCES Status_Agendamento(id_status)
+    CONSTRAINT fk_status FOREIGN KEY (id_status) REFERENCES Status_Agendamento(id_status),
+    CONSTRAINT fk_veterinario FOREIGN KEY (id_veterinario) REFERENCES Veterinario(id_veterinario)
 );
 
-CREATE TABLE IF NOT EXISTS Tipo_Consulta (
-    id_tipo SERIAL PRIMARY KEY,
-    nome VARCHAR(50) NOT NULL
+CREATE TABLE IF NOT EXISTS Horario_Funcionamento (
+    id_horario SERIAL PRIMARY KEY,
+    horario TIME NOT NULL,
+    turno CHAR(5) CHECK (turno IN ('manhã', 'tarde')) NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS Consulta (
-    id_consulta SERIAL PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS Carga_Horaria (
+       id_veterinario INT NOT NULL,
+       turno CHAR(5) CHECK (turno IN ('manhã', 'tarde')) NOT NULL,
+        PRIMARY KEY (id_veterinario, turno),
+        FOREIGN KEY (id_veterinario) REFERENCES veterinario(id_veterinario) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS Horario_Ocupado (
     id_veterinario INT NOT NULL,
     id_agendamento INT NOT NULL,
     data DATE NOT NULL,
     horario TIME NOT NULL,
-    id_tipo INT NOT NULL,
-    status VARCHAR(20) NOT NULL DEFAULT 'em aberto',
-    CONSTRAINT fk_veterinario FOREIGN KEY (id_veterinario) REFERENCES Veterinario(id_veterinario),
-    CONSTRAINT fk_tipo FOREIGN KEY (id_tipo) REFERENCES Tipo_Consulta(id_tipo),
-    CONSTRAINT fk_agendamento FOREIGN KEY (id_agendamento) REFERENCES Agendamento(id_agendamento)
+    PRIMARY KEY (id_veterinario, id_agendamento),
+    FOREIGN KEY (id_veterinario) REFERENCES veterinario(id_veterinario) ON DELETE CASCADE,
+    FOREIGN KEY (id_agendamento) REFERENCES agendamento(id_agendamento) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS Tratamento (
-    id_tratamento SERIAL PRIMARY KEY,
-    descricao TEXT NOT NULL,
-    preco NUMERIC(10, 2) NOT NULL
-);
+-- FUNCOES, TRIGGERS, VIEWS
 
-CREATE TABLE IF NOT EXISTS Consulta_Tratamento (
-    id_consulta_procedimento SERIAL PRIMARY KEY,
-    id_tratamento INT NOT NULL,
-    id_consulta INT NOT NULL,
-    CONSTRAINT fk_tratamento FOREIGN KEY (id_tratamento) REFERENCES Tratamento(id_tratamento),
-    CONSTRAINT fk_consulta FOREIGN KEY (id_consulta) REFERENCES Consulta(id_consulta)
-);
-
-CREATE TABLE IF NOT EXISTS Meio_Pagamento (
-    id_meio_pagamento SERIAL PRIMARY KEY,
-    nome VARCHAR(50) NOT NULL UNIQUE
-);
-
-CREATE TABLE IF NOT EXISTS Pagamento (
-    id_pagamento SERIAL PRIMARY KEY,
-    id_consulta INT NOT NULL,
-    valor NUMERIC(15, 2) NOT NULL,
-    data_pagamento DATE NOT NULL,
-    id_meio_pagamento INT NOT NULL,
-    CONSTRAINT fk_consulta FOREIGN KEY (id_consulta) REFERENCES Consulta(id_consulta),
-    CONSTRAINT fk_meio_pagamento FOREIGN KEY (id_meio_pagamento) REFERENCES Meio_Pagamento(id_meio_pagamento)
-);
-
--- Trigger para atualizar o status da consulta para 'pago' quando o pagamento eh registrado
-CREATE OR REPLACE FUNCTION AtualizarStatusConsulta() RETURNS TRIGGER AS $$
+-- Funcao para remover horario ocupado quando um agendamento for cancelado
+CREATE OR REPLACE FUNCTION remover_horario_ocupado()
+RETURNS TRIGGER AS $$
 BEGIN
-    -- Atualiza o status da consulta se o valor total foi pago
-    IF (SELECT COALESCE(SUM(valor), 0) FROM Pagamento WHERE id_consulta = NEW.id_consulta) >=
-       (SELECT valor_total FROM Consulta WHERE id_consulta = NEW.id_consulta) THEN
-        UPDATE Consulta
-        SET status = 'pago'
-        WHERE id_consulta = NEW.id_consulta;
+    -- Se o status do agendamento mudar para 2 (cancelado), remover o horário ocupado correspondente
+    IF NEW.id_status = 2 THEN
+        DELETE FROM Horario_Ocupado
+        WHERE id_veterinario = NEW.id_veterinario
+        AND id_agendamento = NEW.id_agendamento;
     END IF;
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
--- View para atualizar dinamicamente o valor total da consulta
-CREATE OR REPLACE VIEW View_Consulta_Valor AS
-SELECT
-    c.id_consulta,
-    COALESCE(SUM(t.preco), 0) AS valor_total_atualizado
-FROM Consulta c
-LEFT JOIN Consulta_Tratamento ct ON c.id_consulta = ct.id_consulta
-LEFT JOIN Tratamento t ON ct.id_tratamento = t.id_tratamento
-GROUP BY c.id_consulta;
-
-
--- Verifica e remove o trigger caso já exista antes de recriá-lo
+-- Conferir se o trigger já existe antes de re-criar
 DO $$
 BEGIN
-    IF EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'atualizar_status_consulta') THEN
-        DROP TRIGGER atualizar_status_consulta ON Pagamento;
+    IF EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'trg_remover_horario_ocupado') THEN
+        DROP TRIGGER trg_remover_horario_ocupado ON Agendamento;
     END IF;
 END $$;
 
--- Criar o trigger após garantir que ele não existe
-CREATE TRIGGER atualizar_status_consulta
-AFTER INSERT ON Pagamento
+-- Criar (ou recriar, caso já exista antes) o trigger para remover horario ocupado
+CREATE TRIGGER trg_remover_horario_ocupado
+AFTER UPDATE OF id_status ON Agendamento
 FOR EACH ROW
-EXECUTE FUNCTION AtualizarStatusConsulta();
+WHEN (NEW.id_status = 2)
+EXECUTE FUNCTION remover_horario_ocupado();
+
+-- View para listar horários que um veterinário tem agendamento
+CREATE OR REPLACE VIEW Horarios_Agendados_Veterinario AS
+SELECT
+    a.id_agendamento,
+    v.id_veterinario,
+    u.nome AS nome_veterinario,
+    a.data,
+    a.horario,
+    sa.nome AS status_agendamento,
+    an.nome AS nome_animal,
+    t.nome AS nome_tutor
+FROM Agendamento a
+JOIN Veterinario v ON a.id_veterinario = v.id_veterinario
+JOIN Usuario u ON u.id_usuario = v.id_veterinario -- Nome do veterinário vem da tabela Usuario
+JOIN Animal an ON a.id_animal = an.id_animal
+JOIN Tutor t ON an.id_tutor = t.id_tutor
+JOIN Status_Agendamento sa ON a.id_status = sa.id_status
+ORDER BY a.data, a.horario;
+
+-- Procedure para realizar um agendamento
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM pg_proc WHERE proname = 'realizar_agendamento') THEN
+        DROP PROCEDURE realizar_agendamento;
+    END IF;
+END $$;
+
+CREATE PROCEDURE realizar_agendamento(
+    IN p_id_animal INT,
+    IN p_id_veterinario INT,
+    IN p_data DATE,
+    IN p_horario TIME
+)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_tutor INT;
+    v_turno CHAR(5);
+    v_horario_disponivel INT;
+BEGIN
+    -- Verifica se o animal existe e encontra o tutor associado
+    SELECT id_tutor INTO v_tutor FROM Animal WHERE id_animal = p_id_animal;
+    IF v_tutor IS NULL THEN
+        RAISE EXCEPTION 'O animal informado não existe.';
+    END IF;
+
+    -- Verifica se o veterinário atende no turno desse horário
+    SELECT turno INTO v_turno FROM Horario_Funcionamento WHERE horario = p_horario;
+    IF NOT EXISTS (SELECT 1 FROM Carga_Horaria WHERE id_veterinario = p_id_veterinario AND turno = v_turno) THEN
+        RAISE EXCEPTION 'O veterinário não atende neste turno.';
+    END IF;
+
+    -- Verifica se o horário está disponível
+    SELECT COUNT(*) INTO v_horario_disponivel
+    FROM Horario_Ocupado
+    WHERE id_veterinario = p_id_veterinario AND data = p_data AND horario = p_horario;
+
+    IF v_horario_disponivel > 0 THEN
+        RAISE EXCEPTION 'Este horário já está ocupado para este veterinário.';
+    END IF;
+
+    -- Se passou em todas as verificações, insere o agendamento
+    INSERT INTO Agendamento (id_animal, id_status, id_veterinario, data, horario)
+    VALUES (p_id_animal, 1, p_id_veterinario, p_data, p_horario)
+    RETURNING id_agendamento INTO v_horario_disponivel;
+
+    -- Adiciona o horário como ocupado
+    INSERT INTO Horario_Ocupado (id_veterinario, id_agendamento, data, horario)
+    VALUES (p_id_veterinario, v_horario_disponivel, p_data, p_horario);
+END;
+$$;
+
+
+
