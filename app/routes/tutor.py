@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify, render_template
-from psycopg2.errors import UniqueViolation
+from psycopg2.errors import Error
 from app.database import execute_sql
 
 from app.utils.formatar_cpf import formatar_cpf
@@ -60,7 +60,7 @@ def cadastro_tutor():
         )
         execute_sql(query, params)
 
-    except UniqueViolation as e:
+    except Error as e:
         return jsonify({"erro": "CPF já cadastrado!"}), 400
     except Exception as e:
         return jsonify({"erro": f"Erro ao cadastrar tutor: {str(e)}"}), 500
