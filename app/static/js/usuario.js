@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", carregarUsuarios);
 
 document.getElementById("novoCadastro").addEventListener("click", function () {
-    fetch("/cadastro_usuario")
+    fetch("/cadastro_usuario_page")
         .then(response => response.text())
         .then(html => {
             document.getElementById("popupContainer").innerHTML = html;
@@ -142,7 +142,7 @@ function salvarEdicaoUsuario(id) {
 }
 
 function editarUsuario(id) {
-    fetch("/cadastro_usuario")
+    fetch("/cadastro_usuario_page")
         .then(response => response.text())
         .then(html => {
             document.getElementById("popupContainer").innerHTML = html;
