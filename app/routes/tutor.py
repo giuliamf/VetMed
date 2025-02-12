@@ -1,8 +1,7 @@
 from flask import Blueprint, request, jsonify, render_template
-from psycopg2.errors import Error
 from app.database import execute_sql
 
-from app.utils.formatar_cpf import formatar_cpf
+from app.utils.funcoes_com_cpf import cpf_existe, cpf_igual, formatar_cpf
 
 tutores_bp = Blueprint('tutores', __name__)
 
@@ -11,22 +10,25 @@ tutores_bp = Blueprint('tutores', __name__)
 @tutores_bp.route('/api/tutores', methods=['GET'])
 def get_tutores():
     """ Retorna a lista de tutores do banco de dados """
-    query = "SELECT id_tutor, cpf, nome, data_nascimento, telefone, endereco FROM Tutor ORDER BY id_tutor ASC"
-    tutores = execute_sql(query, fetch_all=True)
+    try:
+        query = "SELECT * FROM Tutor ORDER BY id_tutor ASC"
+        tutores = execute_sql(query, fetch_all=True)
 
-    tutores_lista = [
-        {
-            "id": t[0],
-            "cpf": t[1],
-            "nome": t[2],
-            "nascimento": str(t[3]),
-            "telefone": t[4],
-            "endereco": t[5]
-        }
-        for t in tutores
-    ]
+        tutores_lista = [
+            {
+                "id": t[0],
+                "cpf": t[1],
+                "nome": t[2],
+                "nascimento": str(t[3]),
+                "telefone": t[4],
+                "endereco": t[5]
+            }
+            for t in tutores
+        ]
 
-    return jsonify(tutores_lista)
+        return jsonify(tutores_lista), 200
+    except Exception as e:
+        return jsonify({"erro": f"Erro ao buscar tutores: {str(e)}"}), 500
 
 
 # Rota para cadastrar um tutor
@@ -40,10 +42,8 @@ def cadastro_tutor():
     cpf = formatar_cpf(data.get("cpf"))
 
     # Verifica se o CPF já existe no banco
-    query_verifica = "SELECT COUNT(*) FROM Tutor WHERE cpf = %s"
-    resultado = execute_sql(query_verifica, (cpf,), fetch_one=True)
-
-    if resultado and resultado[0] > 0:
+    cpf_invalido = cpf_existe(cpf)
+    if cpf_invalido:        # Se cpf não for None, significa que ele foi encontrado
         return jsonify({"erro": "CPF já cadastrado!"}), 400
 
     # Verificar se todos os campos estão presentes
@@ -78,7 +78,7 @@ def cadastro_tutor():
 def editar_tutor(id_tutor):
     if request.method == 'GET':
         # Buscar tutor pelo ID no banco de dados
-        query = "SELECT id_tutor, nome, data_nascimento, cpf, telefone, endereco FROM Tutor WHERE id_tutor = %s"
+        query = "SELECT * FROM Tutor WHERE id_tutor = %s"
         resultado = execute_sql(query, (id_tutor,), fetch_one=True)
 
         if not resultado:
@@ -99,13 +99,32 @@ def editar_tutor(id_tutor):
     if request.method == 'PUT':
         # Código de atualização já existente
         dados = request.json
+        cpf_formatado = formatar_cpf(dados['cpf'])
+
+        # Verifica se o CPF foi alterado e se foi, se ele já existe no banco, se existir, retorna um erro
+        if not cpf_igual(cpf_formatado, id_tutor):
+            cpf_invalido = cpf_existe(cpf_formatado)
+            if cpf_invalido:
+                return cpf_invalido
+
         query = """
-                    UPDATE Tutor SET nome = %s, data_nascimento = %s, telefone = %s, endereco = %s
+                    UPDATE Tutor SET cpf = %s, nome = %s, data_nascimento = %s, telefone = %s, endereco = %s
                     WHERE id_tutor = %s
                 """
-        execute_sql(query, (dados["nome"], dados["nascimento"], dados["telefone"], dados["endereco"], id_tutor))
 
-        return jsonify({"mensagem": "Tutor atualizado com sucesso!"}), 200
+        params = (
+            cpf_formatado,
+            dados["nome"],
+            dados["nascimento"],
+            dados["telefone"],
+            dados["endereco"],
+            id_tutor
+        )
+        try:
+            execute_sql(query, (params, id_tutor))
+            return jsonify({"mensagem": "Tutor atualizado com sucesso!"}), 200
+        except Exception as e:
+            return jsonify({"erro": f"Erro ao atualizar tutor: {str(e)}"}), 500
 
 
 # Rotas para renderizar páginas HTML

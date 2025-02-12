@@ -1,7 +1,7 @@
 from flask import render_template, jsonify, request, redirect, session
-from app import create_app, db
-from app.database import disconnect_database, buscar_dados_usuario_por_email, buscar_usuario_por_id, execute_sql
-from app.criptografia_senhas import criptografar_senha, verificar_senha
+from app import create_app
+from app.database import buscar_dados_usuario_por_email, buscar_usuario_por_id, execute_sql
+from app.utils.criptografia_senhas import criptografar_senha, verificar_senha
 from app.simulação_bd import usuarios, especialidades, agendamento, listastatus
 from datetime import datetime
 
