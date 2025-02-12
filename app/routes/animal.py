@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify, render_template
 from app.database import execute_sql
 
 from app.utils.funcoes_com_cpf import formatar_cpf, nome_tutor_id, cpf_igual, cpf_existe
-from app.utils.buscas_bd import id_tutor_cpf, cpf_tutor_id, id_tutor_id_animal
+from app.utils.buscas_bd import buscar_id_tutor_por_cpf, buscar_cpf_tutor_por_id, buscar_id_tutor_por_id_animal
 
 animais_bp = Blueprint('pacientes', __name__)
 
@@ -48,7 +48,7 @@ def criar_paciente():
     cpf_tutor = formatar_cpf(data.get("tutor"))
 
     # Achar o id do tutor pelo cpf
-    id_tutor = id_tutor_cpf(cpf_tutor)
+    id_tutor = buscar_id_tutor_por_cpf(cpf_tutor)
     if not id_tutor:
         return jsonify({"erro": "Tutor não encontrado! Cadastre o tutor antes"}), 404
 
@@ -93,7 +93,7 @@ def editar_paciente(id_animal):
             return jsonify({"erro": "Paciente não encontrado"}), 404
 
         # Pegar o cpf do tutor a partir do id
-        cpf_tutor = formatar_cpf(cpf_tutor_id(resultado[1]))
+        cpf_tutor = formatar_cpf(buscar_cpf_tutor_por_id(resultado[1]))
 
         paciente = {
             "id_animal": resultado[0],
@@ -117,7 +117,7 @@ def editar_paciente(id_animal):
         cpf_formatado = formatar_cpf(cpf)
 
         # Pegar o id "original" do tutor a partir do id do animal
-        id_tutor_original = id_tutor_id_animal(id_animal)
+        id_tutor_original = buscar_id_tutor_por_id_animal(id_animal)
 
         # Verificar se o usuário tentou mudar o cpf
         if not cpf_igual(cpf_formatado, id_tutor_original):
@@ -127,7 +127,7 @@ def editar_paciente(id_animal):
                 return cpf_invalido
 
         # Achar o id do tutor através do cpf
-        id_tutor = id_tutor_cpf(cpf_formatado)
+        id_tutor = buscar_id_tutor_por_cpf(cpf_formatado)
 
         if not id_tutor:    # Se não encontrar o tutor, retornar erro
             return jsonify({"erro": "Tutor não encontrado! Cadastre o tutor antes"}), 404

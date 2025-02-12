@@ -2,13 +2,13 @@
     <div class="popup-content">
         <h2>Agendamento - <span id="dataSelecionadaPopup"></span></h2>
         <form id="cadastroForm" method="POST" action="/cadastro_agendamento">
+            <input type="hidden" id="id_agendamento" name="id_agendamento">
             <input type="hidden" id="data" name="data"> <!-- Campo oculto para a data -->
 
             <label for="tutor">Tutor (CPF)</label>
             <div class="tutor-container">
                 <input type="text" id="tutor" name="tutor" required
-                       oninput="this.value = this.value.replace(/\D/g, '')"
-                       placeholder="Digite o CPF">
+                       placeholder="XXX.XXX.XX-XX">
                 <button type="button" id="carregarTutor">Carregar tutor</button>
                 <span id="loadingTutor" style="display: none;">Carregando...</span>
             </div>

@@ -2,6 +2,7 @@
     <div class="popup-content">
         <h2>Editar Agendamento</h2>
         <form id="cadastroForm">
+            <input type="hidden" id="id_agendamento" name="id_agendamento">
 
             <label for="data">Data</label>
             <input type="text" disabled id="data" name="data" required>
@@ -15,9 +16,6 @@
             <label for="status">Status</label>
             <select id="status" name="status" required>
                 <option value="">Selecione</option>
-                { % for status in status % }
-                <option value="{{ status.id }}">{{ status.nome }}</option>
-                { % endfor % }
             </select>
 
             <label for="horario">Horário</label>

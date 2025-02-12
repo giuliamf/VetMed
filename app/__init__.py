@@ -36,5 +36,8 @@ def create_app():
 
     from app.routes.usuario import usuarios_bp
     app.register_blueprint(usuarios_bp)
+
+    from app.routes.agendamento import agendamentos_bp
+    app.register_blueprint(agendamentos_bp)
     
     return app

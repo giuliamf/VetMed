@@ -55,30 +55,11 @@
                     </tr>
                 </thead>
                 <tbody id="listaAgendamentos">
-                {% for agendamento in agendamentos %}
-                    <tr>
-                        <td>{{ agendamento.hora }}</td>
-                        <td>
-                            <span class="paciente-nome" data-paciente-id="{{ agendamento.paciente }}"></span>
-                            (<span class="tutor-nome" data-tutor-id="{{ agendamento.tutor }}"></span>)
-                        </td>
-                        <td>
-                            <span class="status-nome">{{ agendamento.status }}</span>
-                        </td>
-                        <td>
-                            <button class="editar" onclick="editarAgendamento('{{ agendamento.id }}')">Editar</button>
-                            <div class="popupContainer">
-                                {% include 'tela_cadastros/editar_agendamento.html' %}
-                            </div>
-                        </td>
-                    </tr>
-                {% endfor %}
+                    <!-- Os agendamentos serão carregados dinamicamente aqui -->
                 </tbody>
             </table>
         </div>
     </main>
-    <script type="application/json" id="agendamentos-data">{{ agendamento | tojson }}</script>
-
     <script type="module" src="../static/js/agenda.js"></script>
     <script type="module" src="../static/js/buscas.js"></script>
     <script src="../static/js/logout.js"></script>

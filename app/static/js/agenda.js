@@ -1,92 +1,158 @@
-import {
-    buscarNomeIdPaciente,
-    buscarNomeIdTutor,
-    buscarNomeStatus,
-    buscarPacientesPorTutor,
-    buscarTutorCpf
-} from "./buscas.js";
-
 document.addEventListener("DOMContentLoaded", function () {
-    // Constantes dos elementos da página de agenda
-    const dataInput = document.getElementById("dataSelecionada");
     const listaAgendamentos = document.getElementById("listaAgendamentos");
     const dataAtualSpan = document.getElementById("dataAtual");
-    const agendaDiv = document.getElementById("agenda");
-    const agendaControls = document.getElementById("agenda-controls");
-    const novoAgendamentoBtn = document.getElementById("novoAgendamento");
+    const dataInput = document.getElementById("dataSelecionada");
+    const agendaDiv = document.getElementById("agenda"); // Seleciona a div da agenda
 
-    // Configurar evento do botão "Carregar Tutor"
-    configurarCarregarTutorBtn();
+    async function carregarAgendamentos(dataSelecionada) {
+        listaAgendamentos.innerHTML = ""; // Limpa os agendamentos anteriores
 
-    // Função para atualizar a agenda conforme a data escolhida
-    let agendamentosData = [];
-    try {
-        agendamentosData = JSON.parse(document.getElementById("agendamentos-data").textContent);
-    } catch (error) {
-        console.error("Erro ao carregar agendamentos:", error);
-        agendamentosData = [];
-    }
-
-    async function atualizarAgenda(dataSelecionada) {
-        listaAgendamentos.innerHTML = ""; // Limpa a tabela antes de adicionar os novos dados
-        const dataFormatada = new Date(dataSelecionada).toISOString().split("T")[0];
-
-        const agendamentosFiltrados = agendamentosData
-            .filter(agendamento => agendamento.data === dataFormatada)
-            .sort((a, b) => a.hora.localeCompare(b.hora));
-
-        dataAtualSpan.textContent = dataSelecionada ? formatarData(dataSelecionada) : "Selecione um dia";
-        agendaDiv.style.display = "block";
-
-        if (agendaControls) {
-            agendaControls.style.display = "block";
+        if (!dataSelecionada) {
+            dataAtualSpan.textContent = "Selecione um dia";
+            agendaDiv.style.display = "none"; // Garante que a agenda fique oculta se nenhuma data for selecionada
+            return;
         }
 
-        if (agendamentosFiltrados.length > 0) {
-            for (const agendamento of agendamentosFiltrados) {
-                const row = document.createElement("tr");
-                const nomePaciente = await buscarNomeIdPaciente(agendamento.paciente);
-                const nomeTutor = await buscarNomeIdTutor(agendamento.tutor);
-                const nomeStatus = await buscarNomeStatus(agendamento.status);
+        try {
+            // Faz a requisição para a API Flask
+            const response = await fetch("/api/agendamentos");
+            const agendamentosData = await response.json();
 
-                row.innerHTML = `
-                    <td>${agendamento.hora}</td>
-                    <td>${nomePaciente || "Não informado"} (${nomeTutor || "Sem tutor"})</td>
-                    <td>${nomeStatus}</td>
-                    <td>
-                        <button class="editar" onclick="editarAgendamento(${agendamento.id})">Editar</button>
-                    </td>
-                `;
-                listaAgendamentos.appendChild(row);
+            // Filtra os agendamentos pela data escolhida
+            const dataFormatada = new Date(dataSelecionada).toISOString().split("T")[0];
+            const agendamentosFiltrados = agendamentosData
+                .filter(agendamento => agendamento.data === dataFormatada)
+                .sort((a, b) => a.horario.localeCompare(b.horario));
+
+            dataAtualSpan.textContent = formatarData(dataSelecionada);
+            agendaDiv.style.display = "block"; // Exibe a agenda assim que uma data for selecionada
+
+            if (agendamentosFiltrados.length > 0) {
+                for (const agendamento of agendamentosFiltrados) {
+                    const row = document.createElement("tr");
+
+                    row.innerHTML = `
+                        <td>${agendamento.horario}</td>
+                        <td>${agendamento.paciente} (${agendamento.tutor})</td>
+                        <td>${agendamento.status}</td>
+                        <td>
+                            <button class="editar" onclick="editarAgendamento(${agendamento.id_agendamento})">Editar</button>
+                        </td>
+                    `;
+                    listaAgendamentos.appendChild(row);
+                }
+            } else {
+                // Se não houver agendamentos, exibe a mensagem padrão e mantém a tabela visível
+                listaAgendamentos.innerHTML = `<tr><td colspan="4" style="text-align:center;">Nenhum agendamento encontrado para este dia.</td></tr>`;
             }
-        } else {
-            listaAgendamentos.innerHTML = `<tr><td colspan="4" style="text-align:center;">Nenhum agendamento encontrado para este dia.</td></tr>`;
+        } catch (error) {
+            console.error("Erro ao carregar agendamentos:", error);
+            listaAgendamentos.innerHTML = `<tr><td colspan="4" style="text-align:center; color: red;">Erro ao carregar agendamentos.</td></tr>`;
+            agendaDiv.style.display = "block"; // Garante que a agenda seja exibida mesmo se houver erro
         }
     }
 
+    // Atualiza os agendamentos ao escolher uma data
     dataInput.addEventListener("change", function () {
-        atualizarAgenda(this.value).then(() => console.log("Agenda atualizada!"));
+        carregarAgendamentos(this.value);
     });
 
+    // Carrega os agendamentos ao abrir a página
     if (dataInput.value) {
-        atualizarAgenda(dataInput.value).then(() => console.log("Agenda inicializada!"));
-    }
-
-    if (novoAgendamentoBtn) {
-        novoAgendamentoBtn.addEventListener("click", function () {
-            const dataSelecionada = dataInput.value;
-            if (!dataSelecionada) {
-                alert("Por favor, selecione uma data antes de agendar.");
-                return;
-            }
-            abrirPopupCadastro(dataSelecionada);
-        });
+        carregarAgendamentos(dataInput.value);
     }
 });
 
-// ==================
-// Função separada para configurar o evento do botão "Carregar Tutor"
-// ==================
+document.getElementById("cadastroForm").addEventListener("submit", async function (event) {
+    event.preventDefault();
+
+    const id = document.getElementById("id_agendamento").value;
+    const status = document.getElementById("status").value;
+    const horario = document.getElementById("horario").value;
+
+    if (!id || !status || !horario) {
+        alert("Todos os campos são obrigatórios!");
+        return;
+    }
+
+    try {
+        const response = await fetch(`/api/agendamentos/${id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ horario, status }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            alert("Agendamento atualizado com sucesso!");
+            fecharPopupEdicao();
+            carregarAgendamentos(document.getElementById("dataSelecionada").value);
+        } else {
+            alert(`Erro: ${data.erro}`);
+        }
+    } catch (error) {
+        console.error("Erro ao atualizar agendamento:", error);
+    }
+});
+
+async function carregarStatus() {
+    try {
+        const response = await fetch("/api/status");
+        const statusData = await response.json();
+
+        let statusSelect = document.getElementById("status");
+        if (!statusSelect) {
+            console.error("Elemento select de status não encontrado!");
+            return;
+        }
+
+        statusSelect.innerHTML = '<option value="">Selecione</option>';
+
+        statusData.forEach(status => {
+            let option = document.createElement("option");
+            option.value = status.id;
+            option.textContent = status.nome;
+            statusSelect.appendChild(option);
+        });
+    } catch (error) {
+        console.error("Erro ao carregar status:", error);
+    }
+}
+
+async function editarAgendamento(id) {
+    try {
+        // Buscar os dados do agendamento selecionado
+        const response = await fetch(`/api/agendamentos/${id}`);
+        const agendamento = await response.json();
+
+        if (!agendamento || agendamento.erro) {
+            console.error("Agendamento não encontrado!");
+            return;
+        }
+
+        // Carregar a página de edição no popup
+        const htmlResponse = await fetch("/editar_agendamento");
+        document.getElementById("popupContainer").innerHTML = await htmlResponse.text();
+
+        // Garantir que os elementos do popup foram carregados antes de preenchê-los
+        await carregarStatus();
+
+        document.getElementById("id_agendamento").value = agendamento.id_agendamento;
+        document.getElementById("data").value = formatarData(agendamento.data);
+        document.getElementById("tutor").value = agendamento.tutor;
+        document.getElementById("paciente").value = agendamento.paciente;
+        document.getElementById("horario").value = agendamento.horario;
+        document.getElementById("status").value = agendamento.id_status;
+
+        // Exibir o popup
+        document.getElementById("editar-popup").style.display = "flex";
+    } catch (error) {
+        console.error("Erro ao abrir popup de edição:", error);
+    }
+}
+
+
 function configurarCarregarTutorBtn() {
     const carregarTutorBtn = document.getElementById("carregarTutor");
     if (!carregarTutorBtn) {
@@ -105,9 +171,6 @@ function configurarCarregarTutorBtn() {
 
 }
 
-// ==================
-// Função separada para buscar pacientes por tutor
-// ==================
 async function atualizarListaPacientes() {
     const tutorInput = document.getElementById("tutor");
     const pacienteSelect = document.getElementById("paciente");
@@ -153,82 +216,8 @@ async function atualizarListaPacientes() {
     }
 }
 
-// ==================
-// Funções auxiliares
-// ==================
-function formatarCPF(cpf) {
-    cpf = cpf.replace(/\D/g, "");
-    if (cpf.length === 11) {
-        return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
-    }
-    return cpf;
-}
-
-export async function editarAgendamento(id) {
-    try {
-        // Buscar os dados do agendamento selecionado
-        const response = await fetch("/api/agendamentos");
-        const agendamentos = await response.json();
-        const agendamento = agendamentos.find(a => a.id === parseInt(id));
-
-        if (!agendamento) {
-            console.error("Agendamento não encontrado!");
-            return;
-        }
-
-        // Buscar HTML do popup de edição
-        const htmlResponse = await fetch("/editar_agendamento");
-        // Inserir o HTML carregado dentro do container correto
-        document.getElementById("popupContainer").innerHTML = await htmlResponse.text();
-
-        // Garantir que os elementos foram carregados corretamente
-        const dataElement = document.getElementById("data");
-        const tutorElement = document.getElementById("tutor");
-        const pacienteElement = document.getElementById("paciente");
-        const horarioElement = document.getElementById("horario");
-        const statusElement = document.getElementById("status");
-
-        if (!dataElement || !tutorElement || !pacienteElement || !horarioElement || !statusElement) {
-            console.error("Elementos do popup de edição não encontrados!");
-            return;
-        }
-
-        // Formatar e preencher os dados
-        const dataFormatada = formatarData(agendamento.data);
-        const nomeTutor = await buscarNomeIdTutor(agendamento.tutor);
-        const nomePaciente = await buscarNomeIdPaciente(agendamento.paciente);
-
-        dataElement.value = dataFormatada;
-        tutorElement.value = nomeTutor;
-        pacienteElement.value = nomePaciente;
-        horarioElement.value = agendamento.hora;
-
-        // Buscar e preencher a lista de status
-        const statusResponse = await fetch("/api/status");
-        const statusList = await statusResponse.json();
-
-        statusElement.innerHTML = "";
-        statusList.forEach(status => {
-            let option = document.createElement("option");
-            option.value = status.id;
-            option.textContent = status.nome;
-            statusElement.appendChild(option);
-        });
-
-        // Definir o status selecionado
-        statusElement.value = agendamento.status;
-
-        // Exibir a popup de edição
-        document.getElementById("editar-popup").style.display = "flex";
-
-    } catch (error) {
-        console.error("Erro ao abrir popup de edição:", error);
-    }
-}
-
-
 function abrirPopupCadastro(dataSelecionada) {
-    fetch("/cadastro_agendamento")
+    fetch("/cadastro_agendamento_page")
         .then(response => response.text())
         .then(html => {
             // document.getElementById("popupContainer").innerHTML = html;
@@ -265,6 +254,7 @@ function enviarFormulario() {
 }
 
 function formatarData(data) {
+    if (!data) return "";
     return data.split("-").reverse().join("/");
 }
 
