@@ -111,7 +111,6 @@ function salvarEdicaoTutor(id) {
     .catch(error => console.error("Erro ao atualizar tutor:", error));
 }
 
-
 function editarTutor(id) {
     fetch(`/api/tutores/${id}`)
         .then(response => response.json())
@@ -136,7 +135,6 @@ function editarTutor(id) {
         })
         .catch(error => console.error("Erro ao buscar tutor:", error));
 }
-
 
 document.getElementById("cadastroForm").addEventListener("submit", function (event) {
     event.preventDefault(); // Impede o recarregamento da página

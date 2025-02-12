@@ -28,3 +28,16 @@ def formatar_cpf(cpf):
     cpf = re.sub(r'\D', '', cpf)  # Remove tudo que não for número
     return f"{cpf[:3]}.{cpf[3:6]}.{cpf[6:9]}-{cpf[9:]}" if len(cpf) == 11 else cpf
 
+
+# Função para achar o nome do tutor através do cpf
+def nome_tutor_cpf(cpf):
+    query = "SELECT nome FROM Tutor WHERE cpf = %s"
+    nome = execute_sql(query, (cpf,), fetch_one=True)
+    return nome[0] if nome else None
+
+
+# Função para achar o nome do tutor através do id
+def nome_tutor_id(id_tutor):
+    query = "SELECT nome FROM Tutor WHERE id_tutor = %s"
+    nome = execute_sql(query, (id_tutor,), fetch_one=True)
+    return nome[0] if nome else None

@@ -1,10 +1,11 @@
 from flask import Blueprint, request, jsonify, render_template
 from app.database import execute_sql
 
-from app.utils.funcoes_com_cpf import formatar_cpf, cpf_existe
+from app.utils.funcoes_com_cpf import formatar_cpf, nome_tutor_id
 from app.utils.buscas_bd import id_tutor_cpf
 
-animais_bp = Blueprint('animais', __name__)
+
+animais_bp = Blueprint('pacientes', __name__)
 
 
 @animais_bp.route('/api/pacientes', methods=['GET'])
@@ -28,6 +29,11 @@ def get_pacientes():
             }
             for p in pacientes
         ]
+
+        # incluir o nome do tutor na lista
+        for paciente in pacientes_lista:
+            paciente["nome_tutor"] = nome_tutor_id(paciente["id_tutor"])
+
         return jsonify(pacientes_lista), 200
     except Exception as e:
         return jsonify({"erro": f"Erro ao buscar pacientes: {str(e)}"}), 500
@@ -40,17 +46,12 @@ def criar_paciente():
         return jsonify({"erro": "Nenhum dado JSON foi recebido"}), 400
 
     data = request.json
-    id_tutor = data.get("id_tutor")
+    cpf_tutor = formatar_cpf(data.get("tutor"))
 
-    # Achar nome do tutor pelo id
-    try:
-        query = "SELECT nome FROM Tutor WHERE id_tutor = %s"
-        nome_tutor = execute_sql(query, (id_tutor,), fetch_one=True)
-    except Exception as e:
-        return jsonify({"erro": f"Erro ao buscar tutor: {str(e)}"}), 500
-
-    if not nome_tutor:
-        return jsonify({"erro": "Tutor não encontrado"}), 404
+    # Achar o id do tutor pelo cpf
+    id_tutor = id_tutor_cpf(cpf_tutor)
+    if not id_tutor:
+        return jsonify({"erro": "Tutor não encontrado! Cadastre o tutor antes"}), 404
 
     if not all(key in data for key in ["nome", "especie", "raca", "nascimento", "sexo", "peso", "cor"]):
         return jsonify({"erro": "Campos obrigatórios ausentes!"}), 400
@@ -139,6 +140,7 @@ def editar_paciente(id_animal):
             return jsonify({"erro": f"Erro ao atualizar paciente: {str(e)}"}), 500
 
 
+# Rotas para renderizar páginas HTML
 @animais_bp.route('/pacientes')
 def pacientes_page():
     return render_template('tela_cadastros/pacientes.html')

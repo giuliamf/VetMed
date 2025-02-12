@@ -53,15 +53,8 @@
                 <th>Ações</th>
             </tr>
             </thead>
-            <tbody>
-            {% for paciente in pacientes %}
-                <tr>
-                    {{ paciente.nome }} (<span id="tutor-{{ paciente.tutor }}"></span>)
-                    <td>
-                        <button onclick="editarPaciente('{{ paciente.id_animal }}')">Editar</button>
-                    </td>
-                </tr>
-            {% endfor %}
+            <tbody id="tabelaPacientes">
+                <!-- Os pacientes serão inseridos aqui dinamicamente -->
             </tbody>
         </table>
     </div>

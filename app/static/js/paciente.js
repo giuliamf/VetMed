@@ -1,20 +1,88 @@
-document.addEventListener("DOMContentLoaded", function () {
-    document.getElementById("cadastroFormPaciente").addEventListener("submit", validarTutorCPF);
-    carregarPacientes();
-});
+document.addEventListener("DOMContentLoaded", carregarPacientes);
 
 document.getElementById("novoCadastro").addEventListener("click", function () {
-    fetch("/cadastro_paciente")  // Faz a requisição AJAX para pegar a popup
+    fetch("/cadastro_paciente_page")
         .then(response => response.text())
         .then(html => {
             document.getElementById("popupContainer").innerHTML = html;
             document.getElementById("cadastro-popup").style.display = "flex";
 
-            // Adiciona o evento de envio ao formulário (validação do CPF)
-            document.getElementById("cadastroForm").addEventListener("submit", validarTutorCPF);
+            document.getElementById("cadastroForm").addEventListener("submit", function (event) {
+                event.preventDefault();
+                enviarFormulario();
+            });
         })
         .catch(error => console.error("Erro ao carregar popup: ", error));
 });
+
+function carregarPacientes() {
+    fetch("/api/pacientes")
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Erro ao buscar pacientes");
+            }
+            return response.json();
+        })
+        .then(pacientes => {
+            let tabela = document.getElementById("tabelaPacientes");
+            tabela.innerHTML = ""; // Limpa a tabela antes de recarregar os dados
+
+            pacientes.forEach(paciente => {
+                let linha = document.createElement("tr");
+                linha.innerHTML = `
+                    <td>${paciente.nome} (${paciente.nome_tutor})</td>
+                    <td><button onclick="editarPaciente('${paciente.id_animal}')">Editar</button></td>
+                `;
+                tabela.appendChild(linha);
+            });
+        })
+        .catch(error => console.error("Erro ao carregar pacientes:", error));
+}
+
+function enviarFormulario() {
+    const form = document.getElementById("cadastroForm");
+    const formData = new FormData(form);
+
+    const dados = {
+        nome: formData.get("nome")?.trim() || "",
+        nascimento: formData.get("nascimento") || "",
+        especie: formData.get("especie")?.trim() || "",
+        raca: formData.get("raca")?.trim() || "",
+        peso: formData.get("peso")?.trim() || "",
+        cor: formData.get("cor")?.trim() || "",
+        sexo: formData.get("sexo") || "",
+        cpf_tutor: formData.get("tutor")?.trim() || "",
+    }
+
+    // Validação: Todos os campos devem estar preenchidos
+    if (!dados.nome || !dados.nascimento || !dados.especie || !dados.raca || !dados.peso || !dados.cor || !dados.sexo || !dados.cpf_tutor) {
+        alert("Por favor, preencha todos os campos.");
+        return;
+    }
+
+    fetch("/cadastro_paciente", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(dados)
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(error => { throw new Error(error.erro || "Erro desconhecido"); });
+        }
+        return response.json();
+    })
+    .then(response => {
+        alert(response.mensagem || "Paciente cadastrado com sucesso!");
+        fecharPopupCadastro()
+        carregarPacientes()
+    })
+        .catch(error => {
+            console.error("Erro ao cadastrar paciente:", error);
+            alert(error.message);
+        })
+}
 
 function validarTutorCPF(event) {
     event.preventDefault(); // Impede o envio do formulário até a validação
@@ -28,8 +96,6 @@ function validarTutorCPF(event) {
         mensagem.innerText = "CPF inválido!";
         return;
     }
-
-    cpfInput.value = cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4"); // Formata CPF
 
     // Verifica no banco se o CPF existe
     fetch(`/api/verificar_tutor/${cpf}`)
@@ -50,29 +116,38 @@ function validarTutorCPF(event) {
         });
 }
 
+function salvarEdicaoPaciente(id){
+    const pacienteAtualizado = {
+        nome: document.getElementById("nome").value,
+        nascimento: document.getElementById("nascimento").value,
+        especie: document.getElementById("especie").value,
+        raca: document.getElementById("raca").value,
+        peso: document.getElementById("peso").value,
+        cor: document.getElementById("cor").value,
+        sexo: document.getElementById("macho").checked ? "M" : "F",
+        cpf_tutor: document.getElementById("tutor").value
+    };
 
-// Função para carregar os pacientes da API e atualizar a tabela
-function carregarPacientes() {
-    fetch("/api/pacientes")
-        .then(response => response.json())
-        .then(pacientes => {
-            let tabelaPacientes = document.querySelector("tbody");
-            tabelaPacientes.innerHTML = ""; // Limpa a tabela antes de preencher
-
-            pacientes.forEach(paciente => {
-                let novaLinha = document.createElement("tr");
-
-                novaLinha.innerHTML = `
-                    <td>${paciente.nome} (<span>${paciente.cpf_tutor}</span>)</td>
-                    <td>
-                        <button onclick="editarPaciente('${paciente.id_animal}')">Editar</button>
-                    </td>
-                `;
-
-                tabelaPacientes.appendChild(novaLinha);
-            });
-        })
-        .catch(error => console.error("Erro ao carregar pacientes:", error));
+    fetch(`/api/pacientes/${id}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(pacienteAtualizado)
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error("Erro ao atualizar paciente");
+        }
+        return response.json();
+    })
+    .then(data => {
+        alert(data.mensagem);
+        fecharPopupCadastro();
+        carregarPacientes(); // Atualiza a tabela após edição
+    })
+    .catch(error => console.error("Erro ao atualizar paciente:", error)
+    );
 }
 
 // Função para preencher os dados no popup de edição
@@ -85,14 +160,17 @@ export function editarPaciente(id) {
                 return;
             }
 
+            console.log(document.getElementById("raca")); // Deve exibir o elemento no console
+            console.log(document.getElementById("tutor")); // Deve exibir o elemento no console
+
             // Preencher os campos do formulário no popup
             document.getElementById("nome").value = paciente.nome;
-            document.getElementById("nascimento").value = formatarData(paciente.ano_nascimento);
+            document.getElementById("nascimento").value = formatarData(paciente.nascimento);
             document.getElementById("especie").value = paciente.especie;
             document.getElementById("raca").value = paciente.raca;
             document.getElementById("peso").value = paciente.peso;
             document.getElementById("cor").value = paciente.cor;
-            document.getElementById("tutor").value = paciente.cpf_tutor; // Agora mostra o CPF correto
+            document.getElementById("tutor").value = paciente.tutor;
 
             // Definir sexo
             if (paciente.sexo === "M") {
@@ -101,10 +179,23 @@ export function editarPaciente(id) {
                 document.getElementById("femea").checked = true;
             }
 
+            // Atualiza o botão "Salvar" para chamar a função corretamente com o ID
+            document.getElementById("cadastroForm").dataset.pacienteId = id;
+
             // Exibir o popup
             document.getElementById("cadastro-popup").style.display = "block";
         })
         .catch(error => console.error("Erro ao buscar paciente:", error));
+}
+
+document.getElementById("cadastroForm").addEventListener("submit", function (event) {
+    event.preventDefault();
+    const id = this.dataset.pacienteId;
+    salvarEdicaoPaciente(id);
+});
+
+function fecharPopupCadastro() {
+    document.getElementById("cadastro-popup").style.display = "none";
 }
 
 // Formatar a data para YYYY-MM-DD (necessário para o input date)
@@ -117,3 +208,7 @@ function formatarData(data) {
     }
     return data; // Retorna a data original caso não seja necessário formatar
 }
+
+
+window.fecharPopupCadastro = fecharPopupCadastro;
+window.editarPaciente = editarPaciente;
