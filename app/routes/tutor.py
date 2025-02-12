@@ -37,6 +37,14 @@ def cadastro_tutor():
         return jsonify({"erro": "Nenhum dado JSON foi recebido"}), 400
 
     data = request.json
+    cpf = formatar_cpf(data.get("cpf"))
+
+    # Verifica se o CPF já existe no banco
+    query_verifica = "SELECT COUNT(*) FROM Tutor WHERE cpf = %s"
+    resultado = execute_sql(query_verifica, (cpf,), fetch_one=True)
+
+    if resultado and resultado[0] > 0:
+        return jsonify({"erro": "CPF já cadastrado!"}), 400
 
     # Verificar se todos os campos estão presentes
     if not all(key in data for key in ["nome", "cpf", "nascimento", "telefone", "endereco"]):
@@ -59,13 +67,10 @@ def cadastro_tutor():
             data['endereco']
         )
         execute_sql(query, params)
+        return jsonify({"mensagem": "Tutor cadastrado com sucesso!"}), 201
 
-    except Error as e:
-        return jsonify({"erro": "CPF já cadastrado!"}), 400
     except Exception as e:
         return jsonify({"erro": f"Erro ao cadastrar tutor: {str(e)}"}), 500
-
-    return jsonify({"mensagem": "Tutor cadastrado com sucesso!"}), 201
 
 
 # Rota para editar um tutor

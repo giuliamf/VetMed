@@ -57,8 +57,6 @@ function enviarFormulario() {
         return;
     }
 
-    console.log("Enviando dados:", JSON.stringify(dados));
-
     fetch("/cadastro_tutor", {
         method: "POST",
         headers: {
@@ -77,7 +75,10 @@ function enviarFormulario() {
         fecharPopupCadastro();
         carregarTutores(); // Recarregar a lista de tutores
     })
-    .catch(error => console.error("Erro ao cadastrar tutor:", error));
+    .catch(error => {
+        console.error("Erro ao cadastrar tutor:", error);
+        alert(error.message)
+    });
 }
 
 function salvarEdicaoTutor(id) {
