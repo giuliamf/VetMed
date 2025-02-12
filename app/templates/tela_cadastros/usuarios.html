@@ -52,13 +52,8 @@
                         <th>Ações</th>
                     </tr>
                 </thead>
-                <tbody>
-                    {% for usuario in usuarios %}
-                    <tr>
-                        <td id="usuario-{{ usuario.id }}"> {{ usuario.nome }}</td>
-                        <td><button onclick="editarUsuario('{{ usuario.id }}')">Editar</button></td>
-                    </tr>
-                    {% endfor %}
+                <tbody id="tabelaUsuarios">
+                    <!-- Os usuários serão inseridos aqui dinamicamente -->
                 </tbody>
             </table>
         </div>

@@ -22,14 +22,12 @@
                 <label for="especialidade">Especialidade</label>
                 <select id="especialidade" name="especialidade" required>
                     <option value="">Selecione</option>
-                    {% for esp in especialidades %}
-                    <option value="{{ esp.id }}">{{ esp.nome }}</option>
-                    {% endfor %}
+                    <!-- Aqui o select será feito dinamicamente com as especialidades da tabela -->
                 </select>
             </div>
 
             <div class="form-buttons">
-                <button type="submit" class="salvar">Salvar</button>
+                <button type="submit" id="btnSalvar" class="salvar">Salvar</button>
                 <button type="button" class="cancelar" onclick="fecharPopupCadastro()">Cancelar</button>
             </div>
         </form>
