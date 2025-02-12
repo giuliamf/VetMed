@@ -13,3 +13,7 @@ def id_tutor_cpf(cpf):
     return id_tutor[0] if id_tutor else None
 
 
+def id_tutor_id_animal(id_animal):
+    query = "SELECT id_tutor FROM Animal WHERE id_animal = %s"
+    id_tutor = execute_sql(query, (id_animal,), fetch_one=True)
+    return id_tutor[0] if id_tutor else None

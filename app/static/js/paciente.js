@@ -51,11 +51,11 @@ function enviarFormulario() {
         peso: formData.get("peso")?.trim() || "",
         cor: formData.get("cor")?.trim() || "",
         sexo: formData.get("sexo") || "",
-        cpf_tutor: formData.get("tutor")?.trim() || "",
+        tutor: formData.get("tutor")?.trim() || "",
     }
 
     // Validação: Todos os campos devem estar preenchidos
-    if (!dados.nome || !dados.nascimento || !dados.especie || !dados.raca || !dados.peso || !dados.cor || !dados.sexo || !dados.cpf_tutor) {
+    if (!dados.nome || !dados.nascimento || !dados.especie || !dados.raca || !dados.peso || !dados.cor || !dados.sexo || !dados.tutor) {
         alert("Por favor, preencha todos os campos.");
         return;
     }
@@ -125,7 +125,7 @@ function salvarEdicaoPaciente(id){
         peso: document.getElementById("peso").value,
         cor: document.getElementById("cor").value,
         sexo: document.getElementById("macho").checked ? "M" : "F",
-        cpf_tutor: document.getElementById("tutor").value
+        tutor: document.getElementById("tutor").value
     };
 
     fetch(`/api/pacientes/${id}`, {
@@ -137,7 +137,7 @@ function salvarEdicaoPaciente(id){
     })
     .then(response => {
         if (!response.ok) {
-            throw new Error("Erro ao atualizar paciente");
+            throw new Error("Erro ao atualizar paciente 2");
         }
         return response.json();
     })
@@ -146,12 +146,12 @@ function salvarEdicaoPaciente(id){
         fecharPopupCadastro();
         carregarPacientes(); // Atualiza a tabela após edição
     })
-    .catch(error => console.error("Erro ao atualizar paciente:", error)
+    .catch(error => console.error("Erro ao atualizar paciente 3:", error)
     );
 }
 
 // Função para preencher os dados no popup de edição
-export function editarPaciente(id) {
+function editarPaciente(id) {
     fetch(`/api/pacientes/${id}`)
         .then(response => response.json())
         .then(paciente => {
@@ -159,9 +159,6 @@ export function editarPaciente(id) {
                 console.error("Paciente não encontrado!");
                 return;
             }
-
-            console.log(document.getElementById("raca")); // Deve exibir o elemento no console
-            console.log(document.getElementById("tutor")); // Deve exibir o elemento no console
 
             // Preencher os campos do formulário no popup
             document.getElementById("nome").value = paciente.nome;
@@ -171,6 +168,8 @@ export function editarPaciente(id) {
             document.getElementById("peso").value = paciente.peso;
             document.getElementById("cor").value = paciente.cor;
             document.getElementById("tutor").value = paciente.tutor;
+
+            document.getElementById("tutor").setAttribute("disabled", "true");
 
             // Definir sexo
             if (paciente.sexo === "M") {
@@ -198,15 +197,9 @@ function fecharPopupCadastro() {
     document.getElementById("cadastro-popup").style.display = "none";
 }
 
-// Formatar a data para YYYY-MM-DD (necessário para o input date)
-function formatarData(data) {
-    if (!data) return "";
-
-    let partes = data.split("-");
-    if (partes.length === 3) {
-        return `${partes[0]}-${partes[1]}-${partes[2]}`; // Mantém formato YYYY-MM-DD
-    }
-    return data; // Retorna a data original caso não seja necessário formatar
+function formatarData(dataCompleta) {
+    let data = new Date(dataCompleta); // Converte para objeto Date
+    return data.toISOString().split("T")[0]; // Extrai apenas yyyy-MM-dd
 }
 
 

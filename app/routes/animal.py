@@ -1,9 +1,8 @@
 from flask import Blueprint, request, jsonify, render_template
 from app.database import execute_sql
 
-from app.utils.funcoes_com_cpf import formatar_cpf, nome_tutor_id
-from app.utils.buscas_bd import id_tutor_cpf
-
+from app.utils.funcoes_com_cpf import formatar_cpf, nome_tutor_id, cpf_igual, cpf_existe
+from app.utils.buscas_bd import id_tutor_cpf, cpf_tutor_id, id_tutor_id_animal
 
 animais_bp = Blueprint('pacientes', __name__)
 
@@ -82,6 +81,7 @@ def criar_paciente():
 
 @animais_bp.route('/api/pacientes/<int:id_animal>', methods=['GET', 'PUT'])
 def editar_paciente(id_animal):
+    print(f"Buscando paciente com ID: {id_animal}")
 
     if request.method == 'GET':
         # Buscar paciente pelo ID no banco de dados
@@ -89,18 +89,23 @@ def editar_paciente(id_animal):
         resultado = execute_sql(query, (id_animal,), fetch_one=True)
 
         if not resultado:
+            print(f"Paciente com ID {id_animal} não encontrado.")
             return jsonify({"erro": "Paciente não encontrado"}), 404
+
+        # Pegar o cpf do tutor a partir do id
+        cpf_tutor = formatar_cpf(cpf_tutor_id(resultado[1]))
 
         paciente = {
             "id_animal": resultado[0],
             "id_tutor": resultado[1],
             "nome": resultado[2],
             "especie": resultado[3],
-            "raca:": resultado[4],
-            "nascimento": str(resultado[5]),
+            "raca": resultado[4],
+            "nascimento": resultado[5],
             "sexo": resultado[6],
-            "peso": float(resultado[7]),
-            "cor": resultado[8]
+            "peso": resultado[7],
+            "cor": resultado[8],
+            "tutor": cpf_tutor
         }
         return jsonify(paciente), 200
 
@@ -110,6 +115,16 @@ def editar_paciente(id_animal):
 
         cpf = dados["tutor"]
         cpf_formatado = formatar_cpf(cpf)
+
+        # Pegar o id "original" do tutor a partir do id do animal
+        id_tutor_original = id_tutor_id_animal(id_animal)
+
+        # Verificar se o usuário tentou mudar o cpf
+        if not cpf_igual(cpf_formatado, id_tutor_original):
+            # Verificar se o novo cpf já está cadastrado
+            cpf_invalido = cpf_existe(cpf_formatado)
+            if cpf_invalido:    # Se o cpf já existe, retornar erro
+                return cpf_invalido
 
         # Achar o id do tutor através do cpf
         id_tutor = id_tutor_cpf(cpf_formatado)
@@ -137,7 +152,7 @@ def editar_paciente(id_animal):
             execute_sql(query, params)
             return jsonify({"mensagem": "Paciente atualizado com sucesso!"}), 200
         except Exception as e:
-            return jsonify({"erro": f"Erro ao atualizar paciente: {str(e)}"}), 500
+            return jsonify({"erro": f"Erro ao atualizar paciente 1: {str(e)}"}), 500
 
 
 # Rotas para renderizar páginas HTML

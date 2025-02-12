@@ -25,8 +25,10 @@ def cpf_igual(cpf, id_tutor):
 
 # Função para formatar o cpf
 def formatar_cpf(cpf):
+    print(cpf)
     cpf = re.sub(r'\D', '', cpf)  # Remove tudo que não for número
-    return f"{cpf[:3]}.{cpf[3:6]}.{cpf[6:9]}-{cpf[9:]}" if len(cpf) == 11 else cpf
+    print(f"{cpf[:3]}.{cpf[3:6]}.{cpf[6:9]}-{cpf[9:]}" if len(cpf) == 11 else cpf)
+    return f"{cpf[:3]}.{cpf[3:6]}.{cpf[6:9]}-{cpf[9:]}"
 
 
 # Função para achar o nome do tutor através do cpf
