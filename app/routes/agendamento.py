@@ -45,7 +45,7 @@ def get_agendamentos():
 def get_status():
     """ Retorna a lista de status para agendamento """
     try:
-        query = "SELECT * FROM Status"
+        query = "SELECT * FROM Status_Agendamento"
         status = execute_sql(query, fetch_all=True)
 
         status_lista = [

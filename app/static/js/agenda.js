@@ -132,7 +132,7 @@ async function editarAgendamento(id) {
         }
 
         // Carregar a página de edição no popup
-        const htmlResponse = await fetch("/editar_agendamento");
+        const htmlResponse = await fetch("/editar_agendamento_page");
         document.getElementById("popupContainer").innerHTML = await htmlResponse.text();
 
         // Garantir que os elementos do popup foram carregados antes de preenchê-los
