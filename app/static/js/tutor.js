@@ -120,10 +120,6 @@ function editarTutor(id) {
                 return;
             }
 
-            console.log(tutor); // Verifique o conteúdo real do objeto tutor
-            console.log("Nome:", tutor.nome);
-            console.log("Nascimento:", tutor.nascimento);
-
             // Preenche os campos com os dados do tutor
             document.getElementById("nome").value = tutor.nome;
             document.getElementById("nascimento").value = formatarData(tutor.nascimento);
