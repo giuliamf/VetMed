@@ -2,7 +2,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
 from app.database import criar_usuario, create_tables, globalizar_cursor_e_conexao, connect_database, \
-    popular_especialidades, inicializar_status_agendamento, inicializar_meio_pagamento, popular_tratamento
+    popular_especialidades, inicializar_status_agendamento
 
 db = SQLAlchemy()
 
@@ -23,8 +23,6 @@ def create_app():
         # funções de popular as tabelas automáticas
         popular_especialidades()
         inicializar_status_agendamento()
-        inicializar_meio_pagamento()
-        popular_tratamento()
 
     # Registrar blueprints (rotas)
 

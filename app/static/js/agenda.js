@@ -31,6 +31,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 for (const agendamento of agendamentosFiltrados) {
                     const row = document.createElement("tr");
 
+                    console.log(agendamento);
+
                     row.innerHTML = `
                         <td>${agendamento.horario}</td>
                         <td>${agendamento.paciente} (${agendamento.tutor})</td>
@@ -137,6 +139,9 @@ async function editarAgendamento(id) {
 
         // Garantir que os elementos do popup foram carregados antes de preenchê-los
         await carregarStatus();
+
+        // debugar para ver quais campos estão vindo
+        console.log(agendamento);
 
         document.getElementById("id_agendamento").value = agendamento.id_agendamento;
         document.getElementById("data").value = formatarData(agendamento.data);

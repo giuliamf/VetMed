@@ -178,22 +178,6 @@ def inicializar_status_agendamento():
         print("Status populados com sucesso!")
 
 
-def inicializar_meio_pagamento():
-    sql_file_path = os.path.join(base_dir, 'database', 'popular_meio_pagamento.sql')
-    with open(sql_file_path, 'r', encoding='utf-8') as file:
-        sql_script = file.read()
-        execute_sql(sql_script)
-        print("Meios de pagamento populados com sucesso!")
-
-
-def popular_tratamento():
-    sql_file_path = os.path.join(base_dir, 'database', 'popular_tratamento.sql')
-    with open(sql_file_path, 'r', encoding='utf-8') as file:
-        sql_script = file.read()
-        execute_sql(sql_script)
-        print("Tratamentos populados com sucesso!")
-
-
 """"
 def inicializar_tipo_consulta():
     sql_file_path = os.path.join(base_dir, 'database', 'popular_tipo_consulta.sql')

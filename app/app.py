@@ -69,12 +69,6 @@ def consultas():
     return render_template('consultas.html')
 
 
-# Tela do financeiro e suas funcionalidades
-@app.route('/financeiro')
-def financeiro():
-    return render_template('financeiro.html')
-
-
 @app.route('/sair')
 def sair():
     session.clear()  # Limpa a sessão
