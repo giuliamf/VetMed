@@ -30,9 +30,8 @@ def get_agendamentos():
                 "paciente": a[1],
                 "tutor": a[2],
                 "id_status": a[3],
-                "status": a[4],
-                "data": str(a[5]),
-                "horario": a[6]
+                "data": str(a[4]),
+                "horario": a[5]
             }
             for a in agendamentos
         ]
