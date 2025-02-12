@@ -51,7 +51,7 @@ CREATE TABLE IF NOT EXISTS Especialidade (
 CREATE TABLE IF NOT EXISTS Veterinario (
     id_veterinario INT PRIMARY KEY REFERENCES Usuario(id_usuario) ON DELETE CASCADE,  -- Herda ID de Usuario
     id_especialidade INT NOT NULL REFERENCES Especialidade(id_especialidade),
-    carga_horaria CHAR(5) CHECK (carga_horaria IN ('manhã', 'tarde')) NOT NULL,
+    carga_horaria CHAR(5) CHECK (carga_horaria IN ('manhã', 'tarde')) NOT NULL
     -- Especialidade obrigatoria, nao eh PK porque cada veterinario tem apenas uma especialidade e ela eh obrigatoria
 );
 
@@ -219,6 +219,3 @@ BEGIN
     VALUES (p_id_veterinario, v_horario_disponivel, p_data, p_horario);
 END;
 $$;
-
-
-
