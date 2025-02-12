@@ -1,5 +1,6 @@
 import psycopg2
 import traceback
+import os
 
 
 def connect_database():
@@ -98,6 +99,8 @@ def verify_connection():
 
 
 """ FUNÇÕES DE MÉTODOS """
+
+
 # Inicializando as variáveis globais cursor e conn
 
 
@@ -151,3 +154,51 @@ def criar_usuario():
         print('Usuário padrão criado com sucesso!')
     else:
         print('Usuário padrão já existe!')
+
+
+""" Popular as tabelas automáticas """
+
+base_dir = os.path.dirname(os.path.abspath(__file__))
+
+
+# especialidade
+def popular_especialidades():
+    sql_file_path = os.path.join(base_dir, 'database', 'popular_especialidade.sql')
+    with open(sql_file_path, 'r', encoding='utf-8') as file:
+        sql_script = file.read()
+        execute_sql(sql_script)
+        print("Especialidades populadas com sucesso!")
+
+
+def inicializar_status_agendamento():
+    sql_file_path = os.path.join(base_dir, 'database', 'popular_status_agendamento.sql')
+    with open(sql_file_path, 'r', encoding='utf-8') as file:
+        sql_script = file.read()
+        execute_sql(sql_script)
+        print("Status populados com sucesso!")
+
+
+def inicializar_meio_pagamento():
+    sql_file_path = os.path.join(base_dir, 'database', 'popular_meio_pagamento.sql')
+    with open(sql_file_path, 'r', encoding='utf-8') as file:
+        sql_script = file.read()
+        execute_sql(sql_script)
+        print("Meios de pagamento populados com sucesso!")
+
+
+def popular_tratamento():
+    sql_file_path = os.path.join(base_dir, 'database', 'popular_tratamento.sql')
+    with open(sql_file_path, 'r', encoding='utf-8') as file:
+        sql_script = file.read()
+        execute_sql(sql_script)
+        print("Tratamentos populados com sucesso!")
+
+
+""""
+def inicializar_tipo_consulta():
+    sql_file_path = os.path.join(base_dir, 'database', 'popular_tipo_consulta.sql')
+    with open(sql_file_path, 'r', encoding='utf-8') as file:
+        sql_script = file.read()
+        execute_sql(sql_script)
+        print("Tipos de consulta populados com sucesso!")
+"""

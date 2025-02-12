@@ -75,7 +75,7 @@ CREATE TABLE IF NOT EXISTS Animal (
     CONSTRAINT fk_tutor FOREIGN KEY (id_tutor) REFERENCES Tutor(id_tutor)
 );
 
-CREATE TABLE IF NOT EXISTS StatusAgendamento (
+CREATE TABLE IF NOT EXISTS Status_Agendamento (
     id_status SERIAL PRIMARY KEY,
     nome VARCHAR(50) NOT NULL UNIQUE
 );
@@ -87,7 +87,7 @@ CREATE TABLE IF NOT EXISTS Agendamento (
     data DATE NOT NULL,
     horario CHAR(5) NOT NULL, -- Time retorna HH:MM:SS, nesse caso apenas a string HH:MM eh suficiente
     CONSTRAINT fk_animal FOREIGN KEY (id_animal) REFERENCES Animal(id_animal),
-    CONSTRAINT fk_status FOREIGN KEY (id_status) REFERENCES StatusAgendamento(id_status)
+    CONSTRAINT fk_status FOREIGN KEY (id_status) REFERENCES Status_Agendamento(id_status)
 );
 
 CREATE TABLE IF NOT EXISTS Tipo_Consulta (
