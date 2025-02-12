@@ -10,7 +10,14 @@ usuarios_bp = Blueprint('usuarios', __name__)
 def get_usuarios():
     """ Retorna a lista de usuários do banco de dados """
     try:
-        query = "SELECT * FROM Usuario WHERE cargo != 'adm' ORDER BY id_usuario ASC"
+        query = """
+            SELECT u.id_usuario, u.email, u.nome, u.senha, u.cargo, v.id_especialidade
+            FROM Usuario u
+            LEFT JOIN Veterinario v ON u.id_usuario = v.id_veterinario
+            WHERE u.cargo != 'adm'
+            ORDER BY u.id_usuario ASC
+        """
+        # Pegar todos os usuários, inclusive veterinários e suas especialidades
         usuarios = execute_sql(query, fetch_all=True)
 
         usuarios_lista = [
@@ -19,7 +26,8 @@ def get_usuarios():
                 "email": u[1],
                 "nome": u[2],
                 "senha": u[3],
-                "cargo": u[4]
+                "cargo": u[4],
+                "especialidade": u[5] if u[4] == 'vet' else None     # Se não for veterinário, especialidade é None
             }
             for u in usuarios
         ]
@@ -85,7 +93,12 @@ def editar_usuario(usuario_id):
     """ Rota para editar um usuário """
     if request.method == 'GET':
         # Buscar usuário pelo ID no banco de dados
-        query = "SELECT * FROM Usuario WHERE id_usuario = %s"
+        query = """
+            SELECT u.id_usuario, u.email, u.nome, u.senha, u.cargo, v.id_especialidade
+            FROM Usuario u
+            LEFT JOIN Veterinario v ON u.id_usuario = v.id_veterinario
+            WHERE u.id_usuario = %s
+            """
         resultado = execute_sql(query, (usuario_id,), fetch_one=True)
 
         if not resultado:
@@ -96,13 +109,19 @@ def editar_usuario(usuario_id):
             "email": resultado[1],
             "nome": resultado[2],
             "senha": resultado[3],
-            "cargo": resultado[4]
+            "cargo": resultado[4],
+            "especialidade": resultado[5] if resultado[4] == "vet" else None  # Só retorna especialidade se for 'vet'
         }
 
         return jsonify(usuario), 200
 
     if request.method == 'PUT':
-        data = request.json
+
+        if not request.is_json:
+            return jsonify({"erro": "Formato inválido! Use 'application/json'"}), 415
+
+        data = request.get_json()
+        print("Recebendo dados para atualização:", data)  # Debug no console
 
         if not all(key in data for key in ["nome", "email", "senha", "cargo"]):
             return jsonify({"erro": "Campos obrigatórios ausentes!"}), 400
@@ -110,15 +129,15 @@ def editar_usuario(usuario_id):
         if not all(data.values()):
             return jsonify({"erro": "Preencha todos os campos!"}), 400
 
-        # Conferir se a senha foi modificada
-        query_senha = "SELECT senha FROM Usuario WHERE id_usuario = %s"
-        senha_atual = execute_sql(query_senha, (usuario_id,), fetch_one=True)
-
-        if senha_atual[0] != data['senha']:
-            # criptografar a nova senha recebida
-            data['senha'] = criptografar_senha(data['senha'])
-
         try:
+            # Conferir se a senha foi modificada
+            query_senha = "SELECT senha FROM Usuario WHERE id_usuario = %s"
+            senha_atual = execute_sql(query_senha, (usuario_id,), fetch_one=True)
+
+            if senha_atual and senha_atual[0] != data['senha']:
+                # criptografar a nova senha recebida
+                data['senha'] = criptografar_senha(data['senha'])
+
             query = """
                 UPDATE Usuario
                 SET email = %s, nome = %s, senha = %s, cargo = %s
@@ -134,21 +153,18 @@ def editar_usuario(usuario_id):
             execute_sql(query, params)
 
             # Se o cargo for 'vet', atualizar na tabela Veterinario
-            if data['cargo'] == 'vet':
-                try:
-                    query_vet = """
-                        UPDATE Veterinario
-                        SET id_especialidade = %s
-                        WHERE id_veterinario = %s
-                    """
-                    params_vet = (
-                        data['especialidade'],
-                        usuario_id
-                    )
-                    execute_sql(query_vet, params_vet)
-
-                except Exception as e:
-                    return jsonify({"erro": f"Erro ao atualizar especialidade: {str(e)}"}), 500
+            if data['cargo'] == 'vet' and 'especialidade' in data and data['especialidade']:
+                query_vet = """
+                    INSERT INTO Veterinario (id_veterinario, id_especialidade)
+                    VALUES (%s, %s)
+                    ON CONFLICT (id_veterinario) 
+                    DO UPDATE SET id_especialidade = EXCLUDED.id_especialidade;
+                """
+                params_vet = (
+                    data['especialidade'],
+                    usuario_id
+                )
+                execute_sql(query_vet, params_vet)
 
             return jsonify({"mensagem": "Usuário atualizado com sucesso!"}), 200
         except Exception as e:

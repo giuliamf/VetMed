@@ -15,6 +15,20 @@ document.getElementById("novoCadastro").addEventListener("click", function () {
         .catch(error => console.error("Erro ao carregar popup: ", error));
 });
 
+document.getElementById("cadastroForm").addEventListener("submit", function (event) {
+    if (event.target.id === "cadastroForm") {
+        event.preventDefault();
+        const id = event.target.dataset.usuarioId;
+
+        if (id) {
+            console.log("Chamando salvarEdicaoUsuario com ID:", id);
+            salvarEdicaoUsuario(id);
+        } else {
+            console.error("ID do usuário não encontrado!");
+        }
+    }
+});
+
 function carregarUsuarios() {
     fetch("/api/usuarios")
         .then(response => {
@@ -40,20 +54,19 @@ function carregarUsuarios() {
 }
 
 function enviarFormulario() {
-    const form = document.getElementById("cadastroForm");
-    const formData = new FormData(form);
-
-    // Só considera a especialidade, caso ela não seja undefined
-    const cargo = formData.get("cargo") || "";
-    const especialidade = cargo === "vet" ? formData.get("especialidade")?.trim() || "" : undefined;
+    const formData = new FormData(document.getElementById("cadastroForm"));
 
     const dados = {
         nome: formData.get("nome")?.trim() || "",
         email: formData.get("email")?.trim() || "",
         senha: formData.get("senha")?.trim() || "",
-        cargo: cargo,
-        ...(especialidade !== undefined && { especialidade }) // Adiciona a especialidade apenas caso ela exista (vet)
+        cargo: formData.get("cargo") || "",
     };
+
+    // Adiciona a especialidade se o cargo for "vet"
+    if (dados.cargo === "vet") {
+        dados.especialidade = formData.get("especialidade") || "";
+    }
 
     // Validação: Todos os campos devem estar preenchidos
     if (!dados.nome || !dados.email || !dados.senha || !dados.cargo) {
@@ -65,6 +78,8 @@ function enviarFormulario() {
         alert("Por favor, preencha a especialidade.");
         return;
     }
+
+    console.log("Enviando dados para o servidor:", JSON.stringify(dados));
 
     fetch("/cadastro_usuario", {
         method: "POST",
@@ -79,8 +94,8 @@ function enviarFormulario() {
             }
             return response.json();
         })
-        .then(() => {
-            alert(response.mensagem || "Tutor cadastrado com sucesso!");
+        .then(data => {
+            alert(data.mensagem || "Usuário cadastrado com sucesso!");
             fecharPopupCadastro();
             carregarUsuarios();
         })
@@ -91,13 +106,18 @@ function enviarFormulario() {
 }
 
 function salvarEdicaoUsuario(id) {
+    const cargo = document.getElementById("cargo").value;
+    const especialidadeInput = document.getElementById("especialidade");
+
     const usuarioAtualizado = {
         nome: document.getElementById("nome").value,
         email: document.getElementById("email").value,
         senha: document.getElementById("senha").value,
-        cargo: document.getElementById("cargo").value,
-        especialidade: document.getElementById("especialidade").value, // caso não seja vet, o valor é vazio
+        cargo: cargo,
+        especialidade: cargo === "vet" && especialidadeInput ? especialidadeInput.value : null
     };
+
+    console.log("Enviando dados para atualização:", JSON.stringify(usuarioAtualizado));
 
     fetch(`/api/usuarios/${id}`, {
         method: "PUT",
@@ -112,8 +132,9 @@ function salvarEdicaoUsuario(id) {
             }
             return response.json();
         })
-        .then(() => {
-            alert(data.mensagem);
+        .then(data => { // ✅ Agora 'data' está definido corretamente
+            console.log("Resposta do servidor:", data);
+            alert(data.mensagem || "Usuário atualizado com sucesso!");
             fecharPopupCadastro();
             carregarUsuarios();
         })
@@ -121,47 +142,57 @@ function salvarEdicaoUsuario(id) {
 }
 
 function editarUsuario(id) {
-    fetch("/api/usuarios")
-        .then(response => response.json())
-        .then(usuarios => {
-            let usuario = usuarios.find(u => u.id === parseInt(id));
-            if (!usuario) {
-                console.error("Usuário não encontrado!")
-                return
+    fetch("/cadastro_usuario")
+        .then(response => response.text())
+        .then(html => {
+            document.getElementById("popupContainer").innerHTML = html;
+            document.getElementById("cadastro-popup").style.display = "flex";
+
+            const form = document.getElementById("cadastroForm");
+            if (form) {
+                form.dataset.usuarioId = id;
+                console.log("ID do usuário definido no dataset:", form.dataset.usuarioId);
+
+                form.addEventListener("submit", function (event) {
+                    event.preventDefault();
+                    salvarEdicaoUsuario(id);
+                });
+            } else {
+                console.error("Erro: Formulário não encontrado!");
             }
 
-            fetch("/cadastro_usuario")
-                .then(response => response.text())
-                .then(html => {
-                    document.getElementById("popupContainer").innerHTML = html;
-                    document.getElementById("cadastro-popup").style.display = "flex";
+            fetch("/api/usuarios")
+                .then(response => response.json())
+                .then(usuarios => {
+                    let usuario = usuarios.find(u => u.id === parseInt(id));
+                    if (!usuario) {
+                        console.error("Usuário não encontrado!");
+                        return;
+                    }
 
                     document.getElementById("nome").value = usuario.nome;
                     document.getElementById("email").value = usuario.email;
                     document.getElementById("senha").value = usuario.senha;
                     document.getElementById("cargo").value = usuario.cargo;
 
-                    toggleEspecialidade()
+                    document.getElementById("cargo").addEventListener("change", toggleEspecialidade);
 
                     if (usuario.cargo === "vet") {
-                        document.getElementById("especialidade").value = usuario.especialidade;
-                    } else {
-                        document.getElementById("especialidade").value = "";
-                    }
-                    document.getElementById("cargo").addEventListener("change", toggleEspecialidade);
-                    document.getElementById("cadastroForm").dataset.usuarioId = id;
-                    document.getElementById("cadastro-popup").style.display = "block";
-                })
-                .catch(error => console.error("Erro ao carregar popup: ", error));
-        })
-        .catch(error => console.error("Erro ao buscar usuários:", error));
-}
+                        let especialidadeSelect = document.getElementById("especialidade");
 
-document.getElementById("cadastroForm").addEventListener("submit", function (event) {
-    event.preventDefault();
-    const id = event.target.dataset.usuarioId;
-    salvarEdicaoUsuario(id);
-});
+                        especialidadeSelect.dataset.valor = usuario.especialidade;
+
+                        carregarEspecialidades().then(() => {
+                            especialidadeSelect.value = usuario.especialidade;
+                        });
+                    }
+
+                    toggleEspecialidade();
+                })
+                .catch(error => console.error("Erro ao buscar usuários:", error));
+        })
+        .catch(error => console.error("Erro ao carregar popup: ", error));
+}
 
 function toggleEspecialidade() {
     let cargo = document.getElementById("cargo").value;
@@ -170,15 +201,25 @@ function toggleEspecialidade() {
 
     if (cargo === "vet") {
         especialidadeContainer.style.display = "block";
-        carregarEspecialidades();
+        // Carrega as especialidades apenas se ainda não estiverem carregadas
+        if (especialidadeSelect.options.length <= 1) {
+            especialidadeSelect.setAttribute("required", "true"); // Adiciona required
+            carregarEspecialidades().then(() => {
+                let usuarioEspecialidade = especialidadeSelect.dataset.valor;
+                if (usuarioEspecialidade) {
+                    especialidadeSelect.value = usuarioEspecialidade
+                }
+            });
+        }
     } else {
         especialidadeContainer.style.display = "none";
-        especialidadeSelect.innerHTML = '<option value="">Selecione</option>'
+        especialidadeSelect.removeAttribute("required"); // Remove required se não for "vet"
+        especialidadeSelect.value = ""; // Reseta o valor
     }
 }
 
 function carregarEspecialidades() {
-    fetch("/api/especialidades")
+    return fetch("/api/especialidades")
         .then(response => response.json())
         .then(especialidades => {
             let especialidadeSelect = document.getElementById("especialidade");
@@ -190,6 +231,8 @@ function carregarEspecialidades() {
                 option.innerText = especialidade.nome;
                 especialidadeSelect.appendChild(option);
             });
+
+            return especialidadeSelect; // Retorna o select para usar depois
         })
         .catch(error => console.error("Erro ao carregar especialidades:", error));
 }
