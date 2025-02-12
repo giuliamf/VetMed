@@ -11,7 +11,7 @@ tutores_bp = Blueprint('tutores', __name__)
 @tutores_bp.route('/api/tutores', methods=['GET'])
 def get_tutores():
     """ Retorna a lista de tutores do banco de dados """
-    query = "SELECT id_tutor, cpf, nome, data_nascimento, telefone, endereco FROM Tutor"
+    query = "SELECT id_tutor, cpf, nome, data_nascimento, telefone, endereco FROM Tutor ORDER BY id_tutor ASC"
     tutores = execute_sql(query, fetch_all=True)
 
     tutores_lista = [
@@ -69,18 +69,38 @@ def cadastro_tutor():
 
 
 # Rota para editar um tutor
-@tutores_bp.route('/api/tutores/<int:id_tutor>', methods=['PUT'])
-def atualizar_tutor(id_tutor):
+@tutores_bp.route('/api/tutores/<int:id_tutor>', methods=['GET', 'PUT'])
+def editar_tutor(id_tutor):
+    if request.method == 'GET':
+        # Buscar tutor pelo ID no banco de dados
+        query = "SELECT id_tutor, nome, data_nascimento, cpf, telefone, endereco FROM Tutor WHERE id_tutor = %s"
+        resultado = execute_sql(query, (id_tutor,), fetch_one=True)
+
+        if not resultado:
+            return jsonify({"erro": "Tutor não encontrado"}), 404
+
+        tutor = {
+            "id": resultado[0],
+            "nome": resultado[1],
+            "nascimento": resultado[2],
+            "cpf": resultado[3],
+            "telefone": resultado[4],
+            "endereco": resultado[5]
+        }
+
+        return jsonify(tutor), 200
+
     """ Atualiza os dados de um tutor """
-    dados = request.json
+    if request.method == 'PUT':
+        # Código de atualização já existente
+        dados = request.json
+        query = """
+                    UPDATE Tutor SET nome = %s, data_nascimento = %s, telefone = %s, endereco = %s
+                    WHERE id_tutor = %s
+                """
+        execute_sql(query, (dados["nome"], dados["nascimento"], dados["telefone"], dados["endereco"], id_tutor))
 
-    query = """
-        UPDATE Tutor SET nome = %s, data_nascimento = %s, telefone = %s, endereco = %s
-        WHERE id_tutor = %s
-    """
-    execute_sql(query, (dados["nome"], dados["nascimento"], dados["telefone"], dados["endereco"], id_tutor))
-
-    return jsonify({"mensagem": "Tutor atualizado com sucesso!"}), 200
+        return jsonify({"mensagem": "Tutor atualizado com sucesso!"}), 200
 
 
 # Rotas para renderizar páginas HTML
