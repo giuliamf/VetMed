@@ -1,4 +1,10 @@
 document.addEventListener("DOMContentLoaded", function () {
+    const botaoSalvar = document.getElementById("salvarEdicao");
+
+    if (botaoSalvar) {
+        botaoSalvar.addEventListener("click", enviarEdicao);
+    }
+
     // Certifique-se de que esses elementos existem antes de usá-los
     const dataInput = document.getElementById("dataSelecionada");
     const listaAgendamentos = document.getElementById("listaAgendamentos");
@@ -85,6 +91,124 @@ async function atualizarAgenda(dataSelecionada) {
         agendaDiv.style.display = "block";
     }
 }
+
+async function editarAgendamento(id_agendamento) {
+    try {
+        let popupContainer = document.getElementById("editar-popup");
+
+        if (!popupContainer) {
+            const responsePopup = await fetch("/editar_agendamento_page");
+            const htmlPopup = await responsePopup.text();
+
+            const div = document.createElement("div");
+            div.innerHTML = htmlPopup;
+            document.body.appendChild(div);
+
+            popupContainer = document.getElementById("editar-popup");
+
+            // Adiciona o evento ao botão "Salvar" após carregar o popup
+            const botaoSalvar = document.getElementById("salvarEdicao");
+            if (botaoSalvar) {
+                botaoSalvar.addEventListener("click", enviarEdicao);
+            }
+        }
+
+        const response = await fetch(`/api/agendamentos/${id_agendamento}`);
+        const agendamento = await response.json();
+
+        if (!response.ok) {
+            alert("Erro ao carregar agendamento: " + agendamento.erro);
+            return;
+        }
+
+        console.log("Agendamento encontrado:", agendamento);
+
+        document.getElementById("id_agendamento").value = agendamento["id_agendamento"];
+        await carregarStatus(agendamento["id_status"]);
+
+        popupContainer.style.display = "flex";
+
+    } catch (error) {
+        console.error("Erro ao carregar dados do agendamento:", error);
+        alert("Erro ao carregar agendamento.");
+    }
+}
+
+
+
+async function carregarStatus(id_status_selecionado) {
+    try {
+        const response = await fetch("/api/status");
+        const statusLista = await response.json();
+
+        if (!response.ok) {
+            alert("Erro ao carregar status.");
+            return;
+        }
+
+        const selectStatus = document.getElementById("status");
+        selectStatus.innerHTML = '<option value="">Selecione um status</option>';
+
+        statusLista.forEach(status => {
+            let option = document.createElement("option");
+            option.value = status.id;
+            option.textContent = status.nome;
+            if (status.id === id_status_selecionado) {
+                option.selected = true;
+            }
+            selectStatus.appendChild(option);
+        });
+
+    } catch (error) {
+        console.error("Erro ao carregar status:", error);
+        alert("Erro ao carregar status.");
+    }
+}
+
+async function enviarEdicao() {
+    const id_agendamento = document.getElementById("id_agendamento").value;
+    const status = document.getElementById("status").value;
+
+    if (!id_agendamento || !status) {
+        alert("Selecione um status para atualizar.");
+        return;
+    }
+
+    const dadosEdicao = { status };
+
+    try {
+        const response = await fetch(`/api/agendamentos/${id_agendamento}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(dadosEdicao)
+        });
+
+        const resposta = await response.json();
+
+        if (response.ok) {
+            alert("Status atualizado com sucesso!");
+            fecharPopupEdicao();
+            await atualizarAgenda(document.getElementById("dataSelecionada").value);
+        } else {
+            alert("Erro ao atualizar status: " + resposta.erro);
+        }
+    } catch (error) {
+        console.error("Erro ao atualizar agendamento:", error);
+        alert("Erro ao atualizar status.");
+    }
+}
+
+
+
+function fecharPopupEdicao() {
+    document.getElementById("editar-popup").style.display = "none";
+}
+
+// Expor funções globalmente
+window.editarAgendamento = editarAgendamento;
+window.enviarEdicao = enviarEdicao;
+window.fecharPopupEdicao = fecharPopupEdicao;
+
 
 // ====================
 // Funções para Cadastro de Agendamento

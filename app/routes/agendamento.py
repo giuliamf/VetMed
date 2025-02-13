@@ -113,50 +113,45 @@ def cadastro_agendamento():
 
 @agendamentos_bp.route('/api/agendamentos/<int:id_agendamento>', methods=['GET', 'PUT'])
 def editar_agendamento(id_agendamento):
-    # Quando a edição for chamada, as únicas informações que podem ser alteradas são hora e status
     if request.method == 'GET':
-        id_agendamento = id_agendamento
-        query = "SELECT * FROM Agendamento WHERE id_agendamento = %s"
+        query = """
+            SELECT a.id_agendamento, s.id_status, s.nome AS status
+            FROM Agendamento a
+            JOIN Status_Agendamento s ON a.id_status = s.id_status
+            WHERE a.id_agendamento = %s
+        """
         resultado = execute_sql(query, (id_agendamento,), fetch_one=True)
 
         if not resultado:
             return jsonify({"erro": "Agendamento não encontrado!"}), 404
 
-        agendamentos = {
+        agendamento = {
             "id_agendamento": resultado[0],
-            "id_animal": resultado[1],
-            "id_status": resultado[2],
-            "data": str(resultado[3]),
-            "horario": resultado[4],
+            "id_status": resultado[1],
+            "status": resultado[2]
         }
 
-        return jsonify(agendamentos), 200
+        return jsonify(agendamento), 200
 
     if request.method == 'PUT':
         data = request.json
-
-        horario = data.get('horario')
         status = data.get('status')
 
-        if not horario or not status:
-            return jsonify({"erro": "Campos obrigatórios ausentes!"}), 400
+        if not status:
+            return jsonify({"erro": "O campo status é obrigatório!"}), 400
 
         query = """
             UPDATE Agendamento
-            SET horario = %s, id_status = %s
+            SET id_status = %s
             WHERE id_agendamento = %s
-                """
-        params = (
-            horario,
-            status,
-            id_agendamento
-        )
+        """
+        params = (status, id_agendamento)
 
         try:
             execute_sql(query, params)
-            return jsonify({"mensagem": "Agendamento atualizado com sucesso!"}), 200
+            return jsonify({"mensagem": "Status atualizado com sucesso!"}), 200
         except Exception as e:
-            return jsonify({"erro": f"Erro ao atualizar agendamento: {str(e)}"}), 500
+            return jsonify({"erro": f"Erro ao atualizar status: {str(e)}"}), 500
 
 
 @agendamentos_bp.route('/api/pacientes_por_tutor', methods=['GET'])

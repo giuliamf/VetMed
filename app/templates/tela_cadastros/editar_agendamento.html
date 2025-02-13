@@ -1,38 +1,16 @@
 <div id="editar-popup" class="popup-container" style="display: none">
     <div class="popup-content">
-        <h2>Editar Agendamento</h2>
-        <form id="cadastroForm">
+        <h2>Editar Status do Agendamento</h2>
+        <form id="editarForm">
             <input type="hidden" id="id_agendamento" name="id_agendamento">
-
-            <label for="data">Data</label>
-            <input type="text" disabled id="data" name="data" required>
-
-            <label for="tutor">Tutor</label>
-            <input type="text" disabled id="tutor" name="tutor" required>
-
-            <label for="paciente">Paciente</label>
-            <input type="text" disabled id="paciente" name="paciente" required>
-
-            <label for="especialidade">Especialidade</label>
-            <select id="especialidade" disabled name="especialidade" required>
-                <option value="">Selecione</option>
-            </select>
-
-            <label for="veterinario">Veterinário</label>
-            <select id="veterinario" name="veterinario" disabled required>
-                <option value="">Selecione</option>
-            </select>
 
             <label for="status">Status</label>
             <select id="status" name="status" required>
                 <option value="">Selecione</option>
             </select>
 
-            <label for="horario">Horário</label>
-            <select id="horario" name="horario" disabled required>
-            </select>
             <div class="form-buttons">
-                <button type="submit" class="salvar">Salvar</button>
+                <button type="button" id="salvarEdicao" class="salvar">Salvar</button>
                 <button type="button" class="cancelar" onclick="fecharPopupEdicao()">Cancelar</button>
             </div>
         </form>
