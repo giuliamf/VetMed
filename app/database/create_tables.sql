@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS Usuario (
     email VARCHAR(50) UNIQUE NOT NULL,  -- Unique para evitar emails iguais
     nome VARCHAR(90) NOT NULL,
     senha VARCHAR(64) NOT NULL,
-    cargo VARCHAR(3) CHECK (cargo IN ('vet', 'sec', 'adm')) NOT NULL,  -- Restricao CHECK para aceitar valores especificos
+    cargo VARCHAR(3) CHECK (cargo IN ('vet', 'sec', 'adm')) NOT NULL  -- Restricao CHECK para aceitar valores especificos
 );
 
 CREATE TABLE IF NOT EXISTS Usuario_Foto (

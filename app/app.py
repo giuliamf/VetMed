@@ -1,9 +1,7 @@
 from flask import render_template, jsonify, request, redirect, session
 from app import create_app
 from app.database import buscar_dados_usuario_por_email, buscar_usuario_por_id, execute_sql
-from app.utils.criptografia_senhas import criptografar_senha, verificar_senha
-from app.simulação_bd import usuarios, especialidades, agendamento, listastatus
-from datetime import datetime
+from app.utils.criptografia_senhas import verificar_senha
 
 app = create_app()
 
@@ -76,17 +74,6 @@ def sair():
 
 
 # back-end
-# MODIFICAR AQUI QUANDO DEFINIR A FUNCAO QUE VAI PEGAR A LISTA DE AGENDAMENTOS DO BD (ou colocar em outro lugar)
-def formatar_data(lista_agenda):
-    for a in lista_agenda:
-        if type(a['data']) != datetime:  # Se a data já estiver no formato datetime, não precisa converter
-            try:
-                a['data'] = datetime.strptime(a['data'], '%d/%m/%Y')  # Converte a data para o formato datetime
-            except ValueError:
-                continue
-        a['data'] = a['data'].strftime('%Y-%m-%d')  # Converte a data para o formato 'AAAA-MM-DD'
-    return lista_agenda
-
 
 if __name__ == '__main__':
     app.run(debug=True)
