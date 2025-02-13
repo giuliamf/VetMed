@@ -1,0 +1,92 @@
+@startuml
+
+entity "Usuario" {
+  +id_usuario : INT
+  email : VARCHAR
+  nome : VARCHAR
+  senha : VARCHAR
+  cargo : VARCHAR
+}
+
+entity "Usuario_Foto" {
+  +id_usuario : INT
+  foto : BLOB
+}
+
+entity "Especialidade" {
+  +id_especialidade : INT
+  nome : VARCHAR
+}
+
+entity "Veterinario" {
+  +id_veterinario : INT
+  +id_especialidade : INT
+}
+
+entity "Tutor" {
+  +id_tutor : INT
+  cpf : VARCHAR
+  nome : VARCHAR
+  data_nascimento : DATE
+  telefone : VARCHAR
+  endereco : VARCHAR
+}
+
+entity "Animal" {
+  +id_animal : INT
+  +id_tutor : INT
+  nome : VARCHAR
+  especie : VARCHAR
+  raca : VARCHAR
+  nascimento : DATE
+  sexo : CHAR
+  peso : DECIMAL
+  cor : VARCHAR
+}
+
+entity "Status_Agendamento" {
+  +id_status : INT
+  nome : VARCHAR
+}
+
+entity "Agendamento" {
+  +id_agendamento : INT
+  +id_animal : INT
+  +id_status : INT
+  +id_veterinario : INT
+  data : DATE
+  horario : TIME
+}
+
+entity "Horario_Funcionamento" {
+  +id_horario : INT
+  horario : TIME
+  turno : VARCHAR
+}
+
+entity "Carga_Horaria" {
+  +id_veterinario : INT
+  turno : VARCHAR
+}
+
+entity "Horario_Ocupado" {
+  +id_veterinario : INT
+  +id_agendamento : INT
+  data : DATE
+  horario : TIME
+}
+
+Usuario_Foto }|--|| Usuario : "Possui"
+Usuario ||--o{ Veterinario : "Herda"
+Veterinario ||--|| Especialidade : "Tem especialidade"
+Veterinario ||--o{ Carga_Horaria : "Possui"
+Veterinario ||--o{ Agendamento : "Realiza"
+Animal ||--o{ Agendamento : "Tem agendamentos"
+Animal ||--|| Tutor : "Pertence a"
+Agendamento ||--|| Status_Agendamento : "Possui status"
+Agendamento ||--o{ Horario_Ocupado : "Tem horário"
+Carga_Horaria }|--|| Veterinario : "Associado a"
+Horario_Ocupado }|--|| Agendamento : "Relacionado a"
+Horario_Funcionamento }|--|| Carga_Horaria : "Disponível para"
+
+@enduml
