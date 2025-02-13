@@ -166,12 +166,14 @@ RETURNS TRIGGER AS $$
 DECLARE
     v_foto_padrao BYTEA;
 BEGIN
-    -- Pegamos a foto padrão do usuário fictício com id_usuario = 0
-    SELECT foto INTO v_foto_padrao FROM Usuario_Foto WHERE id_usuario = 0;
+    SELECT foto INTO v_foto_padrao FROM Usuario_Foto WHERE id_usuario = 1;
 
     -- Se a foto do usuário for NULL, usar a foto padrão salva no banco
-    IF NEW.foto IS NULL THEN
-        NEW.foto := v_foto_padrao;
+    IF v_foto_padrao IS NOT NULL THEN
+        INSERT INTO Usuario_Foto (id_usuario, foto)
+        VALUES (NEW.id_usuario, v_foto_padrao);
+    ELSE
+        RAISE NOTICE 'Foto padrão não encontrada. Nenhuma imagem foi atribuída ao novo usuário.';
     END IF;
 
     RETURN NEW;
@@ -180,7 +182,7 @@ $$ LANGUAGE plpgsql;
 
 -- Criar o trigger para definir foto padrão
 CREATE TRIGGER trg_definir_foto_padrao
-BEFORE INSERT ON Usuario_Foto
+AFTER INSERT ON Usuario
 FOR EACH ROW
 EXECUTE FUNCTION definir_foto_padrao();
 

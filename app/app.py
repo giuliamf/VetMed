@@ -31,7 +31,6 @@ def carregar_foto_usuario():
             print('Tipo inesperado: ', type(foto_binario))
             return
 
-
         foto_base64 = base64.b64encode(foto_binario).decode('utf-8')
         g.foto_url = f"data:image/jpeg;base64,{foto_base64}"
     else:
