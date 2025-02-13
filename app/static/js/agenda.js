@@ -1,207 +1,194 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const listaAgendamentos = document.getElementById("listaAgendamentos");
-    const dataAtualSpan = document.getElementById("dataAtual");
+    // Certifique-se de que esses elementos existem antes de usá-los
     const dataInput = document.getElementById("dataSelecionada");
-    const agendaDiv = document.getElementById("agenda"); // Seleciona a div da agenda
+    const listaAgendamentos = document.getElementById("listaAgendamentos");
+    const dataAtualSpan = document.getElementById("dataAtual"); // Corrigido
+    const agendaDiv = document.getElementById("agenda"); // Corrigido
+    const novoAgendamentoBtn = document.getElementById("novoAgendamento");
 
-    async function carregarAgendamentos(dataSelecionada) {
-        listaAgendamentos.innerHTML = ""; // Limpa os agendamentos anteriores
-
-        if (!dataSelecionada) {
-            dataAtualSpan.textContent = "Selecione um dia";
-            agendaDiv.style.display = "none"; // Garante que a agenda fique oculta se nenhuma data for selecionada
-            return;
-        }
-
-        try {
-            // Faz a requisição para a API Flask
-            const response = await fetch("/api/agendamentos");
-            const agendamentosData = await response.json();
-
-            // Filtra os agendamentos pela data escolhida
-            const dataFormatada = new Date(dataSelecionada).toISOString().split("T")[0];
-            const agendamentosFiltrados = agendamentosData
-                .filter(agendamento => agendamento.data === dataFormatada)
-                .sort((a, b) => a.horario.localeCompare(b.horario));
-
-            dataAtualSpan.textContent = formatarData(dataSelecionada);
-            agendaDiv.style.display = "block"; // Exibe a agenda assim que uma data for selecionada
-
-            if (agendamentosFiltrados.length > 0) {
-                for (const agendamento of agendamentosFiltrados) {
-                    const row = document.createElement("tr");
-
-                    console.log(agendamento);
-
-                    row.innerHTML = `
-                        <td>${agendamento.horario}</td>
-                        <td>${agendamento.paciente} (${agendamento.tutor})</td>
-                        <td>${agendamento.status}</td>
-                        <td>
-                            <button class="editar" onclick="editarAgendamento(${agendamento.id_agendamento})">Editar</button>
-                        </td>
-                    `;
-                    listaAgendamentos.appendChild(row);
-                }
-            } else {
-                // Se não houver agendamentos, exibe a mensagem padrão e mantém a tabela visível
-                listaAgendamentos.innerHTML = `<tr><td colspan="4" style="text-align:center;">Nenhum agendamento encontrado para este dia.</td></tr>`;
-            }
-        } catch (error) {
-            console.error("Erro ao carregar agendamentos:", error);
-            listaAgendamentos.innerHTML = `<tr><td colspan="4" style="text-align:center; color: red;">Erro ao carregar agendamentos.</td></tr>`;
-            agendaDiv.style.display = "block"; // Garante que a agenda seja exibida mesmo se houver erro
-        }
-    }
-
-    // Atualiza os agendamentos ao escolher uma data
     dataInput.addEventListener("change", function () {
-        carregarAgendamentos(this.value);
+        atualizarAgenda(this.value);
     });
 
-    // Carrega os agendamentos ao abrir a página
     if (dataInput.value) {
-        carregarAgendamentos(dataInput.value);
+        atualizarAgenda(dataInput.value);
+    }
+
+    if (novoAgendamentoBtn) {
+        novoAgendamentoBtn.addEventListener("click", function () {
+            const dataSelecionada = dataInput.value;
+            if (!dataSelecionada) {
+                alert("Por favor, selecione uma data antes de agendar.");
+                return;
+            }
+            abrirPopupCadastro(dataSelecionada);
+        });
     }
 });
 
-document.getElementById("cadastroForm").addEventListener("submit", async function (event) {
-    event.preventDefault();
+// ====================
+// Função para Atualizar Agenda
+// ====================
+async function atualizarAgenda(dataSelecionada) {
+    // Verificar se os elementos existem antes de usá-los
+    const dataAtualSpan = document.getElementById("dataAtual");
+    const agendaDiv = document.getElementById("agenda");
+    const listaAgendamentos = document.getElementById("listaAgendamentos");
 
-    const id = document.getElementById("id_agendamento").value;
-    const status = document.getElementById("status").value;
-    const horario = document.getElementById("horario").value;
+    if (!dataAtualSpan || !agendaDiv || !listaAgendamentos) {
+        console.error("Erro: Elementos da agenda não foram encontrados.");
+        return;
+    }
 
-    if (!id || !status || !horario) {
-        alert("Todos os campos são obrigatórios!");
+    listaAgendamentos.innerHTML = "";
+
+    if (!dataSelecionada) {
+        dataAtualSpan.textContent = "Selecione um dia";
+        agendaDiv.style.display = "none";
         return;
     }
 
     try {
-        const response = await fetch(`/api/agendamentos/${id}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ horario, status }),
+        const response = await fetch(`/api/agendamentos?data=${dataSelecionada}`);
+        const agendamentosData = await response.json();
+
+        if (response.status !== 200) {
+            throw new Error(agendamentosData.erro || "Erro desconhecido ao carregar agendamentos.");
+        }
+
+        dataAtualSpan.textContent = formatarData(dataSelecionada);
+        agendaDiv.style.display = "block";
+
+        if (agendamentosData.length > 0) {
+            for (const agendamento of agendamentosData) {
+                const row = document.createElement("tr");
+
+                row.innerHTML = `
+                    <td>${agendamento.horario}</td>
+                    <td>${agendamento.paciente} (${agendamento.tutor})</td>
+                    <td>${agendamento.status}</td>
+                    <td>${agendamento.veterinario}</td>
+                    <td>
+                        <button class="editar" onclick="editarAgendamento(${agendamento.id_agendamento})">Editar</button>
+                    </td>
+                `;
+
+                listaAgendamentos.appendChild(row);
+            }
+        } else {
+            listaAgendamentos.innerHTML = `<tr><td colspan="5" style="text-align:center;">Nenhum agendamento encontrado para este dia.</td></tr>`;
+        }
+    } catch (error) {
+        console.error("Erro ao carregar agendamentos:", error);
+        listaAgendamentos.innerHTML = `<tr><td colspan="5" style="text-align:center; color: red;">Erro ao carregar agendamentos.</td></tr>`;
+        agendaDiv.style.display = "block";
+    }
+}
+
+// ====================
+// Funções para Cadastro de Agendamento
+// ====================
+async function abrirPopupCadastro(dataSelecionada) {
+    try {
+        const response = await fetch("/cadastro_agendamento_page");
+        const html = await response.text();
+
+            document.getElementById("popupContainer").innerHTML = html;
+            document.getElementById("cadastro-popup").style.display = "flex";
+
+            // Define a data no formulário
+            document.getElementById("dataSelecionadaPopup").textContent = formatarData(dataSelecionada);
+            document.getElementById("data").value = dataSelecionada;
+
+            await carregarEspecialidades();
+
+            await carregarHorarios();// Adiciona um pequeno atraso para evitar sobreposição
+
+        } catch (error) {
+    console.error("Erro ao carregar popup: ", error);
+    }
+}
+
+function fecharPopupCadastro() {
+    document.getElementById("cadastro-popup").style.display = "none";
+}
+
+// ====================
+// Função para Enviar Formulário de Agendamento
+// ====================
+document.addEventListener("submit", function (event) {
+    if (event.target.id === "cadastroForm") {
+        event.preventDefault();
+        enviarFormulario();
+    }
+});
+
+async function enviarFormulario() {
+    const form = document.getElementById("cadastroForm");
+    const formData = new FormData(form);
+
+    try {
+        const response = await fetch("/cadastro_agendamento", {
+            method: "POST",
+            body: formData
         });
 
         const data = await response.json();
 
         if (response.ok) {
-            alert("Agendamento atualizado com sucesso!");
-            fecharPopupEdicao();
-            carregarAgendamentos(document.getElementById("dataSelecionada").value);
+            alert("Agendamento cadastrado com sucesso!");
+            fecharPopupCadastro();
+            atualizarAgenda(document.getElementById("dataSelecionada").value);
         } else {
             alert(`Erro: ${data.erro}`);
         }
     } catch (error) {
-        console.error("Erro ao atualizar agendamento:", error);
-    }
-});
-
-async function carregarStatus() {
-    try {
-        const response = await fetch("/api/status");
-        const statusData = await response.json();
-
-        let statusSelect = document.getElementById("status");
-        if (!statusSelect) {
-            console.error("Elemento select de status não encontrado!");
-            return;
-        }
-
-        statusSelect.innerHTML = '<option value="">Selecione</option>';
-
-        statusData.forEach(status => {
-            let option = document.createElement("option");
-            option.value = status.id;
-            option.textContent = status.nome;
-            statusSelect.appendChild(option);
-        });
-    } catch (error) {
-        console.error("Erro ao carregar status:", error);
+        console.error("Erro ao enviar formulário: ", error);
+        alert("Erro ao cadastrar agendamento.");
     }
 }
 
-async function editarAgendamento(id) {
-    try {
-        // Buscar os dados do agendamento selecionado
-        const response = await fetch(`/api/agendamentos/${id}`);
-        const agendamento = await response.json();
-
-        if (!agendamento || agendamento.erro) {
-            console.error("Agendamento não encontrado!");
-            return;
-        }
-
-        // Carregar a página de edição no popup
-        const htmlResponse = await fetch("/editar_agendamento_page");
-        document.getElementById("popupContainer").innerHTML = await htmlResponse.text();
-
-        // Garantir que os elementos do popup foram carregados antes de preenchê-los
-        await carregarStatus();
-
-        // debugar para ver quais campos estão vindo
-        console.log(agendamento);
-
-        document.getElementById("id_agendamento").value = agendamento.id_agendamento;
-        document.getElementById("data").value = formatarData(agendamento.data);
-        document.getElementById("tutor").value = agendamento.tutor;
-        document.getElementById("paciente").value = agendamento.paciente;
-        document.getElementById("horario").value = agendamento.horario;
-        document.getElementById("status").value = agendamento.id_status;
-
-        // Exibir o popup
-        document.getElementById("editar-popup").style.display = "flex";
-    } catch (error) {
-        console.error("Erro ao abrir popup de edição:", error);
-    }
-}
-
-
-function configurarCarregarTutorBtn() {
-    const carregarTutorBtn = document.getElementById("carregarTutor");
-    if (!carregarTutorBtn) {
-        console.error("Botão 'Carregar Tutor' não encontrado no DOM!");
-        return;
-    }
-
-    document.addEventListener("click", function (event) {
-    if (event.target && event.target.id === "carregarTutor") {
-        document.getElementById("loadingTutor").style.display = "inline"; // Mostra "Carregando..."
-        atualizarListaPacientes().then(() => {
-            document.getElementById("loadingTutor").style.display = "none"; // Esconde após carregar
-        });
-    }
-});
-
+// ====================
+// Funções Auxiliares
+// ====================
+function formatarData(data) {
+    if (!data) return "";
+    return data.split("-").reverse().join("/");
 }
 
 async function atualizarListaPacientes() {
     const tutorInput = document.getElementById("tutor");
     const pacienteSelect = document.getElementById("paciente");
+    const loadingTutor = document.getElementById("loadingTutor");
 
     let cpfTutor = tutorInput.value.trim();
-    cpfTutor = formatarCPF(cpfTutor);
-
-    const mensagemTutor = document.getElementById("mensagemTutor");
 
     if (!cpfTutor) {
         pacienteSelect.innerHTML = "<option value=''>Informe um tutor.</option>";
-        mensagemTutor.style.display = "none";
         return;
     }
 
+    // Exibe "Carregando..."
+    loadingTutor.style.display = "inline";
+
     try {
-        const tutor = await buscarTutorCpf(cpfTutor);
-        if (!tutor || !tutor.id) {
-            alert("Faça o cadastro do tutor antes de cadastrar um paciente.");
+        // Buscar os pacientes pelo CPF do tutor
+        const response = await fetch(`/api/pacientes_por_tutor?cpf=${cpfTutor}`);
+
+        if (!response.ok) {
+            throw new Error("Erro ao buscar pacientes do tutor.");
+        }
+
+        const pacientes = await response.json();
+
+        // Verificar se há erro na resposta
+        if (pacientes.erro) {
+            alert(pacientes.erro);
             pacienteSelect.innerHTML = "<option value=''>Nenhum paciente disponível.</option>";
-            mensagemTutor.style.display = "block";
             return;
         }
 
-        mensagemTutor.style.display = "none";
-        const pacientes = await buscarPacientesPorTutor(tutor.id);
+        // Preencher a lista de pacientes
         pacienteSelect.innerHTML = "<option value=''>Selecione um paciente</option>";
 
         if (pacientes.length === 0) {
@@ -209,63 +196,143 @@ async function atualizarListaPacientes() {
             pacienteSelect.innerHTML = "<option value=''>Nenhum paciente disponível.</option>";
         } else {
             pacientes.forEach(paciente => {
-                const option = document.createElement("option");
-                option.value = paciente.id;
-                option.textContent = paciente.nome;
+                let option = document.createElement("option");
+                option.value = paciente["id"];
+                option.textContent = paciente["nome"];
                 pacienteSelect.appendChild(option);
             });
         }
     } catch (error) {
-        console.error("Erro ao buscar tutor:", error);
-        alert("Erro ao buscar tutor.");
+        console.error("Erro ao buscar pacientes:", error);
+        alert("Erro ao carregar os pacientes do tutor.");
+    } finally {
+        // Esconde "Carregando..."
+        loadingTutor.style.display = "none";
     }
 }
 
-function abrirPopupCadastro(dataSelecionada) {
-    fetch("/cadastro_agendamento_page")
-        .then(response => response.text())
-        .then(html => {
-            // document.getElementById("popupContainer").innerHTML = html;
-            document.getElementById("cadastro-popup").style.display = "flex";
+async function carregarVeterinarios() {
+    const especialidade = document.getElementById("especialidade").value;
+    const turno = document.getElementById("turno").value;
+    const selectVet = document.getElementById("veterinario");
 
-            document.getElementById("dataSelecionadaPopup").textContent = formatarData(dataSelecionada);
-            document.getElementById("data").value = dataSelecionada;
-        })
-        .catch(error => console.error("Erro ao carregar popup: ", error));
+    // Verifica se a especialidade foi selecionada
+    if (!especialidade) {
+        selectVet.innerHTML = '<option value="">Selecione uma especialidade primeiro</option>';
+        return;
+    }
+
+    try {
+        let url = `/api/veterinarios_disponiveis?especialidade_id=${especialidade}`;
+
+        if (turno) {
+            url += `&turno=${turno}`;
+        }
+
+        const response = await fetch(url);
+        const veterinarios = await response.json();
+
+        if (!veterinarios || veterinarios.length === 0) {
+            selectVet.innerHTML = '<option value="">Nenhum veterinário disponível.</option>';
+            return;
+        }
+
+        selectVet.innerHTML = '<option value="">Selecione um veterinário</option>';
+
+        console.log("vet:", veterinarios);
+
+        if (!veterinarios || veterinarios.length === 0) {
+            selectVet.innerHTML = '<option value="">Nenhum veterinário disponível.</option>';
+            return;
+        }
+
+        veterinarios.forEach(vet => {
+            let option = document.createElement("option");
+            option.value = vet.id;
+            option.textContent = vet.nome;
+            selectVet.appendChild(option);
+        });
+    } catch (error) {
+        console.error("Erro ao carregar veterinários:", error);
+        alert("Erro ao carregar veterinários.");
+    }
 }
 
-function fecharPopupCadastro() {
-    document.getElementById("cadastro-popup").style.display = "none";
+async function carregarHorarios() {
+    const turno = document.getElementById("turno");
+    const selectHorario = document.getElementById("horario");
+
+    if (!selectHorario) {
+        console.error("Elemento select de horários não encontrado.");
+        return;
+    }
+
+    try {
+        let url = "/api/horarios";
+
+        const response = await fetch(url);
+        const horarios = await response.json();
+
+        console.log("Horários recebidos (antes de verificar tipo):", horarios);
+
+        selectHorario.innerHTML = '<option value="">Selecione um horário</option>';
+        horarios.forEach(horario => {
+            let option = document.createElement("option");
+            option.value = horario;
+            option.textContent = horario;
+            selectHorario.appendChild(option);
+        });
+        console.log("Lista de horários final:", horarios);
+
+    } catch (error) {
+        console.error("Erro ao carregar horários:", error);
+        alert("Erro ao carregar horários.");
+    }
 }
 
-function fecharPopupEdicao() {
-    document.getElementById("editar-popup").style.display = "none";
+async function carregarEspecialidades() {
+    const selectEspecialidade = document.getElementById("especialidade");
+
+    if (!selectEspecialidade) {
+        console.error("Elemento select de especialidades não encontrado.");
+        return;
+    }
+
+    try {
+        const response = await fetch("/api/especialidades");
+        const especialidades = await response.json();
+
+        // Verifica se especialidades é uma lista válida
+        if (!Array.isArray(especialidades)) {
+            throw new Error("Resposta da API não é um array válido.");
+        }
+
+        selectEspecialidade.innerHTML = '<option value="">Selecione uma especialidade</option>';
+
+        console.log("especialidades:", especialidades);
+
+        especialidades.forEach(especialidade => {
+            console.log(especialidade);
+            let option = document.createElement("option");
+            option.value = especialidade["id"];
+            option.textContent = especialidade["nome"];
+            selectEspecialidade.appendChild(option);
+        });
+        console.log("Lista final de especialidades:", especialidades);
+    } catch (error) {
+        console.error("Erro ao carregar especialidades:", error);
+        alert("Erro ao carregar especialidades.");
+    }
 }
 
-function enviarFormulario() {
-    const form = document.getElementById("cadastroForm");
-    const formData = new FormData(form);
-
-    fetch("/cadastro_agendamento", {
-        method: "POST",
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        alert(data.mensagem);
-        fecharPopupCadastro();
-    })
-    .catch(error => console.error("Erro ao enviar formulário: ", error));
-}
-
-function formatarData(data) {
-    if (!data) return "";
-    return data.split("-").reverse().join("/");
-}
 
 
-
+// ====================
+// Expor funções globalmente
+// ====================
 window.abrirPopupCadastro = abrirPopupCadastro;
 window.fecharPopupCadastro = fecharPopupCadastro;
-window.editarAgendamento = editarAgendamento;
-window.fecharPopupEdicao = fecharPopupEdicao;
+window.atualizarListaPacientes = atualizarListaPacientes;
+window.carregarVeterinarios = carregarVeterinarios;
+window.carregarHorarios = carregarHorarios;
+window.carregarEspecialidades = carregarEspecialidades;

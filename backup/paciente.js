@@ -1,5 +1,3 @@
-import { buscarTutorCpf } from '../app/static/js/buscas.js';
-
 document.getElementById("novoCadastro").addEventListener("click", function () {
     fetch("/cadastro_paciente")
         .then(response => response.text())

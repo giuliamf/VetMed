@@ -1,15 +1,14 @@
-<div id="cadastro-popup" class="popup-container" style="display: none">
+<div id="cadastro-popup" class="popup-container" style="display: none;">
     <div class="popup-content">
         <h2>Agendamento - <span id="dataSelecionadaPopup"></span></h2>
-        <form id="cadastroForm" method="POST" action="/cadastro_agendamento">
+        <form id="cadastroForm">
             <input type="hidden" id="id_agendamento" name="id_agendamento">
             <input type="hidden" id="data" name="data"> <!-- Campo oculto para a data -->
 
             <label for="tutor">Tutor (CPF)</label>
             <div class="tutor-container">
-                <input type="text" id="tutor" name="tutor" required
-                       placeholder="XXX.XXX.XX-XX">
-                <button type="button" id="carregarTutor">Carregar tutor</button>
+                <input type="text" id="tutor" name="tutor" required placeholder="XXX.XXX.XXX-XX">
+                <button type="button" id="carregarTutor" onclick="atualizarListaPacientes()">Carregar tutor</button>
                 <span id="loadingTutor" style="display: none;">Carregando...</span>
             </div>
 
@@ -18,34 +17,27 @@
                 <option value="">Selecione</option>
             </select>
 
-            <p id="mensagemTutor" style="color: red; display: none;">Faça o cadastro do tutor antes de agendar uma consulta.</p>
-
-            <label for="horario">Horário</label>
-            <select id="horario" name="horario" required>
-                <optgroup label="Manhã">
-                    <option value="08:30">08:00</option>
-                    <option value="08:30">08:30</option>
-                    <option value="09:00">09:00</option>
-                    <option value="09:30">09:30</option>
-                    <option value="10:00">10:00</option>
-                    <option value="10:30">10:30</option>
-                    <option value="11:00">11:00</option>
-                    <option value="11:30">11:30</option>
-                </optgroup>
-                <optgroup label="Tarde">
-                    <option value="13:00">13:00</option>
-                    <option value="13:30">13:30</option>
-                    <option value="14:00">14:00</option>
-                    <option value="14:30">14:30</option>
-                    <option value="15:00">15:00</option>
-                    <option value="15:30">15:30</option>
-                    <option value="16:00">16:00</option>
-                    <option value="16:30">16:30</option>
-                    <option value="17:00">17:00</option>
-                    <option value="17:30">17:30</option>
-                </optgroup>
+            <label for="especialidade">Especialidade</label>
+            <select id="especialidade" required onchange="carregarVeterinarios()">
+                <option value="">Selecione</option>
             </select>
 
+            <label for="turno">Turno</label>
+            <select id="turno" onchange="carregarVeterinarios(); carregarHorarios()">
+                <option value="">Indiferente</option>
+                <option value="manha">Manhã</option>
+                <option value="tarde">Tarde</option>
+            </select>
+
+            <label for="veterinario">Veterinário</label>
+            <select id="veterinario" required>
+                <option value="">Selecione</option>
+            </select>
+
+            <label for="horario">Horário</label>
+            <select id="horario" required>
+                <option value="">Selecione</option>
+            </select>
 
             <div class="form-buttons">
                 <button type="submit" class="salvar">Salvar</button>

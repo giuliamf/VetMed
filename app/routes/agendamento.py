@@ -2,42 +2,55 @@ from flask import Blueprint, jsonify, request, render_template
 from app.database import execute_sql
 
 from app.utils.funcoes_com_cpf import formatar_cpf
-from app.utils.buscas_bd import buscar_id_tutor_por_cpf
+from app.utils.buscas_bd import buscar_animais_por_cpf_tutor, buscar_vet_por_especialidade_turno
 
 agendamentos_bp = Blueprint('agendamento', __name__)
 
 
-@agendamentos_bp.route('/api/agendamentos')
+@agendamentos_bp.route('/api/agendamentos', methods=['GET'])
 def get_agendamentos():
-    """ Retorna a lista de agendamentos do banco de dados """
+    """ Retorna a lista de agendamentos do banco de dados filtrando por data """
     try:
-        query = """
-                SELECT a.id_agendamento, p.nome AS animal, t.nome AS tutor, s.nome AS status, 
-                       a.data, a.horario
-                FROM Agendamento a
-                JOIN Animal p ON a.id_animal = p.id_animal
-                JOIN Tutor t ON p.id_tutor = t.id_tutor
-                JOIN Status_Agendamento s ON a.id_status = s.id_status
-                ORDER BY a.data ASC, a.horario ASC
-            """
+        data_selecionada = request.args.get('data')
 
-        agendamentos = execute_sql(query, fetch_all=True)
-        print(agendamentos)
+        if not data_selecionada:
+            return jsonify({"erro": "Data não fornecida"}), 400
+
+        query = """
+            SELECT a.id_agendamento, p.nome AS paciente, t.nome AS tutor, s.nome AS status, 
+                   u.nome AS veterinario, a.data, a.horario
+            FROM Agendamento a
+            JOIN Usuario u ON a.id_veterinario = u.id_usuario
+            JOIN Animal p ON a.id_animal = p.id_animal
+            JOIN Tutor t ON p.id_tutor = t.id_tutor
+            JOIN Status_Agendamento s ON a.id_status = s.id_status
+            JOIN Veterinario v ON a.id_veterinario = v.id_veterinario
+            WHERE a.data = %s
+            ORDER BY a.horario ASC
+        """
+
+        # Executando a consulta
+        agendamentos = execute_sql(query, (data_selecionada,), fetch_all=True)
+
+        if not agendamentos:
+            return jsonify([]), 200  # Retorna uma lista vazia se não houver agendamentos
 
         agendamentos_lista = [
             {
                 "id_agendamento": a[0],
                 "paciente": a[1],
                 "tutor": a[2],
-                "id_status": a[3],
-                "data": str(a[4]),
-                "horario": a[5]
+                "status": a[3],
+                "veterinario": a[4],  # Nome do veterinário
+                "data": str(a[5]),
+                "horario": a[6]
             }
             for a in agendamentos
         ]
 
         return jsonify(agendamentos_lista), 200
     except Exception as e:
+        print(f"Erro ao buscar agendamentos: {e}")  # Log do erro no console do servidor
         return jsonify({"erro": f"Erro ao buscar agendamentos: {str(e)}"}), 500
 
 
@@ -67,48 +80,19 @@ def cadastro_agendamento():
     if not request.json:
         return jsonify({"erro": "Nenhum dado JSON foi recebido"}), 400
 
-    """
-    Aqui, eu recebo do formulário: cpf do tutor (achar o id)
-    id do animal
-    status é cadastrado como 1 (agendado)
-    data é recebida do calendário da página
-    horário é recebido do select como uma string hh:mm
-    """
-
     data = request.json
 
-    # Dados recebidos do formulário
-    cpf_tutor = data.get("cpf_tutor")
-    id_animal = data.get("id_animal")
-    data_agendamento = data.get("data")
-    horario = data.get("horario")
-
-    if not cpf_tutor or not id_animal or not data_agendamento or not horario:
-        return jsonify({"erro": "Campos obrigatórios ausentes!"}), 400
-
-    id_tutor = buscar_id_tutor_por_cpf(formatar_cpf(cpf_tutor))
-
-    if not id_tutor:
-        return jsonify({"erro": "Tutor não encontrado!"}), 404
-
-    novo_agendamento = {
-        "id_tutor": id_tutor,
-        "id_animal": id_animal,
-        "data_agendamento": data_agendamento,
-        "horario": horario,
-    }
+    params = (
+        data.get("id_animal"),
+        data.get("id_veterinario"),
+        data.get("data"),
+        data.get("horario"),
+        data.get("turno"),
+        data.get("id_especialidade")
+    )
 
     try:
-        query = """
-            INSERT INTO Agendamento (id_animal, id_status, data, horario)
-            VALUES (%s, 1, %s, %s)
-        """
-        params = (
-            novo_agendamento['id_animal'],
-            novo_agendamento['data_agendamento'],
-            novo_agendamento['horario']
-        )
-        execute_sql(query, params)
+        execute_sql("CALL realizar_agendamento(%s, %s, %s, %s, %s, %s)", params)
         return jsonify({"mensagem": "Agendamento realizado com sucesso!"}), 201
 
     except Exception as e:
@@ -161,6 +145,101 @@ def editar_agendamento(id_agendamento):
             return jsonify({"mensagem": "Agendamento atualizado com sucesso!"}), 200
         except Exception as e:
             return jsonify({"erro": f"Erro ao atualizar agendamento: {str(e)}"}), 500
+
+
+@agendamentos_bp.route('/api/pacientes_por_tutor', methods=['GET'])
+def get_pacientes_por_tutor():
+    """ Retorna os pacientes (animais) de um tutor pelo CPF """
+    cpf_tutor = request.args.get("cpf")
+    cpf_formatado = formatar_cpf(cpf_tutor)
+
+    if not cpf_formatado:
+        return jsonify({"erro": "CPF do tutor é obrigatório!"}), 400
+
+    try:
+        animais = buscar_animais_por_cpf_tutor(cpf_formatado)
+        if not animais:
+            return jsonify({"erro": "Tutor não encontrado!"}), 404
+
+        pacientes_lista = [{"id": a[0], "nome": a[2]} for a in animais]
+        print(pacientes_lista)
+
+        return jsonify(pacientes_lista), 200
+    except Exception as e:
+        return jsonify({"erro": f"Erro ao buscar pacientes: {str(e)}"}), 500
+
+
+@agendamentos_bp.route('/api/veterinarios_disponiveis', methods=['GET'])
+def get_veterinarios_disponiveis():
+    """ Retorna a lista de veterinários filtrados por especialidade e, opcionalmente, por turno """
+    especialidade_id = request.args.get("especialidade_id")
+    turno = request.args.get("turno")
+
+    if not especialidade_id:
+        return jsonify({"erro": "Especialidade é obrigatória!"}), 400
+
+    try:
+        if turno and turno in ['manha', 'tarde']:
+            veterinarios = buscar_vet_por_especialidade_turno(especialidade_id, turno)
+
+        else:
+            veterinarios = buscar_vet_por_especialidade_turno(especialidade_id)
+
+        if not veterinarios:
+            return jsonify([]), 200  # Retorna uma lista vazia se não houver veterinários
+
+        return jsonify(veterinarios), 200
+    except Exception as e:
+        return jsonify({"erro": f"Erro ao buscar veterinários disponíveis: {str(e)}"}), 500
+
+
+@agendamentos_bp.route('/api/horarios', methods=['GET'])
+def get_horarios():
+    """ Retorna todos os horários disponíveis e, se um turno for selecionado, filtra os horários desse turno. """
+    turno = request.args.get("turno")
+
+    try:
+        if turno and turno in ['manha', 'tarde']:
+            query = "SELECT horario FROM Horario_Funcionamento WHERE turno = %s ORDER BY horario ASC"
+            horarios = execute_sql(query, (turno,), fetch_all=True)
+            horarios_lista = [h[0] for h in horarios] if horarios else []
+        else:
+            query = "SELECT horario FROM Horario_Funcionamento ORDER BY horario ASC"
+            horarios = execute_sql(query, fetch_all=True)
+            horarios_lista = [h[0] for h in horarios] if horarios else []
+
+        for h in horarios_lista:
+            print(h)
+        # Certifique-se de que sempre retorna uma lista JSON válida
+
+        print("Retornando horários:", horarios_lista)  # Depuração
+
+        return jsonify(horarios_lista), 200
+    except Exception as e:
+        print(f"Erro ao buscar horários: {e}")  # Log do erro no console do servidor
+        return jsonify({"erro": f"Erro ao buscar horários: {str(e)}"}), 500
+
+
+@agendamentos_bp.route('/api/especialidades', methods=['GET'])
+def get_especialidades():
+    """ Retorna a lista de especialidades """
+    try:
+        query = "SELECT id_especialidade, nome FROM Especialidade ORDER BY nome ASC"
+        especialidades = execute_sql(query, fetch_all=True)
+
+        print("Especialidades recebidas do banco: ", especialidades)  # Depuração
+
+        if not especialidades:
+            return jsonify([]), 200  # Retorna lista vazia caso não haja especialidades
+
+        lista_especialidade = [{"id": e[0], "nome": e[1]} for e in especialidades]
+
+        print("Lista final de especialidades:", lista_especialidade)  # Depuração
+
+        return jsonify(lista_especialidade), 200
+    except Exception as e:
+        print(f"Erro ao buscar especialidades: {e}")  # Log do erro no servidor
+        return jsonify({"erro": f"Erro ao buscar especialidades: {str(e)}"}), 500
 
 
 # Rotas para renderizar as páginas de HTML de agendamento

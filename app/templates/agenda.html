@@ -6,7 +6,7 @@
     <link rel="shortcut icon" href="../static/images/icon.png">
     <link rel="stylesheet" href="../static/css/cabecalho.css">  <!-- CSS do cabeçalho -->
     <link rel="stylesheet" href="../static/css/agenda.css">  <!-- CSS da página de agenda -->
-     <link rel="stylesheet" href="../static/css/logout.css">  <!-- CSS do popup de logout -->
+    <link rel="stylesheet" href="../static/css/logout.css">  <!-- CSS do popup de logout -->
     <link rel="stylesheet" href="../static/css/popup.css">  <!-- CSS do popup padrão -->
     <title>Calendário de Agendamentos</title>
 </head>
@@ -21,11 +21,12 @@
                 <li><a href="#" onclick="abrirPopupLogout()">Sair</a></li>
             </ul>
             <div id="popup-container">
-            {% include 'logout.html' %}
+                {% include 'logout.html' %}
             </div>
             {% include 'partials/navbar.html' %}
         </nav>
     </header>
+
     <main>
         <div class="calendario-container">
             <label for="dataSelecionada"></label>
@@ -34,11 +35,11 @@
 
         <div class="agenda" id="agenda" style="display: none;">
             <div class="agenda-header">
-            <h2>Agendamentos: <span id="dataAtual">Selecione um dia</span></h2>
+                <h2>Agendamentos: <span id="dataAtual">Selecione um dia</span></h2>
                 <div class="agenda-controls">
-                <label for="search"></label>
+                    <label for="search"></label>
                     <input type="text" id="search" placeholder="Pesquisar agendamento">
-                <button id="novoAgendamento">Novo Agendamento</button>
+                    <button id="novoAgendamento" onclick="abrirPopupCadastro()">Novo Agendamento</button>
                     <div id="popupContainer">
                         {% include 'tela_cadastros/cadastro_agendamentos.html' %}
                     </div>
@@ -59,8 +60,9 @@
             </table>
         </div>
     </main>
-    <script type="module" src="../static/js/agenda.js"></script>
-    <script type="module" src="../static/js/buscas.js"></script>
-    <script src="../static/js/logout.js"></script>
+
+    <!-- Scripts carregados com defer para evitar conflitos -->
+    <script src="../static/js/agenda.js" defer></script>
+    <script src="../static/js/logout.js" defer></script>
 </body>
-</html>>
+</html>

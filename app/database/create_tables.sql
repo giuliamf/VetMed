@@ -122,6 +122,18 @@ CREATE TABLE IF NOT EXISTS Horario_Ocupado (
 
 -- FUNCOES, TRIGGERS, VIEWS
 
+-- View para retornar os veterinários disponíveis em determinado turno e de determinadas especialidades
+CREATE OR REPLACE VIEW Vet_Disponiveis AS
+SELECT
+    v.id_veterinario,
+    u.nome AS nome_veterinario,
+    e.nome AS especialidade,
+    c.turno
+FROM Veterinario v
+JOIN Usuario u ON v.id_veterinario = u.id_usuario
+JOIN Especialidade e ON v.id_especialidade = e.id_especialidade
+JOIN Carga_Horaria c ON v.id_veterinario = c.id_veterinario;
+
 -- Funcao para remover horario ocupado quando um agendamento for cancelado
 CREATE OR REPLACE FUNCTION remover_horario_ocupado()
 RETURNS TRIGGER AS $$
@@ -218,11 +230,13 @@ BEGIN
     END IF;
 END $$;
 
-CREATE PROCEDURE realizar_agendamento(
+CREATE OR REPLACE PROCEDURE realizar_agendamento(
     IN p_id_animal INT,
     IN p_id_veterinario INT,
     IN p_data DATE,
-    IN p_horario CHAR(5)
+    IN p_horario CHAR(5),
+    IN p_turno CHAR(5),
+    IN p_id_especialidade INT
 )
 LANGUAGE plpgsql
 AS $$
@@ -230,6 +244,7 @@ DECLARE
     v_tutor INT;
     v_turno CHAR(5);
     v_horario_disponivel INT;
+    v_validacao INT;
 BEGIN
     -- Verifica se o animal existe e encontra o tutor associado
     SELECT id_tutor INTO v_tutor FROM Animal WHERE id_animal = p_id_animal;
@@ -237,10 +252,15 @@ BEGIN
         RAISE EXCEPTION 'O animal informado não existe.';
     END IF;
 
-    -- Verifica se o veterinário atende no turno desse horário
-    SELECT turno INTO v_turno FROM Horario_Funcionamento WHERE horario = p_horario;
-    IF NOT EXISTS (SELECT 1 FROM Carga_Horaria WHERE id_veterinario = p_id_veterinario AND turno = v_turno) THEN
-        RAISE EXCEPTION 'O veterinário não atende neste turno.';
+    -- Verifica se o veterinário atende no turno e tem a especialidade correta
+    SELECT COUNT(*) INTO v_validacao
+    FROM Vet_Disponiveis
+    WHERE id_veterinario = p_id_veterinario
+    AND turno = p_turno
+    AND especialidade = (SELECT nome FROM Especialidade WHERE id_especialidade = p_id_especialidade);
+
+    IF v_validacao = 0 THEN
+        RAISE EXCEPTION 'O veterinário selecionado não atende neste turno ou não tem essa especialidade.';
     END IF;
 
     -- Verifica se o horário está disponível
@@ -262,3 +282,4 @@ BEGIN
     VALUES (p_id_veterinario, v_horario_disponivel, p_data, p_horario);
 END;
 $$;
+

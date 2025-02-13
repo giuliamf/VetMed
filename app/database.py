@@ -84,6 +84,8 @@ def execute_sql(query, params=None, fetch_one=False, fetch_all=False):
             conn.commit()  # Confirma transações como INSERT, UPDATE, DELETE
             result = None
 
+        print(result)
+
         return result
     except Exception as e:
         print(f"Erro ao executar SQL: {e}")
