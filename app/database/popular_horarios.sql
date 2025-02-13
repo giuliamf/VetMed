@@ -6,3 +6,4 @@ SELECT * FROM unnest(
           'tarde', 'tarde', 'tarde', 'tarde', 'tarde', 'tarde', 'tarde', 'tarde']
 )
 WHERE NOT EXISTS (SELECT 1 FROM Horario_Funcionamento);
+

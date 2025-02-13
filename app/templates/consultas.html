@@ -6,28 +6,59 @@
     <link rel="shortcut icon" href="../static/images/icon.png">
     <link rel="stylesheet" href="../static/css/cabecalho.css">  <!-- CSS do cabeçalho -->
     <link rel="stylesheet" href="../static/css/agenda.css">  <!-- CSS da página de agenda -->
-     <link rel="stylesheet" href="../static/css/logout.css">  <!-- CSS do popup de logout -->
+    <link rel="stylesheet" href="../static/css/logout.css">  <!-- CSS do popup de logout -->
     <link rel="stylesheet" href="../static/css/popup.css">  <!-- CSS do popup padrão -->
-    <title>Consultas de hoje</title>
+    <title>Calendário de Agendamentos</title>
 </head>
 <body>
     <header>
         <nav class="navbar">
             <ul>
                 <li><a href="/inicio">Início</a></li>
-                <li><a href="/agenda">Agenda</a></li>
+                <li><a href="/agenda" class="active">Agenda</a></li>
                 <li><a href="/cadastros">Cadastros</a></li>
-                <li><a href="/consultas" class="active">Consultas</a></li>
+                <li><a href="/consultas">Consultas</a></li>
                 <li><a href="#" onclick="abrirPopupLogout()">Sair</a></li>
             </ul>
             <div id="popup-container">
-            {% include 'logout.html' %}
+                {% include 'logout.html' %}
             </div>
             {% include 'partials/navbar.html' %}
         </nav>
     </header>
 
-    <script type="module" src="../static/js/agenda.js"></script>
-    <script src="../static/js/logout.js"></script>
+    <main>
+        <div class="calendario-container">
+            <label for="dataSelecionada"></label>
+            <input type="date" id="dataSelecionada">
+        </div>
+
+        <div class="agenda" id="agenda" style="display: none;">
+            <div class="agenda-header">
+                <h2>Agendamentos: <span id="dataAtual">Selecione um dia</span></h2>
+                <div class="agenda-controls">
+                    <label for="search"></label>
+                    <input type="text" id="search" placeholder="Pesquisar agendamento">
+                </div>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Hora</th>
+                        <th>Paciente</th>
+                        <th>Status</th>
+                        <th>Veterinário</th>
+                    </tr>
+                </thead>
+                <tbody id="listaAgendamentosPorUsuario">
+                    <!-- Os agendamentos serão carregados dinamicamente aqui -->
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <!-- Scripts carregados com defer para evitar conflitos -->
+    <script src="../static/js/consulta.js" defer></script>
+    <script src="../static/js/logout.js" defer></script>
 </body>
-</html>>
+</html>

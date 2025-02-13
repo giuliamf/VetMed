@@ -2,7 +2,7 @@ from flask import Blueprint, jsonify, request, render_template
 from app.database import execute_sql
 
 from app.utils.funcoes_com_cpf import formatar_cpf
-from app.utils.buscas_bd import buscar_animais_por_cpf_tutor, buscar_vet_por_especialidade_turno
+from app.utils.buscas_bd import buscar_animais_por_cpf_tutor, buscar_vet_por_especialidade_turno, buscar_turno_por_horario
 
 agendamentos_bp = Blueprint('agendamento', __name__)
 
@@ -76,23 +76,35 @@ def get_status():
 
 @agendamentos_bp.route('/cadastro_agendamento', methods=['POST'])
 def cadastro_agendamento():
-    """ Cadastro de novo agendamento """
+    """ Cadastro de novo agendamento utilizando a procedure """
     if not request.json:
         return jsonify({"erro": "Nenhum dado JSON foi recebido"}), 400
 
     data = request.json
 
-    params = (
-        data.get("id_animal"),
-        data.get("id_veterinario"),
-        data.get("data"),
-        data.get("horario"),
-        data.get("turno"),
-        data.get("id_especialidade")
-    )
+    id_animal = data.get("id_animal")
+    id_veterinario = data.get("id_veterinario")
+    data_agendamento = data.get("data")
+    horario = data.get("horario")
+    id_especialidade = data.get("id_especialidade")
+
+    if not all([id_animal, id_veterinario, data_agendamento, horario, id_especialidade]):
+        print("Campos obrigatórios ausentes:", data)
+        return jsonify({"erro": "Todos os campos são obrigatórios"}), 400
 
     try:
-        execute_sql("CALL realizar_agendamento(%s, %s, %s, %s, %s, %s)", params)
+        # Buscar o turno com base no horário
+        turno = buscar_turno_por_horario(horario)
+
+        if not turno:
+            return jsonify({"erro": "Turno não encontrado para este horário."}), 400
+
+        # Chamar a procedure com o turno obtido
+        execute_sql(
+            "CALL realizar_agendamento(%s, %s, %s, %s, %s, %s)",
+            (id_animal, id_veterinario, data_agendamento, horario, turno, id_especialidade)
+        )
+
         return jsonify({"mensagem": "Agendamento realizado com sucesso!"}), 201
 
     except Exception as e:
@@ -173,19 +185,17 @@ def get_pacientes_por_tutor():
 def get_veterinarios_disponiveis():
     """ Retorna a lista de veterinários filtrados por especialidade e, opcionalmente, por turno """
     especialidade_id = request.args.get("especialidade_id")
-    turno = request.args.get("turno")
 
     if not especialidade_id:
         return jsonify({"erro": "Especialidade é obrigatória!"}), 400
 
     try:
-        if turno and turno in ['manha', 'tarde']:
-            veterinarios = buscar_vet_por_especialidade_turno(especialidade_id, turno)
+        veterinarios = buscar_vet_por_especialidade_turno(especialidade_id)
 
-        else:
-            veterinarios = buscar_vet_por_especialidade_turno(especialidade_id)
+        print(f"Veterinários encontrados para especialidade {especialidade_id}: {veterinarios}")
 
         if not veterinarios:
+            print("Nenhum veterinário encontrado para os filtros.")
             return jsonify([]), 200  # Retorna uma lista vazia se não houver veterinários
 
         return jsonify(veterinarios), 200
@@ -196,23 +206,17 @@ def get_veterinarios_disponiveis():
 @agendamentos_bp.route('/api/horarios', methods=['GET'])
 def get_horarios():
     """ Retorna todos os horários disponíveis e, se um turno for selecionado, filtra os horários desse turno. """
-    turno = request.args.get("turno")
-
     try:
-        if turno and turno in ['manha', 'tarde']:
-            query = "SELECT horario FROM Horario_Funcionamento WHERE turno = %s ORDER BY horario ASC"
-            horarios = execute_sql(query, (turno,), fetch_all=True)
-            horarios_lista = [h[0] for h in horarios] if horarios else []
-        else:
-            query = "SELECT horario FROM Horario_Funcionamento ORDER BY horario ASC"
-            horarios = execute_sql(query, fetch_all=True)
-            horarios_lista = [h[0] for h in horarios] if horarios else []
+        query = "SELECT horario FROM Horario_Funcionamento ORDER BY horario ASC"
+        horarios = execute_sql(query, fetch_all=True)
 
-        for h in horarios_lista:
-            print(h)
-        # Certifique-se de que sempre retorna uma lista JSON válida
+        if horarios:
+            horarios_lista = [h[0] for h in horarios]
+        else:
+            horarios_lista = []
 
         print("Retornando horários:", horarios_lista)  # Depuração
+        print(horarios)
 
         return jsonify(horarios_lista), 200
     except Exception as e:

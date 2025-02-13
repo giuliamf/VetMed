@@ -18,21 +18,15 @@
             </select>
 
             <label for="especialidade">Especialidade</label>
-            <select id="especialidade" required onchange="carregarVeterinarios()">
+            <select id="especialidade" name="especialidade" required onchange="carregarVeterinarios()">
                 <option value="">Selecione</option>
-            </select>
-
-            <label for="turno">Turno</label>
-            <select id="turno" onchange="carregarVeterinarios(); carregarHorarios()">
-                <option value="">Indiferente</option>
-                <option value="manha">Manhã</option>
-                <option value="tarde">Tarde</option>
             </select>
 
             <label for="veterinario">Veterinário</label>
-            <select id="veterinario" required>
+            <select id="veterinario" name="veterinario" required onchange="carregarHorarios()">
                 <option value="">Selecione</option>
             </select>
+
 
             <label for="horario">Horário</label>
             <select id="horario" required>

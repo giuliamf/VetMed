@@ -31,23 +31,29 @@ def buscar_animais_por_cpf_tutor(cpf):
     return animais if animais else None
 
 
-def buscar_vet_por_especialidade_turno(especialidade_id, turno_id=None):
+def buscar_vet_por_especialidade_turno(especialidade_id):
+
     query = """
-            SELECT v.id_veterinario, u.nome AS nome_veterinario
-            FROM Veterinario v
-            JOIN Usuario u ON v.id_veterinario = u.id_usuario
-            WHERE v.id_especialidade = %s
-        """
+        SELECT v.id_veterinario, u.nome AS nome_veterinario
+        FROM Veterinario v
+        JOIN Usuario u ON v.id_veterinario = u.id_usuario
+        WHERE v.id_especialidade = %s
+    """
     params = [especialidade_id]
-    if turno_id:
-        query += """
-                AND v.id_veterinario IN (
-                    SELECT id_veterinario FROM Carga_Horaria WHERE turno = %s
-                )
-            """
-        params.append(turno_id)
 
     veterinarios = execute_sql(query, tuple(params), fetch_all=True)
+
+    # 🔹 Se não houver veterinários, garantir que retorna []
+    if not veterinarios:
+        return []  # ❌ Antes podia retornar None, agora retorna uma lista vazia
+
     veterinarios_lista = [{"id": v[0], "nome": v[1]} for v in veterinarios]
 
-    return veterinarios_lista if veterinarios_lista else None
+    return veterinarios_lista
+
+
+def buscar_turno_por_horario(horario):
+    query = "SELECT turno FROM Horario_Funcionamento WHERE horario = %s"
+    turno = execute_sql(query, (horario,), fetch_one=True)
+    return turno[0] if turno else None
+

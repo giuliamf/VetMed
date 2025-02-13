@@ -66,9 +66,8 @@ async function atualizarAgenda(dataSelecionada) {
                 row.innerHTML = `
                     <td>${agendamento.horario}</td>
                     <td>${agendamento.paciente} (${agendamento.tutor})</td>
-                    <td>${agendamento.status}</td>
                     <td>${agendamento.veterinario}</td>
-                    
+                    <td>${agendamento.status}</td>
                     <td>
                         <button class="editar" onclick="editarAgendamento(${agendamento.id_agendamento})">Editar</button>
                     </td>
@@ -125,55 +124,29 @@ document.addEventListener("submit", function (event) {
 });
 
 async function enviarFormulario() {
-    const id_animal = document.getElementById("paciente").value;
-    const id_veterinario = document.getElementById("veterinario").value;
-    const data = document.getElementById("data").value;
-    const horario = document.getElementById("horario").value;
-    const id_especialidade = document.getElementById("especialidade").value;
-
-    console.log("Dados capturados antes do envio:", {
-        id_animal,
-        id_veterinario,
-        data,
-        horario,
-        id_especialidade
-    });
-
-    if (!id_animal || !id_veterinario || !horario || !id_especialidade) {
-        alert("Todos os campos são obrigatórios. Verifique se preencheu corretamente.");
-        return;
-    }
-
-    const dadosAgendamento = {
-        id_animal,
-        id_veterinario,
-        data,
-        horario,
-        id_especialidade
-    };
+    const form = document.getElementById("cadastroForm");
+    const formData = new FormData(form);
 
     try {
         const response = await fetch("/cadastro_agendamento", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(dadosAgendamento)
+            body: formData
         });
 
-        const dataResponse = await response.json();
+        const data = await response.json();
 
         if (response.ok) {
             alert("Agendamento cadastrado com sucesso!");
             fecharPopupCadastro();
-            await atualizarAgenda(document.getElementById("dataSelecionada").value);
+            atualizarAgenda(document.getElementById("dataSelecionada").value);
         } else {
-            alert(`Erro: ${dataResponse.erro}`);
+            alert(`Erro: ${data.erro}`);
         }
     } catch (error) {
         console.error("Erro ao enviar formulário: ", error);
         alert("Erro ao cadastrar agendamento.");
     }
 }
-
 
 // ====================
 // Funções Auxiliares
@@ -242,38 +215,43 @@ async function carregarVeterinarios() {
     const especialidade = document.getElementById("especialidade").value;
     const selectVet = document.getElementById("veterinario");
 
+    // Verifica se a especialidade foi selecionada
     if (!especialidade) {
         selectVet.innerHTML = '<option value="">Selecione uma especialidade primeiro</option>';
         return;
     }
 
     try {
-        const response = await fetch(`/api/veterinarios_disponiveis?especialidade_id=${especialidade}`);
+        let url = `/api/veterinarios_disponiveis?especialidade_id=${especialidade}`;
+
+        const response = await fetch(url);
         const veterinarios = await response.json();
 
-        selectVet.innerHTML = veterinarios.length
-            ? '<option value="">Selecione um veterinário</option>'
-            : '<option value="">Nenhum veterinário disponível</option>';
+        if (!veterinarios || veterinarios.length === 0) {
+            selectVet.innerHTML = '<option value="">Nenhum veterinário disponível.</option>';
+            return;
+        }
+
+        selectVet.innerHTML = '<option value="">Selecione um veterinário</option>';
+
+        console.log("vet:", veterinarios);
+
+        if (!veterinarios || veterinarios.length === 0) {
+            selectVet.innerHTML = '<option value="">Nenhum veterinário disponível.</option>';
+            return;
+        }
 
         veterinarios.forEach(vet => {
             let option = document.createElement("option");
-            option.value = vet["id"];
-            option.textContent = vet["nome"];
+            option.value = vet.id;
+            option.textContent = vet.nome;
             selectVet.appendChild(option);
         });
-
-        console.log("Veterinários carregados:", veterinarios);
-
-        // Chamar a função para carregar horários
-        await carregarHorarios();
-
     } catch (error) {
         console.error("Erro ao carregar veterinários:", error);
         alert("Erro ao carregar veterinários.");
     }
 }
-
-
 
 async function carregarHorarios() {
     const selectHorario = document.getElementById("horario");
@@ -286,12 +264,19 @@ async function carregarHorarios() {
     selectHorario.innerHTML = '<option value="">Carregando horários...</option>';
 
     try {
-        const response = await fetch("/api/horarios");
+        let url = "/api/horarios";
+
+        const response = await fetch(url);
         const horarios = await response.json();
 
-        selectHorario.innerHTML = horarios.length
-            ? '<option value="">Selecione um horário</option>'
-            : '<option value="">Nenhum horário disponível</option>';
+        console.log("Horários recebidos (antes de verificar tipo):", horarios);
+
+        selectHorario.innerHTML = '<option value="">Selecione um horário</option>';
+
+        if (horarios.length === 0) {
+            selectHorario.innerHTML = '<option value="">Nenhum horário disponível</option>';
+            return;
+        }
 
         horarios.forEach(horario => {
             let option = document.createElement("option");
@@ -299,15 +284,13 @@ async function carregarHorarios() {
             option.textContent = horario;
             selectHorario.appendChild(option);
         });
-
-        console.log("Horários carregados:", horarios);
+        console.log("Lista de horários final:", horarios);
 
     } catch (error) {
         console.error("Erro ao carregar horários:", error);
         alert("Erro ao carregar horários.");
     }
 }
-
 
 async function carregarEspecialidades() {
     const selectEspecialidade = document.getElementById("especialidade");
