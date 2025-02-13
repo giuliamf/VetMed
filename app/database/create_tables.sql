@@ -137,7 +137,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Conferir se o trigger de remover horário já existe antes de re-criar
+-- Conferir se o trigger de remover horário ocupado já existe e apagar
 DO $$
 BEGIN
     IF EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'trg_remover_horario_ocupado') THEN
@@ -146,62 +146,30 @@ BEGIN
 END $$;
 
 -- Criar (ou recriar, caso já exista antes) o trigger para remover horario ocupado
-DO $$
-BEGIN
-    IF EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'trg_definir_foto_padrao') THEN
-        DROP TRIGGER trg_definir_foto_padrao ON Usuario;
-    END IF;
-END $$;
-
--- Trigger para definir foto padrão do usuário
-CREATE OR REPLACE FUNCTION definir_foto_padrao()
-RETURNS TRIGGER AS $$
-DECLARE
-    v_foto_padrao BYTEA;
-BEGIN
-    -- Carrega a imagem padrão do diretório
-    SELECT pg_read_binary_file('app/static/profile_pictures/padrao.jpg') INTO v_foto_padrao;
-
-    -- Se a foto for NULL (inserção ou remoção da foto pelo usuário), definir imagem padrão
-    IF NEW.foto IS NULL THEN
-        NEW.foto := v_foto_padrao;
-    END IF;
-
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
--- Chamada para criar o trigger
-CREATE TRIGGER trg_definir_foto_padrao
-BEFORE INSERT OR UPDATE ON Usuario
+CREATE TRIGGER trg_remover_horario_ocupado
+AFTER UPDATE OF id_status ON Agendamento
 FOR EACH ROW
-EXECUTE FUNCTION definir_foto_padrao();
+WHEN (NEW.id_status = 2)
+EXECUTE FUNCTION remover_horario_ocupado();
 
--- Conferir se o trigger de foto já existe
+-- Conferir se o trigger de foto padrão já existe
 DO $$
 BEGIN
     IF EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'trg_definir_foto_padrao') THEN
-        DROP TRIGGER trg_definir_foto_padrao ON Usuario;
+        DROP TRIGGER trg_definir_foto_padrao ON Usuario_Foto;
     END IF;
 END $$;
 
 -- Trigger para definir foto padrão do usuário
-DO $$
-BEGIN
-    IF EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'trg_definir_foto_padrao') THEN
-        DROP TRIGGER trg_definir_foto_padrao ON Usuario;
-    END IF;
-END $$;
-
 CREATE OR REPLACE FUNCTION definir_foto_padrao()
 RETURNS TRIGGER AS $$
 DECLARE
     v_foto_padrao BYTEA;
 BEGIN
-    -- Carrega a imagem padrão do diretório para armazenar no banco
-    SELECT pg_read_binary_file('app/static/profile_pictures/padrao.jpg') INTO v_foto_padrao;
+    -- Pegamos a foto padrão do usuário fictício com id_usuario = 0
+    SELECT foto INTO v_foto_padrao FROM Usuario_Foto WHERE id_usuario = 0;
 
-    -- Se o usuário não enviou uma foto, define a imagem padrão
+    -- Se a foto do usuário for NULL, usar a foto padrão salva no banco
     IF NEW.foto IS NULL THEN
         NEW.foto := v_foto_padrao;
     END IF;
@@ -210,8 +178,9 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- Criar o trigger para definir foto padrão
 CREATE TRIGGER trg_definir_foto_padrao
-BEFORE INSERT ON Usuario
+BEFORE INSERT ON Usuario_Foto
 FOR EACH ROW
 EXECUTE FUNCTION definir_foto_padrao();
 

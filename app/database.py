@@ -178,6 +178,15 @@ def inicializar_status_agendamento():
         print("Status populados com sucesso!")
 
 
+def inicializar_foto_padrao():
+    with open("C:/Users/giuli/Desktop/Unb/BDProjeto2024-2/app/static/profile_pictures/padrao.jpg", "rb") as file:
+        foto_padrao = file.read()
+
+    execute_sql("INSERT INTO Usuario_Foto (id_usuario, foto) VALUES (0, %s) ON CONFLICT (id_usuario) DO NOTHING",
+                   (psycopg2.Binary(foto_padrao),))
+    print('Foto padrão inserida com sucesso!')
+
+
 """"
 def inicializar_tipo_consulta():
     sql_file_path = os.path.join(base_dir, 'database', 'popular_tipo_consulta.sql')

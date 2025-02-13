@@ -1,5 +1,8 @@
 <nav class="navbar-inicio">
     <div class="user-info">
+        {% if g.foto_url %}
+            <img src="{{ g.foto_url }}" alt="Foto de perfil">
+        {% endif %}
         <span>Olá, {{ usuario['nome'] }}!</span>
     </div>
 </nav>

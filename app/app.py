@@ -1,10 +1,28 @@
-from flask import render_template, jsonify, request, redirect, session
+import base64
+
+from flask import render_template, jsonify, request, redirect, session, g
 from app import create_app
 from app.database import buscar_dados_usuario_por_email, buscar_usuario_por_id, execute_sql
 from app.utils.criptografia_senhas import verificar_senha
 
 app = create_app()
 
+
+@app.before_request
+def carregar_foto_usuario():
+    usuario_id = session.get('usuario')
+    if usuario_id:
+        query = """
+            SELECT foto FROM Usuario WHERE id_usuario = %s;
+            """
+        foto = execute_sql(query, (usuario_id,))
+        if foto and foto[0]:
+            foto_base64 = base64.b64encode(foto[0]).decode('utf-8')
+            g.foto_url = f"data:image/jpeg;base64,{foto_base64}"
+        else:
+            g.foto_url = None
+    else:
+        g.foto = None
 
 @app.route('/', methods=['GET', 'POST'])
 def login():
