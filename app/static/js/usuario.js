@@ -314,7 +314,6 @@ function abrirPopupFoto(id) {
         .catch(error => console.error("Erro ao carregar popup de foto: ", error));
 }
 
-
 function fecharPopupFoto() {
     document.getElementById("popup-foto").style.display = "none";
 }
@@ -383,7 +382,6 @@ function excluirUsuario(id) {
     })
     .catch(error => {
         console.error("Erro ao excluir usuário:", error);
-        alert("Erro ao excluir usuário. Verifique se ele está associado a outros registros.");
     });
 }
 

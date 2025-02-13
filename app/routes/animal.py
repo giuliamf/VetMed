@@ -155,6 +155,17 @@ def editar_paciente(id_animal):
             return jsonify({"erro": f"Erro ao atualizar paciente 1: {str(e)}"}), 500
 
 
+@animais_bp.route('/api/pacientes/<int:id_animal>', methods=['DELETE'])
+def excluir_paciente(id_animal):
+    """ Rota para excluir um paciente """
+    try:
+        query = "DELETE FROM Animal WHERE id_animal = %s"
+        execute_sql(query, (id_animal,))
+        return jsonify({"mensagem": "Paciente excluído com sucesso!"}), 200
+    except Exception as e:
+        return jsonify({"erro": f"Erro ao excluir paciente: {str(e)}"}), 500
+
+
 # Rotas para renderizar páginas HTML
 @animais_bp.route('/pacientes')
 def pacientes_page():

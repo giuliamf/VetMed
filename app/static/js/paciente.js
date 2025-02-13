@@ -31,7 +31,10 @@ function carregarPacientes() {
                 let linha = document.createElement("tr");
                 linha.innerHTML = `
                     <td>${paciente.nome} (${paciente.nome_tutor})</td>
-                    <td><button onclick="editarPaciente('${paciente.id_animal}')">Editar</button></td>
+                    <td>
+                        <button onclick="editarPaciente('${paciente.id_animal}')">Editar</button>
+                        <button onclick="excluirPaciente(${paciente.id_animal})">Excluir</button>
+                    </td>
                 `;
                 tabela.appendChild(linha);
             });
@@ -82,38 +85,6 @@ function enviarFormulario() {
             console.error("Erro ao cadastrar paciente:", error);
             alert(error.message);
         })
-}
-
-function validarTutorCPF(event) {
-    event.preventDefault(); // Impede o envio do formulário até a validação
-
-    let cpfInput = document.getElementById("tutor");
-    let cpf = cpfInput.value.replace(/\D/g, ""); // Remove caracteres não numéricos
-    let mensagem = document.getElementById("tutor-verificacao");
-
-    if (cpf.length !== 11) {
-        mensagem.style.display = "inline";
-        mensagem.innerText = "CPF inválido!";
-        return;
-    }
-
-    // Verifica no banco se o CPF existe
-    fetch(`/api/verificar_tutor/${cpf}`)
-        .then(response => response.json())
-        .then(data => {
-            if (data.existe) {
-                mensagem.style.display = "none"; // Esconde mensagem de erro
-                document.getElementById("cadastroForm").submit(); // Envia o formulário
-            } else {
-                mensagem.style.display = "inline";
-                mensagem.innerText = "Tutor não encontrado!";
-            }
-        })
-        .catch(error => {
-            console.error("Erro ao verificar CPF:", error);
-            mensagem.style.display = "inline";
-            mensagem.innerText = "Erro ao verificar CPF!";
-        });
 }
 
 function salvarEdicaoPaciente(id){
@@ -202,6 +173,27 @@ function formatarData(dataCompleta) {
     return data.toISOString().split("T")[0]; // Extrai apenas yyyy-MM-dd
 }
 
+function excluirPaciente(id) {
+    if (!confirm("Tem certeza que deseja excluir este paciente?")) {
+        return;
+    }
+
+    fetch(`/api/pacientes/${id}`, {
+        method: "DELETE"
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error("Erro ao excluir paciente");
+        }
+        return response.json();
+    })
+    .then(data => {
+        alert(data.mensagem);
+        carregarPacientes();
+    })
+    .catch(error => console.error("Erro ao excluir paciente:", error));
+}
 
 window.fecharPopupCadastro = fecharPopupCadastro;
 window.editarPaciente = editarPaciente;
+window.excluirPaciente = excluirPaciente;

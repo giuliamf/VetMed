@@ -237,7 +237,7 @@ def atualizar_foto_usuario(usuario_id):
 def excluir_usuario(usuario_id):
     try:
         # Verifica se o usuário existe
-        usuario_existe = execute_sql("SELECT 1 FROM Usuario WHERE id_usuario = %s", (id,), fetch_one=True)
+        usuario_existe = execute_sql("SELECT 1 FROM Usuario WHERE id_usuario = %s", (usuario_id,), fetch_one=True)
         if not usuario_existe:
             return jsonify({"erro": "Usuário não encontrado"}), 404
 

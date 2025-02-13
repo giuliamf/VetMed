@@ -127,6 +127,17 @@ def editar_tutor(id_tutor):
             return jsonify({"erro": f"Erro ao atualizar tutor: {str(e)}"}), 500
 
 
+@tutores_bp.route('/api/tutores/<int:id_tutor>', methods=['DELETE'])
+def excluir_tutor(id_tutor):
+    """ Rota para excluir um tutor """
+    try:
+        query = "DELETE FROM Tutor WHERE id_tutor = %s"
+        execute_sql(query, (id_tutor,))
+        return jsonify({"mensagem": "Tutor excluído com sucesso!"}), 200
+    except Exception as e:
+        return jsonify({"erro": f"Erro ao excluir tutor: {str(e)}"}), 500
+
+
 # Rotas para renderizar páginas HTML
 @tutores_bp.route('/tutores')
 def tutores_page():

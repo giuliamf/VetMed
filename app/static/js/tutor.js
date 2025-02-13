@@ -31,7 +31,10 @@ function carregarTutores() {
                 let linha = document.createElement("tr");
                 linha.innerHTML = `
                     <td>${tutor.nome} (${tutor.cpf})</td>
-                    <td><button onclick="editarTutor('${tutor.id}')">Editar</button></td>
+                    <td>
+                        <button onclick="editarTutor('${tutor.id}')">Editar</button>
+                        <button onclick="excluirTutor(${tutor.id})">Excluir Tutor</button>
+                    </td>
                 `;
                 tabela.appendChild(linha);
             });
@@ -151,3 +154,27 @@ function formatarData(dataCompleta) {
 function fecharPopupCadastro() {
     document.getElementById("cadastro-popup").style.display = "none";
 }
+
+function excluirTutor(id) {
+    if (!confirm("Tem certeza que deseja excluir este tutor?")) {
+        return;
+    }
+
+    fetch(`/api/tutores/${id}`, {
+        method: "DELETE"
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error("Erro ao excluir tutor");
+        }
+        return response.json();
+    })
+    .then(data => {
+        alert(data.mensagem || "Tutor excluído com sucesso!");
+        carregarTutores(); // Atualiza a tabela após exclusão
+    })
+    .catch(error => console.error("Erro ao excluir tutor:", error));
+}
+
+
+window.excluirTutor = excluirTutor;
