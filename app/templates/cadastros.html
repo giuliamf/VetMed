@@ -11,21 +11,24 @@
     <link rel="stylesheet" href="../static/css/popup.css">    <!-- CSS do popup padrão -->
 </head>
 <body>
-    <header>
-        <nav class="navbar">
-            <ul>
-                <li><a href="/inicio">Início</a></li>
-                <li><a href="/agenda">Agenda</a></li>
-                <li><a href="/cadastros" class="active">Cadastros</a></li>
-                <li><a href="/consultas">Consultas</a></li>
-                <li><a href="#" onclick="abrirPopupLogout()">Sair</a></li>
-            </ul>
-            <div id="popup-container">
-            {% include 'logout.html' %}
-            </div>
-            {% include 'partials/navbar.html' %}
-        </nav>
-    </header>
+    <div class="container-navbar">
+        <header>
+            <nav class="navbar">
+                <ul>
+                    <li><a href="/inicio">Início</a></li>
+                    <li><a href="/agenda">Agenda</a></li>
+                    <li><a href="/cadastros" class="active">Cadastros</a></li>
+                    <li><a href="/consultas">Consultas</a></li>
+                    <li><a href="#" onclick="abrirPopupLogout()">Sair</a></li>
+                </ul>
+                <div id="popup-container">
+                {% include 'logout.html' %}
+                </div>
+                {% include 'partials/navbar.html' %}
+            </nav>
+        </header>
+    </div>
+
     <main>
         <div class="cadastro-container">
             <button class="cadastro-button" onclick="window.location.href='/pacientes'">Pacientes</button>
