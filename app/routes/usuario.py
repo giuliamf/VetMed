@@ -73,6 +73,12 @@ def cadastro_usuario():
             id_usuario = execute_sql(
                 "SELECT id_usuario FROM Usuario WHERE email = %s", (data['email'],), fetch_one=True)
 
+            if 'especialidade' not in data or not data['especialidade']:
+                return jsonify({"erro": "Especialidade é obrigatória para veterinários!"}), 400
+
+            if 'turno' not in data or not data['turno']:
+                return jsonify({"erro": "Turno é obrigatório para veterinários!"}), 400
+
             query_vet = """
                 INSERT INTO Veterinario (id_veterinario, id_especialidade)
                 VALUES (%s, %s)
@@ -82,6 +88,14 @@ def cadastro_usuario():
                 data['especialidade']
             )
             execute_sql(query_vet, params_vet)
+
+            query_turno = """
+                    INSERT INTO Carga_Horaria (id_veterinario, turno)
+                    VALUES (%s, %s)
+                """
+
+            params_turno = (id_usuario[0], data['turno'])
+            execute_sql(query_turno, params_turno)
 
         return jsonify({"mensagem": "Usuário cadastrado com sucesso!"}), 201
     except Exception as e:
@@ -117,11 +131,6 @@ def editar_usuario(usuario_id):
 
     if request.method == 'PUT':
 
-        if 'foto' in request.files:
-            foto = request.files['foto'].read()  # Lê a imagem como bytes
-        else:
-            foto = None
-
         if not request.is_json:
             return jsonify({"erro": "Formato inválido! Use 'application/json'"}), 415
 
@@ -138,6 +147,8 @@ def editar_usuario(usuario_id):
             # Conferir se a senha foi modificada
             query_senha = "SELECT senha FROM Usuario WHERE id_usuario = %s"
             senha_atual = execute_sql(query_senha, (usuario_id,), fetch_one=True)
+
+            data['senha'] = criptografar_senha(data['senha'])
 
             if senha_atual and senha_atual[0] != data['senha']:
                 # criptografar a nova senha recebida
@@ -170,6 +181,16 @@ def editar_usuario(usuario_id):
                     usuario_id
                 )
                 execute_sql(query_vet, params_vet)
+
+                query_turno = """
+                    INSERT INTO Carga_Horaria (id_veterinario, turno)
+                    VALUES (%s, %s)
+                    ON CONFLICT (id_veterinario)
+                    DO UPDATE SET turno = EXCLUDED.turno;
+                """
+
+                params_turno = (usuario_id, data['turno'])
+                execute_sql(query_turno, params_turno)
 
             return jsonify({"mensagem": "Usuário atualizado com sucesso!"}), 200
         except Exception as e:
@@ -247,6 +268,16 @@ def excluir_usuario(usuario_id):
         return jsonify({"mensagem": "Usuário excluído com sucesso!"}), 200
     except Exception as e:
         return jsonify({"erro": f"Erro ao excluir usuário: {str(e)}"}), 500
+
+
+@usuarios_bp.route('/api/turnos', methods=['GET'])
+def get_turnos():
+    """ Retorna os turnos disponíveis para cadastro de veterinários """
+    try:
+        turnos = [{"id": "manha", "nome": "Manhã"}, {"id": "tarde", "nome": "Tarde"}]
+        return jsonify(turnos), 200
+    except Exception as e:
+        return jsonify({"erro": f"Erro ao buscar turnos: {str(e)}"}), 500
 
 
 # Rotas para renderizar páginas HTML

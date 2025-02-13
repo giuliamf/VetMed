@@ -185,6 +185,14 @@ def inicializar_status_agendamento():
         print("Status populados com sucesso!")
 
 
+def popular_horarios():
+    sql_file_path = os.path.join(base_dir, 'database', 'popular_horarios.sql')
+    with open(sql_file_path, 'r', encoding='utf-8') as file:
+        sql_script = file.read()
+        execute_sql(sql_script)
+        print("Horários populados com sucesso!")
+
+
 """"
 def inicializar_tipo_consulta():
     sql_file_path = os.path.join(base_dir, 'database', 'popular_tipo_consulta.sql')

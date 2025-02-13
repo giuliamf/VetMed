@@ -105,6 +105,7 @@ function enviarFormulario() {
     // Adiciona a especialidade se o cargo for "vet"
     if (dados.cargo === "vet") {
         dados.especialidade = formData.get("especialidade") || "";
+        dados.turno = formData.get("turno") || "";
     }
 
     // Validação: Todos os campos devem estar preenchidos
@@ -147,13 +148,15 @@ function enviarFormulario() {
 function salvarEdicaoUsuario(id) {
     const cargo = document.getElementById("cargo").value;
     const especialidadeInput = document.getElementById("especialidade");
+    const turnoInput = document.getElementById("turno");
 
     const usuarioAtualizado = {
         nome: document.getElementById("nome").value,
         email: document.getElementById("email").value,
         senha: document.getElementById("senha").value,
         cargo: cargo,
-        especialidade: cargo === "vet" && especialidadeInput ? especialidadeInput.value : null
+        especialidade: cargo === "vet" && especialidadeInput ? especialidadeInput.value : null,
+        turno: cargo === "vet" && turnoInput ? turnoInput.value : null
     };
 
     console.log("Enviando dados para atualização:", JSON.stringify(usuarioAtualizado));
@@ -214,19 +217,24 @@ function editarUsuario(id) {
                     document.getElementById("senha").value = usuario.senha;
                     document.getElementById("cargo").value = usuario.cargo;
 
-                    document.getElementById("cargo").addEventListener("change", toggleEspecialidade);
+                    document.getElementById("cargo").addEventListener("change", toggles);
 
                     if (usuario.cargo === "vet") {
                         let especialidadeSelect = document.getElementById("especialidade");
+                        let turnoSelect = document.getElementById("turno");
 
                         especialidadeSelect.dataset.valor = usuario.especialidade;
+                        turnoSelect.dataset.valor = usuario.turno;
 
                         carregarEspecialidades().then(() => {
                             especialidadeSelect.value = usuario.especialidade;
                         });
+                        carregarTurnos().then(() => {
+                            turnoSelect.value = usuario.turno;
+                        });
                     }
 
-                    toggleEspecialidade();
+                    toggles();
                 })
                 .catch(error => console.error("Erro ao buscar usuários:", error));
         })
@@ -385,6 +393,46 @@ function excluirUsuario(id) {
     });
 }
 
+function carregarTurnos() {
+    return fetch("/api/turnos")
+        .then(response => response.json())
+        .then(turnos => {
+            let turnoSelect = document.getElementById("turno");
+            turnoSelect.innerHTML = '<option value="">Selecione</option>';
+
+            turnos.forEach(turno => {
+                let option = document.createElement("option");
+                option.value = turno.id;
+                option.innerText = turno.nome;
+                turnoSelect.appendChild(option);
+            });
+
+            return turnoSelect;
+        })
+        .catch(error => console.error("Erro ao carregar turnos:", error));
+}
+
+function toggleTurno() {
+    let cargo = document.getElementById("cargo").value;
+    let turnoContainer = document.getElementById("turno-container");
+    let turnoSelect = document.getElementById("turno");
+
+    if (cargo === "vet") {
+        turnoContainer.style.display = "block";
+        if (turnoSelect.options.length <= 1) {
+            carregarTurnos();
+        }
+    } else {
+        turnoContainer.style.display = "none";
+        turnoSelect.value = "";
+    }
+}
+
+function toggles() {
+    toggleTurno();
+    toggleEspecialidade();
+}
+
 // Disponibiliza a função globalmente para ser chamada no onclick do botão
 window.excluirUsuario = excluirUsuario;
 window.fecharPopupCadastro = fecharPopupCadastro;
@@ -393,3 +441,5 @@ window.editarUsuario = editarUsuario;
 window.previewImagem = previewImagem;
 window.abrirPopupFoto = abrirPopupFoto;
 window.fecharPopupFoto = fecharPopupFoto;
+window.toggles = toggles;
+window.carregarTurnos = carregarTurnos;

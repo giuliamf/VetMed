@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS Usuario (
 
 CREATE TABLE IF NOT EXISTS Usuario_Foto (
     id_usuario INT PRIMARY KEY REFERENCES Usuario(id_usuario) ON DELETE CASCADE,
-    foto bytea NOT NULL -- ver oq fazer aqui com a foto!! default
+    foto bytea NOT NULL
 );
 
 -- Tabela de Especialidades (cadastra as possiveis especialidades)
@@ -54,8 +54,7 @@ CREATE TABLE IF NOT EXISTS Especialidade (
 -- Sub-tabela de Veterinario (herda de Usuario)
 CREATE TABLE IF NOT EXISTS Veterinario (
     id_veterinario INT PRIMARY KEY REFERENCES Usuario(id_usuario) ON DELETE CASCADE,  -- Herda ID de Usuario
-    id_especialidade INT NOT NULL REFERENCES Especialidade(id_especialidade),
-    carga_horaria CHAR(5) CHECK (carga_horaria IN ('manhã', 'tarde')) NOT NULL
+    id_especialidade INT NOT NULL REFERENCES Especialidade(id_especialidade)
     -- Especialidade obrigatoria, nao eh PK porque cada veterinario tem apenas uma especialidade e ela eh obrigatoria
 );
 
@@ -92,7 +91,7 @@ CREATE TABLE IF NOT EXISTS Agendamento (
     id_status INT NOT NULL DEFAULT 1,
     id_veterinario INT NOT NULL,
     data DATE NOT NULL,
-    horario TIME NOT NULL, -- Time retorna HH:MM:SS tratar como HH:MM no select/back end
+    horario CHAR(5) NOT NULL, --
     CONSTRAINT fk_animal FOREIGN KEY (id_animal) REFERENCES Animal(id_animal) ON DELETE CASCADE,
     CONSTRAINT fk_status FOREIGN KEY (id_status) REFERENCES Status_Agendamento(id_status),
     CONSTRAINT fk_veterinario FOREIGN KEY (id_veterinario) REFERENCES Veterinario(id_veterinario) ON DELETE CASCADE
@@ -100,13 +99,13 @@ CREATE TABLE IF NOT EXISTS Agendamento (
 
 CREATE TABLE IF NOT EXISTS Horario_Funcionamento (
     id_horario SERIAL PRIMARY KEY,
-    horario TIME NOT NULL,
-    turno CHAR(5) CHECK (turno IN ('manhã', 'tarde')) NOT NULL
+    horario CHAR(5) NOT NULL,
+    turno CHAR(5) CHECK (turno IN ('manha', 'tarde')) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS Carga_Horaria (
        id_veterinario INT NOT NULL,
-       turno CHAR(5) CHECK (turno IN ('manhã', 'tarde')) NOT NULL,
+       turno CHAR(5) CHECK (turno IN ('manha', 'tarde')) NOT NULL,
         PRIMARY KEY (id_veterinario, turno),
         FOREIGN KEY (id_veterinario) REFERENCES veterinario(id_veterinario) ON DELETE CASCADE
 );
@@ -115,7 +114,7 @@ CREATE TABLE IF NOT EXISTS Horario_Ocupado (
     id_veterinario INT NOT NULL,
     id_agendamento INT NOT NULL,
     data DATE NOT NULL,
-    horario TIME NOT NULL,
+    horario CHAR(5) NOT NULL,
     PRIMARY KEY (id_veterinario, id_agendamento),
     FOREIGN KEY (id_veterinario) REFERENCES veterinario(id_veterinario) ON DELETE CASCADE,
     FOREIGN KEY (id_agendamento) REFERENCES agendamento(id_agendamento) ON DELETE CASCADE
@@ -223,7 +222,7 @@ CREATE PROCEDURE realizar_agendamento(
     IN p_id_animal INT,
     IN p_id_veterinario INT,
     IN p_data DATE,
-    IN p_horario TIME
+    IN p_horario CHAR(5)
 )
 LANGUAGE plpgsql
 AS $$

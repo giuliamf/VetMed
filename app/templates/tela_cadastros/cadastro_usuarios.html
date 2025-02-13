@@ -12,7 +12,7 @@
             <input type="password" id="senha" name="senha" required>
 
             <label for="cargo">Cargo</label>
-            <select id="cargo" name="cargo" onchange="toggleEspecialidade()" required>
+            <select id="cargo" name="cargo" onchange="toggles()" required>
                 <option value="">Selecione</option>
                 <option value="vet">Veterinário</option>
                 <option value="sec">Secretário</option>
@@ -23,6 +23,13 @@
                 <select id="especialidade" name="especialidade">
                     <option value="">Selecione</option>
                     <!-- Aqui o select será feito dinamicamente com as especialidades da tabela -->
+                </select>
+            </div>
+
+            <div id="turno-container" style="display: none;">
+                <label for="turno">Turno</label>
+                <select id="turno" name="turno">
+                    <option value="">Selecione</option>
                 </select>
             </div>
 
