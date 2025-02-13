@@ -1,0 +1,18 @@
+<div id="popup-foto" class="popup-container" style="display:flex;">
+    <div class="popup-content">
+        <h2>Alterar Foto de Perfil</h2>
+        <form id="formFoto" enctype="multipart/form-data">
+            <input type="hidden" id="usuarioIdFoto">
+
+            <label for="foto">Escolha uma nova foto:</label>
+            <input type="file" id="foto" name="foto" accept="image/*" onchange="previewImagem()">
+
+            <img id="previewFoto" src="" alt="Prévia da Foto" style="display:none; width:100px; height:100px; margin-top:10px;">
+
+            <div class="form-buttons">
+                <button type="submit" class="salvar">Salvar</button>
+                <button type="button" class="cancelar" onclick="fecharPopupFoto()">Cancelar</button>
+            </div>
+        </form>
+    </div>
+</div>

@@ -155,10 +155,15 @@ EXECUTE FUNCTION remover_horario_ocupado();
 -- Conferir se o trigger de foto padrão já existe
 DO $$
 BEGIN
-    IF EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'trg_definir_foto_padrao') THEN
-        DROP TRIGGER trg_definir_foto_padrao ON Usuario_Foto;
+    IF EXISTS (
+        SELECT 1 FROM pg_trigger
+        WHERE tgname = 'trg_definir_foto_padrao'
+        AND tgrelid = 'Usuario'::regclass
+    ) THEN
+        DROP TRIGGER trg_definir_foto_padrao ON Usuario;
     END IF;
 END $$;
+
 
 -- Trigger para definir foto padrão do usuário
 CREATE OR REPLACE FUNCTION definir_foto_padrao()

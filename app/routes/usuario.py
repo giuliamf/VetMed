@@ -117,6 +117,11 @@ def editar_usuario(usuario_id):
 
     if request.method == 'PUT':
 
+        if 'foto' in request.files:
+            foto = request.files['foto'].read()  # Lê a imagem como bytes
+        else:
+            foto = None
+
         if not request.is_json:
             return jsonify({"erro": "Formato inválido! Use 'application/json'"}), 415
 
@@ -191,6 +196,59 @@ def get_especialidades():
         return jsonify({"erro": f"Erro ao buscar especialidades: {str(e)}"}), 500
 
 
+@usuarios_bp.route('/api/usuarios/<int:usuario_id>/foto', methods=['GET', 'PUT'])
+def atualizar_foto_usuario(usuario_id):
+    if request.method == 'GET':
+        try:
+            query = "SELECT foto FROM Usuario_Foto WHERE id_usuario = %s"
+            resultado = execute_sql(query, (usuario_id,), fetch_one=True)
+
+            if not resultado or not resultado[0]:
+                return jsonify({"erro": "Foto não encontrada"}), 404
+
+            # Retorna a foto como resposta binária
+            return resultado[0], 200, {'Content-Type': 'image/jpeg'}
+        except Exception as e:
+            return jsonify({"erro": f"Erro ao buscar foto: {str(e)}"}), 500
+
+    """ Atualiza a foto do usuário """
+
+    if request.method == 'PUT':
+        if 'foto' not in request.files:
+            return jsonify({"erro": "Nenhuma foto foi enviada"}), 400
+
+        foto = request.files['foto'].read()  # Lê a foto como bytes
+
+        try:
+            query = """
+                INSERT INTO Usuario_Foto (id_usuario, foto)
+                VALUES (%s, %s)
+                ON CONFLICT (id_usuario) 
+                DO UPDATE SET foto = EXCLUDED.foto;
+            """
+            execute_sql(query, (usuario_id, foto))
+
+            return jsonify({"mensagem": "Foto atualizada com sucesso!"}), 200
+        except Exception as e:
+            return jsonify({"erro": f"Erro ao atualizar foto: {str(e)}"}), 500
+
+
+@usuarios_bp.route("/api/usuarios/<int:usuario_id>", methods=["DELETE"])
+def excluir_usuario(usuario_id):
+    try:
+        # Verifica se o usuário existe
+        usuario_existe = execute_sql("SELECT 1 FROM Usuario WHERE id_usuario = %s", (id,), fetch_one=True)
+        if not usuario_existe:
+            return jsonify({"erro": "Usuário não encontrado"}), 404
+
+        # Remove o usuário e a foto (ON DELETE CASCADE já deve remover em Usuario_Foto)
+        execute_sql("DELETE FROM Usuario WHERE id_usuario = %s", (usuario_id,))
+
+        return jsonify({"mensagem": "Usuário excluído com sucesso!"}), 200
+    except Exception as e:
+        return jsonify({"erro": f"Erro ao excluir usuário: {str(e)}"}), 500
+
+
 # Rotas para renderizar páginas HTML
 @usuarios_bp.route('/usuarios')
 def usuarios_page():
@@ -201,3 +259,9 @@ def usuarios_page():
 @usuarios_bp.route('/cadastro_usuario_page')
 def cadastro_usuario_page():
     return render_template('tela_cadastros/cadastro_usuarios.html')
+
+
+@usuarios_bp.route('/popup_foto')
+def popup_foto():
+    """ Renderiza a popup de alteração de foto """
+    return render_template('tela_cadastros/popup_foto.html')

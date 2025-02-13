@@ -1,4 +1,39 @@
-document.addEventListener("DOMContentLoaded", carregarUsuarios);
+document.addEventListener("DOMContentLoaded", function () {
+    // Carregar lista de usuários ao carregar a página
+    carregarUsuarios();
+
+    // Evento para o formulário de foto, se existir no DOM
+    const formFoto = document.getElementById("formFoto");
+    if (formFoto) {
+        formFoto.addEventListener("submit", function (event) {
+            event.preventDefault();
+            salvarFotoUsuario();
+        });
+    }
+
+    // Evento para abrir o popup de cadastro
+    const novoCadastroBtn = document.getElementById("novoCadastro");
+    if (novoCadastroBtn) {
+        novoCadastroBtn.addEventListener("click", function () {
+            fetch("/cadastro_usuario_page")
+                .then(response => response.text())
+                .then(html => {
+                    document.getElementById("popupContainer").innerHTML = html;
+                    document.getElementById("cadastro-popup").style.display = "flex";
+
+                    const formCadastro = document.getElementById("cadastroForm");
+                    if (formCadastro) {
+                        formCadastro.addEventListener("submit", function (event) {
+                            event.preventDefault();
+                            enviarFormulario();
+                        });
+                    }
+                })
+                .catch(error => console.error("Erro ao carregar popup: ", error));
+        });
+    }
+});
+
 
 document.getElementById("novoCadastro").addEventListener("click", function () {
     fetch("/cadastro_usuario_page")
@@ -45,7 +80,11 @@ function carregarUsuarios() {
                 let linha = document.createElement("tr");
                 linha.innerHTML = `
                     <td>${usuario.nome} - ${usuario.cargo === 'vet' ? 'Veterinário(a)' : usuario.cargo === 'sec' ? 'Secretário(a)' : usuario.cargo}</td>
-                    <td><button onclick="editarUsuario('${usuario.id}')">Editar</button></td>
+                    <td>
+                        <button onclick="editarUsuario('${usuario.id}')">Editar</button>
+                        <button onclick="abrirPopupFoto(${usuario.id})">Alterar Foto</button>
+                        <button onclick="excluirUsuario(${usuario.id})">Excluir Usuário</button>
+                    </td>
                 `;
                 tabela.appendChild(linha);
             });
@@ -132,7 +171,7 @@ function salvarEdicaoUsuario(id) {
             }
             return response.json();
         })
-        .then(data => { // ✅ Agora 'data' está definido corretamente
+        .then(data => {
             console.log("Resposta do servidor:", data);
             alert(data.mensagem || "Usuário atualizado com sucesso!");
             fecharPopupCadastro();
@@ -241,7 +280,118 @@ function fecharPopupCadastro() {
     document.getElementById("cadastro-popup").style.display = "none";
 }
 
+function abrirPopupFoto(id) {
+    fetch("/popup_foto")
+        .then(response => response.text())
+        .then(html => {
+            let popupContainer = document.getElementById("popupContainer");
 
+            if (!popupContainer) {
+                popupContainer = document.createElement("div");
+                popupContainer.id = "popupContainer";
+                document.body.appendChild(popupContainer);
+            }
+
+            popupContainer.innerHTML = html;
+
+            let popupFoto = document.getElementById("popup-foto");
+            let inputUsuarioId = document.getElementById("usuarioIdFoto");
+
+            if (!popupFoto || !inputUsuarioId) {
+                console.error("Erro: O popup de alteração de foto não foi carregado corretamente.");
+                return;
+            }
+
+            inputUsuarioId.value = id;
+            popupFoto.style.display = "flex";
+
+            // Adiciona evento ao formulário
+            document.getElementById("formFoto").addEventListener("submit", function (event) {
+                event.preventDefault();
+                salvarFotoUsuario();
+            });
+        })
+        .catch(error => console.error("Erro ao carregar popup de foto: ", error));
+}
+
+
+function fecharPopupFoto() {
+    document.getElementById("popup-foto").style.display = "none";
+}
+
+function salvarFotoUsuario() {
+    const id = document.getElementById("usuarioIdFoto").value;
+    const formData = new FormData();
+    const fileInput = document.getElementById("foto");
+
+    if (fileInput.files.length > 0) {
+        formData.append("foto", fileInput.files[0]);
+    } else {
+        alert("Por favor, selecione uma foto.");
+        return;
+    }
+
+    fetch(`/api/usuarios/${id}/foto`, {
+        method: "PUT",
+        body: formData
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error("Erro ao atualizar foto");
+        }
+        return response.json();
+    })
+    .then(data => {
+        alert(data.mensagem || "Foto atualizada com sucesso!");
+        fecharPopupFoto();
+        carregarUsuarios(); // Atualiza a tabela
+    })
+    .catch(error => console.error("Erro ao atualizar foto:", error));
+}
+
+function previewImagem() {
+    const input = document.getElementById("foto");
+    const preview = document.getElementById("previewFoto");
+
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            preview.src = e.target.result;
+            preview.style.display = "block";
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+function excluirUsuario(id) {
+    if (!confirm("Tem certeza que deseja excluir este usuário?")) {
+        return;
+    }
+
+    fetch(`/api/usuarios/${id}`, {
+        method: "DELETE",
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error("Erro ao excluir usuário");
+        }
+        return response.json();
+    })
+    .then(data => {
+        alert(data.mensagem || "Usuário excluído com sucesso!");
+        carregarUsuarios(); // Atualiza a lista após a exclusão
+    })
+    .catch(error => {
+        console.error("Erro ao excluir usuário:", error);
+        alert("Erro ao excluir usuário. Verifique se ele está associado a outros registros.");
+    });
+}
+
+// Disponibiliza a função globalmente para ser chamada no onclick do botão
+window.excluirUsuario = excluirUsuario;
 window.fecharPopupCadastro = fecharPopupCadastro;
 window.toggleEspecialidade = toggleEspecialidade;
 window.editarUsuario = editarUsuario;
+window.previewImagem = previewImagem;
+window.abrirPopupFoto = abrirPopupFoto;
+window.fecharPopupFoto = fecharPopupFoto;

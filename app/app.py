@@ -7,6 +7,7 @@ from app.utils.criptografia_senhas import verificar_senha
 
 app = create_app()
 
+
 @app.before_request
 def carregar_foto_usuario():
     usuario_id = session.get('usuario')
