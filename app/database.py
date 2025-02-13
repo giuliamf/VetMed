@@ -144,14 +144,21 @@ def criar_usuario():
     params = ('admin', 'admin@vetmed.com', '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918', 'adm')
 
     try:
-        usuario_exite = execute_sql(query_check, (params[1],), fetch_one=True)
+        usuario_existe = execute_sql(query_check, (params[1],), fetch_one=True)
+        with open('app/static/profile_pictures/padrao.jpg', 'rb') as file:
+            foto = file.read()
     except Exception as e:
-        print(f"Erro ao verificar usuário padrão: {e}")
-        usuario_exite = None
+        print(f"Erro ao verificar usuário padrão ou ao procurar a foto: {e}")
+        usuario_existe = None
 
-    if not usuario_exite:
+    query_foto = "INSERT INTO Usuario_Foto (id_usuario, foto) VALUES (%s, %s)"
+    params_foto = (1, psycopg2.Binary(foto))
+
+    if not usuario_existe:
         execute_sql(query, params)
         print('Usuário padrão criado com sucesso!')
+        execute_sql(query_foto, params_foto)
+        print('Foto padrão inserida com sucesso!')
     else:
         print('Usuário padrão já existe!')
 
@@ -176,15 +183,6 @@ def inicializar_status_agendamento():
         sql_script = file.read()
         execute_sql(sql_script)
         print("Status populados com sucesso!")
-
-
-def inicializar_foto_padrao():
-    with open("C:/Users/giuli/Desktop/Unb/BDProjeto2024-2/app/static/profile_pictures/padrao.jpg", "rb") as file:
-        foto_padrao = file.read()
-
-    execute_sql("INSERT INTO Usuario_Foto (id_usuario, foto) VALUES (0, %s) ON CONFLICT (id_usuario) DO NOTHING",
-                   (psycopg2.Binary(foto_padrao),))
-    print('Foto padrão inserida com sucesso!')
 
 
 """"

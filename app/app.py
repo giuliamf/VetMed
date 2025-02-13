@@ -7,22 +7,37 @@ from app.utils.criptografia_senhas import verificar_senha
 
 app = create_app()
 
-
 @app.before_request
 def carregar_foto_usuario():
     usuario_id = session.get('usuario')
     if usuario_id:
         query = """
-            SELECT foto FROM Usuario WHERE id_usuario = %s;
+            SELECT foto FROM Usuario_Foto WHERE id_usuario = %s;
             """
-        foto = execute_sql(query, (usuario_id,))
-        if foto and foto[0]:
-            foto_base64 = base64.b64encode(foto[0]).decode('utf-8')
-            g.foto_url = f"data:image/jpeg;base64,{foto_base64}"
-        else:
+        foto = execute_sql(query, (usuario_id,), fetch_one=True)
+
+        if not foto:
+            print('Nenhum resultado retornado pelo banco de dados')
             g.foto_url = None
+            return
+
+        foto_binario = foto[0]
+
+        if isinstance(foto_binario, memoryview):
+            print('Convertendo memoryview para bytes')
+            foto_binario = foto_binario.tobytes()
+
+        if not isinstance(foto_binario, bytes):
+            print('Tipo inesperado: ', type(foto_binario))
+            return
+
+
+        foto_base64 = base64.b64encode(foto_binario).decode('utf-8')
+        g.foto_url = f"data:image/jpeg;base64,{foto_base64}"
     else:
-        g.foto = None
+        print('Nenhum usuário logado')
+        g.foto_url = None
+
 
 @app.route('/', methods=['GET', 'POST'])
 def login():
