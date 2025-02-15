@@ -10,7 +10,7 @@ db = SQLAlchemy()
 
 def create_app():
     app = Flask(__name__)
-    app.config.from_object('config.Config')     # Importa as configurações do arquivo config.py (createdb, createtables,
+    app.config.from_object(Config)   # Importa as configurações do arquivo config.py (createdb, createtables,
     # etc)
     app.secret_key = 'supersecretkey'
     
