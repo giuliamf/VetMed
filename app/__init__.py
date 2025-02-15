@@ -1,6 +1,5 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-import app.config
 
 from app.database import criar_usuario, create_tables, globalizar_cursor_e_conexao, connect_database, \
     popular_especialidades, inicializar_status_agendamento, popular_horarios
@@ -10,7 +9,7 @@ db = SQLAlchemy()
 
 def create_app():
     app = Flask(__name__)
-    app.config.from_object('config.Config')     # Importa as configurações do arquivo config.py (createdb, createtables,
+    app.config.from_object('app.config.Config') # Importa as configurações do arquivo config.py (createdb, createtables,
     # etc)
     app.secret_key = 'supersecretkey'
     
