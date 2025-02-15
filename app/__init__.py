@@ -1,5 +1,6 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+import app.config
 
 from app.database import criar_usuario, create_tables, globalizar_cursor_e_conexao, connect_database, \
     popular_especialidades, inicializar_status_agendamento, popular_horarios

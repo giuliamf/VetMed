@@ -5,7 +5,5 @@
     <file url="file://$PROJECT_DIR$/app/database/popular_especialidade.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/app/database/popular_horarios.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/app/database/popular_status_agendamento.sql" dialect="PostgreSQL" />
-    <file url="file://$PROJECT_DIR$/configurar_banco2.sql" dialect="PostgreSQL" />
-    <file url="file://$PROJECT_DIR$/criar_banco.sql" dialect="PostgreSQL" />
   </component>
 </project>
