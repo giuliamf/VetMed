@@ -1,7 +1,7 @@
 # VetMed - Projeto de Banco de Dados
 Sistema desenvolvido para otimizar a gestão de clínicas veterinárias. O projeto foi desenvolvido como parte da disciplina de Banco de Dados do curso de Ciência da Computação da Universidade de Brasília, no semestre 2024.2.
 
-Para estruturar o banco de dados, foi criado um **Modelo de Entidade-Relacionamento (MER)** (`...`), posteriormente transformado em Modelo Relacional (`docs/diagarama_mr.png`), as formas normais foram analisadas em cinco tabelas do banco para evitar redundâncias e foi elaborado um diagrama da camada de mapeamento para auxiliar na compreensão do armazenamento e acesso aos dados.
+Para estruturar o banco de dados, foi criado um **Modelo de Entidade-Relacionamento (MER)**, posteriormente transformado em Modelo Relacional (`docs/diagarama_mr.png`), as formas normais foram analisadas em cinco tabelas do banco para evitar redundâncias e foi elaborado um diagrama da camada de mapeamento para auxiliar na compreensão do armazenamento e acesso aos dados.
 
 ## Descrição dos arquivos
 ### **Diretório principal da aplicação(`app/`)**
