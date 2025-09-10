@@ -1,9 +1,9 @@
 import base64
 
 from flask import render_template, jsonify, request, redirect, session, g
-from app import create_app
-from app.database import buscar_dados_usuario_por_email, buscar_usuario_por_id, execute_sql
-from app.utils.criptografia_senhas import verificar_senha
+from __init__ import create_app
+from database import buscar_dados_usuario_por_email, buscar_usuario_por_id, execute_sql
+from utils.criptografia_senhas import verificar_senha
 
 app = create_app()
 

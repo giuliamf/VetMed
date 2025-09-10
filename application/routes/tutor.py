@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify, render_template
-from app.database import execute_sql
+from database import execute_sql
 
-from app.utils.funcoes_com_cpf import cpf_existe, cpf_igual, formatar_cpf
+from utils.funcoes_com_cpf import cpf_existe, cpf_igual, formatar_cpf
 
 tutores_bp = Blueprint('tutores', __name__)
 

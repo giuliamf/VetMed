@@ -1,8 +1,8 @@
 from flask import Blueprint, jsonify, request, render_template
-from app.database import execute_sql
+from database import execute_sql
 
-from app.utils.funcoes_com_cpf import formatar_cpf
-from app.utils.buscas_bd import buscar_animais_por_cpf_tutor, buscar_vet_por_especialidade_turno, buscar_turno_por_horario
+from utils.funcoes_com_cpf import formatar_cpf
+from utils.buscas_bd import buscar_animais_por_cpf_tutor, buscar_vet_por_especialidade_turno, buscar_turno_por_horario
 
 agendamentos_bp = Blueprint('agendamento', __name__)
 

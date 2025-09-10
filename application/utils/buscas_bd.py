@@ -1,4 +1,4 @@
-from app.database import execute_sql
+from database import execute_sql
 
 
 def buscar_cpf_tutor_por_id(id_tutor):

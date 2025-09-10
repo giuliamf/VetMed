@@ -48,7 +48,7 @@ def disconnect_database():
 def create_tables():
     """ Executa o SQL de criação de tabelas do arquivo create_tables.sql """
     try:
-        with open('app/database/create_tables.sql', 'r', encoding='utf-8') as file:
+        with open('database/create_tables.sql', 'r', encoding='utf-8') as file:
             sql_scrypt = file.read()
             cursor.execute(sql_scrypt)
             conn.commit()
@@ -147,7 +147,7 @@ def criar_usuario():
 
     try:
         usuario_existe = execute_sql(query_check, (params[1],), fetch_one=True)
-        with open('app/static/profile_pictures/padrao.jpg', 'rb') as file:
+        with open('static/profile_pictures/padrao.jpg', 'rb') as file:
             foto = file.read()
     except Exception as e:
         print(f"Erro ao verificar usuário padrão ou ao procurar a foto: {e}")

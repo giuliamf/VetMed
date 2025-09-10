@@ -1,8 +1,8 @@
 from flask import Blueprint, request, jsonify, render_template
-from app.database import execute_sql
+from database import execute_sql
 
-from app.utils.funcoes_com_cpf import formatar_cpf, nome_tutor_id, cpf_igual, cpf_existe
-from app.utils.buscas_bd import buscar_id_tutor_por_cpf, buscar_cpf_tutor_por_id, buscar_id_tutor_por_id_animal
+from utils.funcoes_com_cpf import formatar_cpf, nome_tutor_id, cpf_igual, cpf_existe
+from utils.buscas_bd import buscar_id_tutor_por_cpf, buscar_cpf_tutor_por_id, buscar_id_tutor_por_id_animal
 
 animais_bp = Blueprint('pacientes', __name__)
 

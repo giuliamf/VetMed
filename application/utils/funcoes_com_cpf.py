@@ -1,4 +1,4 @@
-from app.database import execute_sql
+from database import execute_sql
 from flask import jsonify
 import re
 

@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify, render_template
-from app.database import execute_sql
+from database import execute_sql
 
-from app.utils.criptografia_senhas import criptografar_senha
+from utils.criptografia_senhas import criptografar_senha
 
 usuarios_bp = Blueprint('usuarios', __name__)
 
